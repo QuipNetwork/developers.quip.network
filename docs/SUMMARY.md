@@ -6,7 +6,7 @@
 
 * [Quickstart](getting-started/quickstart.md)
 * [QUIP Extension](getting-started/quip-extension.md)
-* [PQ-Wallet](getting-started/pq-wallet.md)
+* [Riff Wallet](getting-started/riff-wallet.md)
 
 ## Basics
 
