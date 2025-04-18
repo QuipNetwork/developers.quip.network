@@ -1,3 +1,7 @@
+---
+icon: coin-front
+---
+
 # Token
 
 The QUIP token powers decentralized validator networks and multi-party computation. These validators constantly check the current state of each participating network to ensure that transactions containing completed post-quantum hashes are still included as parents of the current network state. In the event of a chain reorganization initiated by a quantum attacker, these hashes can be used as checkpoints to restore the network state to a recent canonical snapshot.

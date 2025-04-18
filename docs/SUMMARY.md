@@ -5,8 +5,8 @@
 ## Getting Started
 
 * [Quickstart](getting-started/quickstart.md)
-* [QUIP Extension](getting-started/quip-extension.md)
-* [Riff Wallet](getting-started/riff-wallet.md)
+* [Quip SDK](getting-started/quip-sdk.md)
+* [Quip Client](getting-started/firewall.md)
 
 ## Basics
 
@@ -20,3 +20,13 @@
 
 * [Participants](network/participants.md)
 * [Token](network/token.md)
+
+## Nodes
+
+* [Classical](nodes/classical.md)
+* [Quantum](nodes/quantum.md)
+
+## Protocols
+
+* [Encrypt](protocols/encrypt.md)
+* [Accelerate](protocols/accelerate.md)

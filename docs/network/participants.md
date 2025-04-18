@@ -1,3 +1,7 @@
+---
+icon: people-group
+---
+
 # Participants
 
 While QUIPs can be created and executed on a peer to peer basis, significant additional value will be created given a public index of all the active quips on various networks. As such, we endeavor to form the Quip Network, comprising several parties who collaborate to make the world a safer place to transact:
