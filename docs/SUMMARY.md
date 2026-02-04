@@ -5,6 +5,7 @@
 ## Getting Started
 
 * [Quickstart](getting-started/quickstart.md)
+* [What is Quip?](getting-started/what-is-quip.md)
 * [Quip SDK](getting-started/quip-sdk.md)
 * [Quip Client](getting-started/firewall.md)
 
