@@ -4,27 +4,15 @@ icon: bullseye-arrow
 
 # Quickstart
 
-The Quip protocol is published as open source software on [GitHub](https://github.com/quipnetwork/quip-protocol). If you wish to run a node, you can follow these steps:
+The Quip protocol is published as open source software on [GitHub](https://github.com/quipnetwork/) and [GitLab](https://gitlab.com/quip.network). If you wish to run a node, you can download the desktop node runner on Windows, Linux, or Mac OSX which will guide you through setting up your environment:\
+\
+[https://gitlab.com/quip.network/quip-node-manager/-/releases](https://gitlab.com/quip.network/quip-node-manager/-/releases)&#x20;
 
-1. To run, please add port 20049 to your router's UDP forwarding
-2.  change `your-public-ip` below, and run this docker image:<br>
+For more node running options see the [Nodes section](/broken/pages/OWaNOJMKuKqbB9m0Tzzn).
 
-    ```
-    docker run -d --pull always --name quip-cpu \
-      -v ~/quip-data:/data \
-      -e QUIP_PUBLIC_HOST=your-public-ip:20049 \
-      -p 20049:20049/udp -p 20049:20049/tcp \
-      carback1/quip-network-node-cpu:latest
-    ```
-3.  You can then watch the logs of the image by running the following:<br>
+Right now there's not much to do other than mine blocks, generate some quantum-resistant keys through our wallets on Ethereum, Solana, their L2s, and the Bitcoin L2s Arch and Midl, but we are building out the smart contract layer so you can take advantage of the quantum computers too!
 
-    ```
-    docker logs quip-cpu -f
-    ```
-
-Congrats you are now downloading the blockchain and mining on the network! Right now there's not much to do other than generate some quantum-resistant keys through our wallets on Ethereum, Solana, their L2s, and the Bitcoin L2s Arch and Midl, but we are building out the smart contract layer so you can take advantage of the quantum computers too!
-
-You can generate post-quantum keys to prepare for the smart contract layer by using our wallets at [vault.quip.network](https://vault.quip.network/) or you can use the libraries below.
+You can generate post-quantum keys to prepare for the smart contract layer by using our wallets at [account.quip.network](https://account.quip.network/) or you can use the libraries below.
 
 If you want to understand the structure of what we're building, here's some key diagrams below:
 
@@ -41,5 +29,5 @@ All Quip Network libraries and contracts are available at our [Github](https://g
 More coming soon
 
 {% hint style="info" %}
-Want to learn more about QUIPs from scratch? Head to the [Basics](broken-reference/) section to learn more.
+Want to learn more about QUIPs from scratch? Head to the [Basics](https://gitlab.com/piqued/gitbook/-/blob/main/getting-started/broken-reference/README.md) section to learn more.
 {% endhint %}

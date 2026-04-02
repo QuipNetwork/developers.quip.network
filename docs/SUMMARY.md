@@ -24,6 +24,7 @@
 
 ## Nodes
 
+* [Run A Node (TestNet)](nodes/run-a-node-testnet.md)
 * [Classical](nodes/classical.md)
 * [Quantum](nodes/quantum.md)
 
