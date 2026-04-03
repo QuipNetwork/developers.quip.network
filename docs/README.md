@@ -8,11 +8,13 @@ coverY: 0
 
 Welcome to the Quip Network docs! Here you'll get an overview of all the amazing features Quip offers to help you build blazingly fast quantum computing solutions, as well as cryptocurrency applications secure against quantum computer threats.
 
-The goal of the Quip Network is to offer a seamless, turn-key solution to solve the world's toughest problems, delivering immediate value to your bottom line in industries as diverse as finance, logistics, manufacturing, and even AI! If you can phrase your question as, "What's the best...?", "What's the fastest...?", or "What's the least costly...?" the odds are good that we can solve your problem faster with a quantum computer.
+The goal of the Quip Network is to offer a seamless, turn-key solution to solve the world's toughest problems, delivering immediate value to your bottom line in industries as diverse as finance, logistics, manufacturing, and even AI!
+
+If you can phrase your question as, "What's the best...?", "What's the fastest...?", or "What's the least costly...?" the odds are good that we can solve your problem faster with a quantum computer.
 
 Because we run a quantum computing network, we also secure client digital assets against threats from the advent of quantum computers. Users of the Quip Network - wallets, protocols, retail, and institutions - will be able to easily integrate the Quip Protocol into their existing chains and wallets to achieve post-quantum security as an extra layer of defense for their digital assets.
 
-Our ultimate mission is to build the worldwide quantum computer, so that we can solve the toughest problems that literally no other platform in the universe will be able to solve. We're excited to help you access that computer and keep your assets secure from anyone who might try to misuse it.
+Our ultimate mission is to build the worldwide quantum computer, so that we can solve the toughest problems that literally no other platform on Earth will be able to solve. We're excited to help you access that computer and keep your assets secure from anyone who might try to misuse it.
 
 ### Jump right in
 

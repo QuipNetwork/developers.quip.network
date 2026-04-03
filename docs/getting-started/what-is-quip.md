@@ -7,25 +7,25 @@ icon: atom
 Quip is **not** a single blockchain or a single quantum computer. Think of it as two orthogonal layers that can be adopted together or separately:
 
 1. **Compute-Consensus Layer (Quip Network)** – a new Nakamoto-style chain whose proof-of-work _is a useful optimization job_. This turns spare classical/quantum hardware into block-production while producing answers clients are willing to pay for.
-2. **Asset Layer (QUIP Vault & Interlock)** – a post-quantum wrapper you deploy _on any existing chain_ to lock, move, or atomically swap value without bridges. It upgrades security today without requiring any hardware or protocol changes.
+2. **Asset Layer (QUIP Account & Interlock)** – a post-quantum wrapper you deploy _on any existing chain_ to lock, move, or atomically swap value without bridges or oracles. It upgrades security today without requiring any hardware or protocol changes.
 
 These layers share the **same token (QUIP)** and the same validator/miner economy, but either layer can function on its own:
 
 * **Only need useful-work mining?** Point your QPU/GPU/CPU farm at the Quip Network; earn QUIP even if you never lock assets.
-* **Only need PQ security?** Use Vaults on Ethereum/Solana/Bitcoin with no exposure to mining.
+* **Only need PQ security?** Use wallets on Ethereum/Solana/Bitcoin/Substrate with no exposure to mining.
 
 ### 1. Mission & Scope
 
 Quip delivers **two coupled services**:
 
 1. **Decentralized compute marketplace** – miners solve real optimization jobs instead of wasteful hashes, proving quantum advantage under a single token economy.
-2. **Post-quantum asset security** – hash-based vaults wrap ECC keys with WOTS+ keys, offering drop-in protection on any chain.
+2. **Post-quantum asset security** – hash-based vaults wrap ECC keys with quantum-resistant WOTS+ keys, offering drop-in protection on any chain.
 
 The outcome? We secure existing value, monetize idle quantum-classical hardware, and fund open-source quantum research.
 
 ### 2. Core Components
 
-#### 2.1. QUIP Vault
+#### 2.1. QUIP Account
 
 * Deposit on any chain → vault ID & first WOTS+ public key.
 * Each action signed with next WOTS+ key → immutable hash-chain of ownership.
@@ -34,9 +34,9 @@ The outcome? We secure existing value, monetize idle quantum-classical hardware,
 #### 2.2. Interlock
 
 * Two parties can perform atomic swaps across chains by cryptographically exchanging quantum-resistant private keys
-* With their single use keys, each party encrypts a new quip vault holding the assets they want to trade, and this begins a timer
-* Either both execute their half of the trade, or the expired timers allow refunds
-* No bridges required!
+* With their single use keys, each party encrypts a new quip wallet holding the assets they want to trade with a commitment to the details of the receiver and transferred tokens, and this begins a timer
+* If one executes their half of the trade, they reveal the information necessary for the other to execute the other half of the trade. If neither party acts, the expired timers allow refunds
+* No bridges or oracles required!
 
 #### 2.3. Consensus – Quantum PoW (QPoW)
 
@@ -49,7 +49,7 @@ The outcome? We secure existing value, monetize idle quantum-classical hardware,
 
 * Each arrow is pluggable; component authors earn royalties.
 * First subnet = Optimization (QUBO -> Ising: knapsack, TSP, SVP, job scheduling…).
-* Future subnets: Search, Factoring, Circuit Mapping.
+* Future subnets: Verifiable Random Functions, Search, Factoring, Circuit Mapping.
 
 User Data → Template → Graph Reduce → Embed → Algo Select → HW Select → Compute
 
@@ -74,17 +74,17 @@ User Data → Template → Graph Reduce → Embed → Algo Select → HW Select 
 
 #### 4.2 Utilities
 
-| Layer                | Action        | Payer           | QUIP sink             |
-| -------------------- | ------------- | --------------- | --------------------- |
-| **Asset (Vault)**    | Vault deposit | Creator         | Flat fee + % burn     |
-|                      | Transfer      | Sender          | Flat fee → validators |
-|                      | Contract exec | Caller          | % routed to treasury  |
-|                      | Swap open     | Both parties    | Escrow (slashable)    |
-|                      | Swap claim    | Claimer         | Nominal fee           |
-| **Compute (Sinnet)** | Job bid       | Consumer        | Variable fee          |
-|                      | Block reward  | Protocol        | Newly-minted          |
-|                      | Staking bond  | Validators/Noms | Locked collateral     |
-|                      | Bounty payout | Treasury        | Stream release        |
+| Layer                | Action          | Payer           | QUIP sink             |
+| -------------------- | --------------- | --------------- | --------------------- |
+| **Asset (Wallet)**   | Account deposit | Creator         | Flat fee + % burn     |
+|                      | Transfer        | Sender          | Flat fee → validators |
+|                      | Contract exec   | Caller          | % routed to treasury  |
+|                      | Swap open       | Both parties    | Escrow (slashable)    |
+|                      | Swap claim      | Claimer         | Nominal fee           |
+| **Compute (Sinnet)** | Job bid         | Consumer        | Variable fee          |
+|                      | Block reward    | Protocol        | Newly-minted          |
+|                      | Staking bond    | Validators/Noms | Locked collateral     |
+|                      | Bounty payout   | Treasury        | Stream release        |
 
 Key points: universal denomination, predictable costs, deflationary burn, security-fee coupling.
 

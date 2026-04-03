@@ -4,7 +4,7 @@ icon: atom
 
 # Motivation
 
-### The World's Shared Quantum Computer
+### The Worldwide Quantum Computer
 
 There will come a day not long from now, when quantum communication is so good that it is easier to scale your quantum computer horizontally than it is to build a more densely packed quantum processor—when we can entangle millions of processors around the world in a quantum internet all bending their capacities toward the same problem.
 
@@ -36,7 +36,7 @@ Finally, the industrial applications for these computers are limited by the tale
 
 #### An Immediate Solution
 
-The Quip Network aims to solve all of these incentive problems and inadequate equilibria with its first Useful Proof of Work network, which requires miners of any kind to solve optimization problems in the form of Ising models.
+The Quip Network aims to solve all of these incentive problems and inadequate equilibria with its first Proof of Useful Work network, which requires miners of any kind to solve optimization problems in the form of Ising models.
 
 There are over 100 known industrial applications for the Ising model, from travelling salesman problems, to knapsack problems, to job scheduling problems, and beyond. More importantly, it's a proof of work that can be solved by any known computation platform, from central processing units, to graphical processing units, to application-specific integrated chips, and even both adiabatic and circuit-based quantum processing units. These comparative proofs of work can be used to judge the quality, time-to-solution, and cost from each platform and validate that quantum computers are really offering advantage.
 
@@ -48,7 +48,7 @@ A potential consumer of these jobs can submit their data to a job queue with a b
 
 This is also a boon for the quantum computer operator, as now they can earn token rewards with their unused compute, defraying the cost of keeping their computer online and providing a default amortization schedule for any loans used to purchase the machine. Operating in a cryptographically encrypted network with heterogeneous platforms allows the operator to maintain optionality in revealing their identity to the network as a whole, and gives consumers confidence that they're really receiving the highest quality and fastest possible answers that any machine can provide.
 
-This initial Useful Proof of Work network solving Ising models is just the first of many like it, but it is the most important for understanding the capabilities and limitations of the verification model today. It is only the beginning, and the prelude to a much more ambitious network.
+This initial Proof of Useful Work network solving Ising models is just the first of many like it, but it is the most important for understanding the capabilities and limitations of the verification model today. It is only the beginning, and the prelude to a much more ambitious network.
 
 ### Expanding the Solution Space
 

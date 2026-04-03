@@ -4,6 +4,77 @@ icon: people-group
 
 # Participants
 
+### Distributed Compute Protocol
+
+Many different consumers, developers, operators, and liquidity providers come together to participate in the Quip Network. Each serves an irreplaceable function in the whole of the protocol.
+
+<figure><img src="../.gitbook/assets/stakeholder-categories-2.png" alt=""><figcaption><p>The different participants in the compute protocol</p></figcaption></figure>
+
+| Payor                 | Payee                 | Request                                                           |
+| --------------------- | --------------------- | ----------------------------------------------------------------- |
+| Consumer              | Application Developer | Upload data and bid for solver execution                          |
+| Application Developer | Algorithm Developer   | Convert consumer bid currencies and format data for chosen solver |
+| Algorithm Developer   | Protocol Developer    | Extract, transform, load data for optimal solver architecture     |
+| Protocol Developers   | Compute Providers     | Route transformed data to the optimal architecture                |
+| Compute Providers     | Liquidity Providers   | Execute the requested job for compute credits                     |
+| Liquidity Providers   | Consumer              | Sell compute credits for local stable currencies                  |
+
+{% tabs %}
+{% tab title="Consumers" %}
+Consumers may be individuals, small businesses, or enterprises. No matter who they are, they're looking to get better answers out of their compute solutions, whether that is a 9-figure cluster of GPUs or Jenny from operations down the hall.
+
+Whoever they are, it's unlikely that they have a lot of expertise in quantum computing, and so they need a lot of help to connect to the right solvers for problems in their industry. The best way for this to happen is that someone identifies edge that can be achieved with a quantum computer and packages that into an app. The second best way is that these quantum curious people can browse a library of solvers and use a no-code API to try them out.
+
+The only thing they should have to worry about is how much they are willing to pay in their home currrency to access a solution. Everything else should be handled by the network.
+{% endtab %}
+
+{% tab title="Application Developers" %}
+As with traditional application developers, middleware providers for the Quip Network may come from their industry of focus and have slightly more technical savvy than their average colleague. Or, they saw an opportunity and hired consultants to help them exploit it.
+
+No matter where they come from, they tend to be entrepreneurs or enterprises trying to package a compute resource into a repeatable billable. Their goal is to find edge in their industry by using the network, and resell that edge to their customers.
+
+The most important thing from the network's perspective is to make it easy to discover applications, format consumer data, request jobs, acquire the tokens expected by the smart contract developer and the protocol, and exchange currencies on behalf of the end-consumer.
+{% endtab %}
+
+{% tab title="Algorithm Developers" %}
+One layer down from the application developers, we have the algorithm developers. They promote job specifications to solve specific industrial challenges that matter to consumers, and then deploy smart contracts that solve those job specifications. They can charge fees in any currency for each execution of the contract.
+
+A job specification consists of an input type, an output type, and a verification type that makes sure the output is a valid transformation of the input. Job specifications can be linked together in order to extract, transform, and load data for arbitrary workloads. Target hardware implementations can be associated with each specification.
+
+When a job specification wants to rely on a Proof of Useful Work, the implementation can request the Protocol to serve the model for a block reward.
+
+The network's role is to make this process of writing, deploying, and optimizing solvers easy and enjoyable, while abstracting away the more onerous aspects of fine-tuning results.
+{% endtab %}
+
+{% tab title="Protocol Developers" %}
+Protocol developers maintain the network and submit parameters for every new Proof of Useful Work. Quantum computers exist in an odd complexity class where some of their outputs can be computed efficiently by classical computers (eg calculating Hamiltonian ground states), some can only be verified efficiently by classical computers (eg elliptic curve discrete logarithm problem), and some can only be verified by other quantum computers (eg quantum merlin-arthur problems)!
+
+Every solved block and every Proof of Useful Work provides a percentage of fees back to the network in order to fund its maintenance and improvement. Protocol developers also deploy new implementations for different hardware architectures so that Proofs of Useful Work can benefit from state of the art algorithmic improvements.
+
+Here, the network's role is to make sure that the development of the subnets and new Proofs of Useful Work is always sufficiently incentivized, and to make this process of deploying new proofs easy with straightforward discoverability and interpretibility by the Compute Providers.
+{% endtab %}
+
+{% tab title="Compute Providers" %}
+These operators of all kinds of computer processors do the hard work of actually solving smart contract bids and Useful Proofs of Work. They charge on a per instruction basis and accept larger bids to prioritize which jobs they will execute on their hardware.
+
+Ultimately it is up to the operator to decide which types of jobs they will serve, the threshold for making that job attractive to execute, and what requirements they will need in a ZK credential before serving a consumer's bid. In many cases, it may make sense to form a mining pool that combines resources across hybrid platforms or multi-QPU clusters.
+
+The protocol must focus on making it easy for compute providers to discover and toggle these features of the collective smart contract library, to benchmark their performance and expected payoff for mining any subnet, and to deny service based on the rules in their local jurisdiction.
+{% endtab %}
+
+{% tab title="Liquidity Providers" %}
+An often under-appreciated participant in most networks, the job of the liquidity providers is to efficiently discover the price of the shared compute credit and to provide a liquid market between consumers' local currency and the network's native token.
+
+For the most part, they should be interacting directly with developers and operators rather than consumers, but in some cases consumers may wish to monetize their inventory of compute credits by acting as a liquidity provider.
+
+There are many unexplored roles for liquidity providers as well: building prediction markets for new valuable Proofs of Useful Work, voting protocol emissions to subnets based on their perceived relative value, and even providing sureties against the bad behavior of distributed identities in the network.
+
+The most important thing is to make the token useful for more than just reserving compute and to make it easily exchangeable and bondable.
+{% endtab %}
+{% endtabs %}
+
+### Interlock Protocol
+
 While QUIPs can be created and executed on a peer to peer basis, significant additional value will be created given a public index of all the active quips on various networks. As such, we endeavor to form the Quip Network, comprising several parties who collaborate to make the world a safer place to transact:
 
 <figure><img src="../.gitbook/assets/quip_whitepaper_value_flow_dark.png" alt=""><figcaption><p>Payment flows and services between participants</p></figcaption></figure>

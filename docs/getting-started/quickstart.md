@@ -22,9 +22,9 @@ If you want to understand the structure of what we're building, here's some key 
 
 <figure><img src="../.gitbook/assets/image.png" alt=""><figcaption><p>The QUIP Lifecycle</p></figcaption></figure>
 
-Quip's implementation of various hash algorithms, especially the preferred Winternitz One-Time Signature (WOTS+), is available as a library for [rust](https://crates.io/crates/hashsigs-rs), [c++](https://github.com/quipnetwork/hashsigs-cpp), [typescript](https://www.npmjs.com/package/@quip.network/hashsigs), and [solidity](https://www.npmjs.com/package/@quip.network/hashsigs-solidity). If you do not want to use these libraries directly, you can use the interface at [vault.quip.network](https://vault.quip.network/).
+Quip's implementation of various hash algorithms, especially the preferred Winternitz One-Time Signature (WOTS+), is available as a library for [rust](https://crates.io/crates/hashsigs-rs), [c++](https://github.com/quipnetwork/hashsigs-cpp), [typescript](https://www.npmjs.com/package/@quip.network/hashsigs), and [solidity](https://www.npmjs.com/package/@quip.network/hashsigs-solidity). If you do not want to use these libraries directly, you can use the interface at [account.quip.network](https://account.quip.network/).
 
-All Quip Network libraries and contracts are available at our [Github](https://github.com/QuipNetwork).
+All Quip Network libraries and contracts are available for review at our [Github](https://github.com/QuipNetwork).
 
 More coming soon
 
