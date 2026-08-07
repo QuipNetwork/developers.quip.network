@@ -11,7 +11,7 @@ The QUIP token is a shared compute credit across all the operators in the decent
 
 #### Token Purpose & Value Accrual
 
-The QUIP token serves as the incentive layer that ensures the Quip.Network remains secure, performant, and decentralized:
+The QUIP token serves as the incentive layer that ensures Quip Network remains secure, performant, and decentralized:
 
 * Reward miners for proving availability on the network
 * Punish bad actors for breaking shared programs
@@ -37,7 +37,7 @@ As the network grows and demand for quantum compute increases:
 
 More quantum demand = more QUIP buy pressure = more QUIP liquidity
 
-This creates a QUIP-native economy where the QUIP protocol continuously earns a larger portion of transaction volume denominated in the QUIP token. The more activity on Quip.Network, the more QUIP flows into buying and locking active trading pairs in captive liquidity pools, creating price stability and token scarcity.
+This creates a QUIP-native economy where the QUIP protocol continuously earns a larger portion of transaction volume denominated in the QUIP token. The more activity on Quip Network, the more QUIP flows into buying and locking active trading pairs in captive liquidity pools, creating price stability and token scarcity.
 
 #### Tokenomics Overview
 

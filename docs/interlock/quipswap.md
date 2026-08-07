@@ -12,7 +12,7 @@ icon: right-left
 **Draft — pending technical review.** This page was assembled from internal specifications on 7 August 2026 and has not been approved by engineering. Details may change before this notice is removed.
 {% endhint %}
 
-QuipSwap is Quip's protocol for trading assets directly with another party. You agree on the terms of a trade, then each of you locks the assets you are giving up in a shared settlement contract on your own chain. A single secret connects the two locks. When one side reveals the secret to claim their new assets, that same reveal lets the other side claim theirs. If the trade stalls, each side takes back what they locked once a deadline passes. The trade can run across two chains or entirely on one chain, and at no point does a bridge, an exchange, or any other custodian hold your money. <!-- REVIEW: Are same-chain swaps supported in the shipped contract, as the formal verification flowcharts (same chain and cross chain runs) suggest? -->
+QuipSwap is Quip Network's protocol for trading assets directly with another party. You agree on the terms of a trade, then each of you locks the assets you are giving up in a shared settlement contract on your own chain. A single secret connects the two locks. When one side reveals the secret to claim their new assets, that same reveal lets the other side claim theirs. If the trade stalls, each side takes back what they locked once a deadline passes. The trade can run across two chains or entirely on one chain, and at no point does a bridge, an exchange, or any other custodian hold your money. <!-- REVIEW: Are same-chain swaps supported in the shipped contract, as the formal verification flowcharts (same chain and cross chain runs) suggest? -->
 
 ### Quantum protection comes first
 

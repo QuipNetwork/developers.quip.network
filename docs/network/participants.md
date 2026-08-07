@@ -80,7 +80,17 @@ The most important thing is to make the token useful for more than just reservin
 
 While QUIPs can be created and executed on a peer to peer basis, significant additional value will be created given a public index of all the active quips on various networks. As such, we endeavor to form the Quip Network, comprising several parties who collaborate to make the world a safer place to transact:
 
-<figure><img src="../.gitbook/assets/quip_whitepaper_value_flow_dark.png" alt=""><figcaption><p>Payment flows and services between participants</p></figcaption></figure>
+```mermaid
+flowchart LR
+    C["Client"] -->|pays fees| TN["Transaction<br/>network"]
+    TN -->|stores and<br/>processes QUIPs| C
+    TN -->|splits fees| V["Quip Network<br/>validators"]
+    V -->|publishes QUIP<br/>commitments| TN
+    V -->|pays yield| N["Nominators"]
+    N -->|stake funds| V
+    N -->|pays bounties| W["Whitehat<br/>hackers"]
+    W -->|proves algorithm<br/>security| N
+```
 
 | Payor                   | Payee                   | Service                       |
 | ----------------------- | ----------------------- | ----------------------------- |

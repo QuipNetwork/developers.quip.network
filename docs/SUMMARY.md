@@ -5,7 +5,7 @@
 ## Getting Started
 
 * [Quickstart](getting-started/quickstart.md)
-* [What is Quip?](getting-started/what-is-quip.md)
+* [What is Quip Network?](getting-started/what-is-quip.md)
 * [Install the Quip SDK](getting-started/install-sdk.md)
 * [Quip SDK](getting-started/quip-sdk.md)
 * [Quip Client](getting-started/firewall.md)
@@ -13,7 +13,7 @@
 
 ## Quip Interlock Protocol
 
-* [How Quip Fits Together](interlock/how-quip-fits-together.md)
+* [How Quip Network Fits Together](interlock/how-quip-fits-together.md)
 * [QUIP: The Quantum Unit Interlock Pathway](basics/quip-the-quantum-unit-interlock-pathway.md)
 * [Quip Accounts](interlock/quip-accounts.md)
 * [QuipSwap](interlock/quipswap.md)

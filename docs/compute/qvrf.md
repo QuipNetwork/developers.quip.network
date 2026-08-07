@@ -11,7 +11,7 @@ icon: dice
 **Draft — pending technical review.** This page was assembled from internal specifications on 7 August 2026 and has not been approved by engineering. Details may change before this notice is removed.
 {% endhint %}
 
-QVRF (Quantum Verifiable Random Function) is Quip's quantum randomness service. It supplies random numbers to smart contracts, and the numbers come from measurements taken on a real quantum computer rather than from a formula. Your contract asks for random values and receives them back later through a callback, the same request-and-callback shape used by existing randomness oracles. The values are delivered over an encrypted application programming interface (API) connection when requested. <!-- REVIEW: Is "an encrypted API connection plus an on-chain request-and-callback" the right one-line description of the V0 delivery surface developers will integrate? -->
+QVRF (Quantum Verifiable Random Function) is Quip Network's quantum randomness service. It supplies random numbers to smart contracts, and the numbers come from measurements taken on a real quantum computer rather than from a formula. Your contract asks for random values and receives them back later through a callback, the same request-and-callback shape used by existing randomness oracles. The values are delivered over an encrypted application programming interface (API) connection when requested. <!-- REVIEW: Is "an encrypted API connection plus an on-chain request-and-callback" the right one-line description of the V0 delivery surface developers will integrate? -->
 
 This page covers concepts only. The request interface is not yet final, so no function names or parameters appear here.
 

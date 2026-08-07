@@ -7,7 +7,7 @@ icon: bullseye-arrow
 
 # Quickstart
 
-The Quip protocol is published as open source software on [GitHub](https://github.com/quipnetwork/) and [GitLab](https://gitlab.com/quip.network). If you wish to run a node, you can download the desktop node runner on Windows, Linux, or Mac OSX which will guide you through setting up your environment:\
+The Quip Network protocol is published as open source software on [GitHub](https://github.com/quipnetwork/) and [GitLab](https://gitlab.com/quip.network). If you wish to run a node, you can download the desktop node runner on Windows, Linux, or Mac OSX which will guide you through setting up your environment:\
 \
 [https://gitlab.com/quip.network/quip-node-manager/-/releases](https://gitlab.com/quip.network/quip-node-manager/-/releases)&#x20;
 

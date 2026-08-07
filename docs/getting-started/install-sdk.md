@@ -11,7 +11,7 @@ icon: download
 **Draft — pending technical review.** This page was assembled from internal specifications on 7 August 2026 and has not been approved by engineering. Details may change before this notice is removed.
 {% endhint %}
 
-This page lists the packages Quip publishes today, verified directly against the public registries on 7 August 2026.
+This page lists the packages Quip Network publishes today, verified directly against the public registries on 7 August 2026.
 
 ### JavaScript and TypeScript (npm)
 

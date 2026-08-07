@@ -23,7 +23,7 @@ A factory contract creates each account, and the account's address is derived de
 
 ### One account, two doors
 
-Quip provides two clients for the same account: a browser extension and the web application at [account.quip.network](https://account.quip.network/). They are two doors into one account, not two wallets. The account itself is the contract on chain. Both clients read the same balances and history and produce signatures for the same account, so nothing you create through one client is trapped in the other.
+Quip Network provides two clients for the same account: a browser extension and the web application at [account.quip.network](https://account.quip.network/). They are two doors into one account, not two wallets. The account itself is the contract on chain. Both clients read the same balances and history and produce signatures for the same account, so nothing you create through one client is trapped in the other.
 
 If your application points users at Quip, route Chrome users to the extension and everyone else to the web app. The web app requires no installation and runs in any modern browser. The extension wraps the same account surface and adds the click-the-icon flow and the decentralised application (dApp) connection surface that Chrome users expect from a wallet.
 

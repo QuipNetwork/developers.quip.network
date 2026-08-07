@@ -11,7 +11,7 @@ icon: paper-plane
 **Draft — pending technical review.** This page was assembled from internal specifications on 7 August 2026 and has not been approved by engineering. Details may change before this notice is removed.
 {% endhint %}
 
-Anyone can post an optimization problem to the network with a reward attached, and miners compete to return the best answer.
+Anyone can post an optimization problem to Quip Network with a reward attached, and miners compete to return the best answer.
 
 This page walks you through installing the tools, describing a problem, and following your job from submission to result.
 

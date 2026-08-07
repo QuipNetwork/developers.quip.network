@@ -5,7 +5,7 @@ description: >-
 icon: circle-question
 ---
 
-# What is Quip?
+# What is Quip Network?
 
 Quip is **not** a single blockchain or a single quantum computer. Think of it as two orthogonal layers that can be adopted together or separately:
 

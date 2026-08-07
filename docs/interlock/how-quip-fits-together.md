@@ -5,7 +5,7 @@ description: >-
 icon: diagram-project
 ---
 
-# How Quip Fits Together
+# How Quip Network Fits Together
 
 {% hint style="warning" %}
 **Draft — pending technical review.** This page was assembled from internal specifications on 7 August 2026 and has not been approved by engineering. Details may change before this notice is removed.
