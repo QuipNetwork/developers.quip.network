@@ -100,7 +100,7 @@ Each flag is a red hint block in the page itself, labeled with the ID below. Ans
 grep -rnE "QuipNetwork|Quipnetwork|QuipNet\b|Quip\.Network|QUIP Network" --include="*.md" .
 ```
 
-Note for R8: the brand book reserves all-caps QUIP for the token, while the docs use QUIP for the primitive (the pathway) throughout. The acronym decision in R8 must resolve this collision too.
+Token differentiation (Brent, 2026-08-07): token mentions may use **$QUIP** to distinguish the token from QUIP the primitive. Applied across token.md, participants.md, what-is-quip.md, and the who-pays-whom diagram (26 instances). Convention: $QUIP = the token; QUIP = the primitive; Quip Network = the brand. This largely resolves the R8 all-caps collision, though R8's three-way acronym expansion still needs a decision.
 
 **House rule 2 (set by Brent, 2026-08-07): no narrating what the reader can see, no manufactured intrigue.** Banned: prose that restates a diagram, table, or layout ("Reading the picture...", "Notice that...", "As you can see", "here's some diagrams below"), meta-commentary about the docs themselves ("this replaces the older diagram"), and rhetorical suspense or reveals ("Notice what is missing...", "The outcome?", "What a quandary."). State facts directly, ideally as comparisons ("Unlike most Web3 platforms, Quip's atomic swaps require no bridge"). The test: does the sentence add anything the figure does not show, stated plainly? Sweep before merge:
 

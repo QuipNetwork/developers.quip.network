@@ -59,13 +59,13 @@ The network is a stack of participants, and every payment between layers settles
 ```mermaid
 flowchart LR
     CC["Compute<br/>Consumers"] -->|USD| AD["Application<br/>Developers"]
-    AD -->|QUIP| ALG["Algorithm<br/>Developers"]
-    ALG -->|QUIP| PD["Protocol<br/>Developers"]
-    PD -->|QUIP| CP["Compute Providers<br/>QPU, GPU, CPU"]
-    LP["Liquidity<br/>Providers"] <-->|"USD to QUIP,<br/>via QuipSwap"| AD
+    AD -->|"$QUIP"| ALG["Algorithm<br/>Developers"]
+    ALG -->|"$QUIP"| PD["Protocol<br/>Developers"]
+    PD -->|"$QUIP"| CP["Compute Providers<br/>QPU, GPU, CPU"]
+    LP["Liquidity<br/>Providers"] <-->|"USD to $QUIP,<br/>via QuipSwap"| AD
 ```
 
-Every QUIP hop is a payment for work one layer down, and cross-chain payments settle over the QuipSwap protocol.
+Every $QUIP hop is a payment for work one layer down, and cross-chain payments settle over the QuipSwap protocol.
 
 ### Where to go next
 

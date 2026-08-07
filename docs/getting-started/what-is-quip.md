@@ -16,9 +16,9 @@ Quip is **not** a single blockchain or a single quantum computer. Think of it as
 **Under review (R2).** Newer internal specifications indicate that block production and useful-work mining are separate tracks: validators produce blocks while miners solve jobs and are rewarded alongside, rather than proof-of-work itself producing blocks. The description above and in section 2.3 may reflect the earlier design. Pending engineering confirmation, see REVIEW-TRACKER.md.
 {% endhint %}
 
-These layers share the **same token (QUIP)** and the same validator/miner economy, but either layer can function on its own:
+These layers share the **same token ($QUIP)** and the same validator/miner economy, but either layer can function on its own:
 
-* **Only need useful-work mining?** Point your QPU/GPU/CPU farm at the Quip Network; earn QUIP even if you never lock assets.
+* **Only need useful-work mining?** Point your QPU/GPU/CPU farm at the Quip Network; earn $QUIP even if you never lock assets.
 * **Only need PQ security?** Use wallets on Ethereum/Solana/Bitcoin/Substrate with no exposure to mining.
 
 ### 1. Mission & Scope
@@ -72,7 +72,7 @@ User Data → Template → Graph Reduce → Embed → Algo Select → HW Select 
 | **Validator**                        | Batch QUIP tx, finalize blocks     | Network fees + emissions |
 | **Canary Node**                      | Track reorgs, checkpoint vaults    | Fees + emissions         |
 | **Algorithm/Pipeline Designer**      | Publish templates, reducers, algos | Royalty on every call    |
-| **Nominator**                        | Delegate QUIP to validators        | Share of validator yield |
+| **Nominator**                        | Delegate $QUIP to validators       | Share of validator yield |
 
 ### 4 Token Economics
 
@@ -85,7 +85,7 @@ User Data → Template → Graph Reduce → Embed → Algo Select → HW Select 
 
 #### 4.2 Utilities
 
-| Layer                | Action          | Payer           | QUIP sink             |
+| Layer                | Action          | Payer           | $QUIP sink            |
 | -------------------- | --------------- | --------------- | --------------------- |
 | **Asset (Wallet)**   | Account deposit | Creator         | Flat fee + % burn     |
 |                      | Transfer        | Sender          | Flat fee → validators |
