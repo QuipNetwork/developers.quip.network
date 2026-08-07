@@ -22,7 +22,7 @@ However, sometimes contracts may require token allowances, specialized permissio
 ## Install
 
 {% hint style="warning" %}
-**Draft — pending technical review.** The sections below were assembled from internal specifications on 7 August 2026 and have not been approved by engineering. Details may change before this notice is removed.
+**Draft — pending technical review.** The sections below were assembled from internal specifications on 7 August 2026 and have not been approved by engineering. Details may change before this notice is removed. Reviewing? Answers and feedback go on the "Quip Docs Review — Staging" page in Notion.
 {% endhint %}
 
 The packages Quip Network publishes today, verified directly against the public registries on 7 August 2026.

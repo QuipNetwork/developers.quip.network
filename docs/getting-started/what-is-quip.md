@@ -13,7 +13,7 @@ Quip is **not** a single blockchain or a single quantum computer. Think of it as
 2. **Asset Layer (QUIP Account & Interlock)** – a post-quantum wrapper you deploy _on any existing chain_ to lock, move, or atomically swap value without bridges or oracles. It upgrades security today without requiring any hardware or protocol changes.
 
 {% hint style="danger" %}
-**Under review (R2).** Newer internal specifications indicate that block production and useful-work mining are separate tracks: validators produce blocks while miners solve jobs and are rewarded alongside, rather than proof-of-work itself producing blocks. The description above and in section 2.3 may reflect the earlier design. Pending engineering confirmation.
+**Under review (R2).** Newer internal specifications indicate that block production and useful-work mining are separate tracks: validators produce blocks while miners solve jobs and are rewarded alongside, rather than proof-of-work itself producing blocks. The description above and in section 2.3 may reflect the earlier design. Pending engineering confirmation; reviewers can answer on the "Quip Docs Review — Staging" page in Notion.
 {% endhint %}
 
 These layers share the **same token ($QUIP)** and the same validator/miner economy, but either layer can function on its own:
@@ -33,7 +33,7 @@ This secures existing value, monetizes idle quantum-classical hardware, and fund
 ### 2. Core Components
 
 {% hint style="danger" %}
-**Under review (R3).** Newer internal documentation indicates two changes to what follows: the account signature scheme has moved from rotating WOTS+ key chains to SHRINCS hash-based signatures (July 2026), and the swap design described in 2.2 (per-swap wallets exchanging quantum-resistant keys) was superseded in March 2026 by a single shared settlement contract per chain using hash locks, with post-quantum authentication in the wallet layer. Pending engineering confirmation; see the [QuipSwap](../interlock/quipswap.md) draft.
+**Under review (R3).** Newer internal documentation indicates two changes to what follows: the account signature scheme has moved from rotating WOTS+ key chains to SHRINCS hash-based signatures (July 2026), and the swap design described in 2.2 (per-swap wallets exchanging quantum-resistant keys) was superseded in March 2026 by a single shared settlement contract per chain using hash locks, with post-quantum authentication in the wallet layer. Pending engineering confirmation; see the [QuipSwap](../interlock/quipswap.md) draft, and answer on the "Quip Docs Review — Staging" page in Notion.
 {% endhint %}
 
 #### 2.1. QUIP Account
@@ -102,7 +102,7 @@ Key points: universal denomination, predictable costs, deflationary burn, securi
 #### 4.3 Emission Outline
 
 {% hint style="danger" %}
-**Under review (R4).** This outline disagrees with the [Token](../network/token.md) page, which states a total emission duration of 10 years. One of the two needs correcting. Pending confirmation.
+**Under review (R4).** This outline disagrees with the [Token](../network/token.md) page, which states a total emission duration of 10 years. One of the two needs correcting. Pending confirmation; reviewers can answer on the "Quip Docs Review — Staging" page in Notion.
 {% endhint %}
 
 * **Years 0-2:** heavy miner + validator issuance.
