@@ -8,6 +8,7 @@ structure:
 # Interlock restructure. GitBook resolves each target file to its
 # new URL, so old links and bookmarks keep working after merge.
 redirects:
+  getting-started/firewall: getting-started/quip-sdk.md
   basics/quip-the-quantum-unit-interlock-pathway: basics/quip-the-quantum-unit-interlock-pathway.md
   basics/quip-lifecycle: basics/quip-lifecycle.md
   protocols/encrypt: protocols/encrypt.md
