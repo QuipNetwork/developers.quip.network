@@ -16,11 +16,9 @@
 * [Quip Accounts](interlock/quip-accounts.md)
 * [QuipSwap](interlock/quipswap.md)
 * [QUIP Lifecycle](basics/quip-lifecycle.md)
-* [Encrypt](protocols/encrypt.md)
 
 ## Compute
 
-* [Requesting Jobs](protocols/accelerate.md)
 * [Submit Your First Compute Job](compute/submit-a-job.md)
 * [Quantum Randomness (QVRF)](compute/qvrf.md)
 
@@ -28,7 +26,6 @@
 
 * [Motivation](basics/motivation.md)
 * [Key Properties](basics/key-properties.md)
-* [Virtues](basics/virtues.md)
 
 ## Network
 
@@ -38,5 +35,4 @@
 ## Nodes
 
 * [Run A Node (TestNet)](nodes/run-a-node-testnet.md)
-* [Classical](nodes/classical.md)
-* [Quantum](nodes/quantum.md)
+* [Miners](nodes/miners.md)

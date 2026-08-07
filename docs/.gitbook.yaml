@@ -11,5 +11,8 @@ redirects:
   getting-started/firewall: getting-started/quip-sdk.md
   basics/quip-the-quantum-unit-interlock-pathway: basics/quip-the-quantum-unit-interlock-pathway.md
   basics/quip-lifecycle: basics/quip-lifecycle.md
-  protocols/encrypt: protocols/encrypt.md
-  protocols/accelerate: protocols/accelerate.md
+  protocols/encrypt: interlock/quip-accounts.md
+  protocols/accelerate: compute/submit-a-job.md
+  basics/virtues: basics/quip-the-quantum-unit-interlock-pathway.md
+  nodes/classical: nodes/miners.md
+  nodes/quantum: nodes/miners.md

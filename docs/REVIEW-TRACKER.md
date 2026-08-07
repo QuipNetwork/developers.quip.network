@@ -23,6 +23,17 @@ Nav positions only. **No file was moved on disk and no page content was changed 
 | Protocols group | existed | dissolved | Both members moved to groups matching the architecture |
 | Basics group | 5 pages | 3 pages (Motivation, Key Properties, Virtues) | Keeps the philosophy/background material, loses the two protocol pages |
 
+**Streamline pass (Brent, 2026-08-07): six pages folded or deleted.** Every fold has a redirect in `.gitbook.yaml`; all content judged on unique contribution.
+
+| Page | Fate | Content went |
+| --- | --- | --- |
+| Quip Client (`getting-started/firewall.md`) | deleted | WalletConnect/wallet-adapter sentence to Quip SDK |
+| Encrypt (`protocols/encrypt.md`) | deleted (brochure page) | Licensing + contacts to README; checkpoint concept already on Participants |
+| Requesting Jobs (`protocols/accelerate.md`) | deleted (brochure page, near-duplicate of Encrypt) | Topic covered by Submit Your First Compute Job |
+| Virtues (`basics/virtues.md`) | deleted | 7-item properties list to the QUIP pathway page; marketing closers dropped |
+| Classical + Quantum (`nodes/*.md`) | merged | One `nodes/miners.md` page, duplicate paragraphs deduplicated, R7 flag carried over |
+| `getting-started/pq-wallet.md` | deleted (orphan, R9) | Nothing unique; removed the last copy of the disputed "256" claim |
+
 New groups: **Quip Interlock Protocol** (after Getting Started) and **Compute** (after it).
 
 ## 2. New draft pages
@@ -59,24 +70,24 @@ Each flag is a red hint block in the page itself, labeled with the ID below. Ans
 
 | ID | Where | What the docs say | What newer sources indicate | Confidence | Question for engineering |
 | --- | --- | --- | --- | --- | --- |
-| R1 | was `getting-started/firewall.md`, now only the orphaned `pq-wallet.md` | Seed safe while "nonce remains lower than 256" | 256 matches no internal source; figures in play are 64 (a chain count, per the 2026-06-10 review) and a proposed warning at 32. The claim left the published docs when the Quip Client page was folded away (2026-08-07); Quip Accounts documents the slot discipline without a number | High that 256 is wrong; the replacement is unsettled | Once the real budget is settled, should a rotation threshold be documented on Quip Accounts? |
+| R1 | resolved by deletion: the claim no longer exists anywhere in the repo | Seed safe while "nonce remains lower than 256" | 256 matches no internal source; figures in play are 64 (a chain count, per the 2026-06-10 review) and a proposed warning at 32. The claim left the published docs when the Quip Client page was folded away (2026-08-07); Quip Accounts documents the slot discipline without a number | High that 256 is wrong; the replacement is unsettled | Once the real budget is settled, should a rotation threshold be documented on Quip Accounts? |
 | R2 | `getting-started/what-is-quip.md` §1 + §2.3 | "Nakamoto-style chain whose proof-of-work" produces blocks | PoW spec (2026-07-18): mining sits alongside BABE+GRANDPA; block production is decoupled from mining | High | Does mining produce blocks, or do validators produce blocks while miners are rewarded on a separate track? |
 | R3 | `getting-started/what-is-quip.md` §2.1–2.2 | Rotating WOTS+ key chain; swaps via per-swap wallets exchanging quantum keys | SHRINCS replaced keysets (Linear QUI-744, closed 2026-07-24); one shared settlement contract per chain with hash locks (spec 2026-07-18, decided 2026-03-03) | High | Has the per-swap design been fully retired, and is SHRINCS the shipped scheme? |
 | R4 | `getting-started/what-is-quip.md` §4.3 | Emissions taper over Years 2–5 | `network/token.md` says 10-year total emission duration; the two pages disagree | Certain (internal contradiction) | Which schedule is correct? |
 | R5 | `getting-started/quickstart.md` | Keys on Ethereum, Solana, L2s, Arch, Midl | Solana feature-flagged off (QUI-176, closed 2026-06-03); EVM confirmed working on one network; Arch/Midl unverified | Medium-high | Which chains genuinely work today? |
 | R6 | `getting-started/quickstart.md` | Points to WOTS+-era libraries | Current packages are `ethereum-sdk@beta` and `hashsigs-wasm@rc` (registry-verified 2026-08-07) | High (registry-verified) | Should this paragraph now point at the Install page, or should the npm dist-tags move instead? |
-| R7 | `nodes/quantum.md` | "Publishes Qiskit and Ocean SDK solutions" | 2026-07-13 toolchain: CPU, GPU, D-Wave, no Qiskit; gate-model tickets unopened as of 2026-08-03 | Medium | Is there a runnable Qiskit solver today? |
+| R7 | `nodes/miners.md` | "Publishes Qiskit and Ocean SDK solutions" | 2026-07-13 toolchain: CPU, GPU, D-Wave, no Qiskit; gate-model tickets unopened as of 2026-08-03 | Medium | Is there a runnable Qiskit solver today? |
 
 ### Tracker-only items (no clean inline anchor)
 
 | ID | Where | Issue |
 | --- | --- | --- |
 | R8 | `README.md` card vs `basics/quip-the-quantum-unit-interlock-pathway.md` vs the internal QuipSwap hub | QUIP now expanded THREE ways: "QUantum Interlock Pathway" (README), "Quantum Unit Interlock Pathway" (pathway page), and "Quantum User Interlock Protocol" (internal QuipSwap hub, 2026-07-27). Pick one before the Interlock group ships; it is the project's central term |
-| R9 | `getting-started/pq-wallet.md` | Orphan (not in SUMMARY.md) and now the near-duplicate of a page that no longer exists (Quip Client, folded 2026-08-07); also the last home of the R1 "256" claim. Recommendation upgraded: delete the file |
+| R9 | resolved | `pq-wallet.md` deleted 2026-08-07 per Brent's streamline decision |
 | R10 | Image assets with old branding or defects | Brand rule from Brent (2026-08-07): the old Quip logo must not appear anywhere; only the new butterfly branding. Status: `quip_whitepaper_value_flow_dark.png` (old logo + Solana logo + white-on-transparent labels, illegible on light theme) replaced with a mermaid diagram on participants.md, file now unreferenced. Still to clean up: `quip_x_header.png` and `quip_x_header (1).png` (old branding, unreferenced, delete candidates), `Quip_DWave_Consensus.png` (unreferenced), and `quip_whitepaper_consensus.png` on quickstart.md ("Quip **Sinnet**" typo, shows three subnets where the current story is two; needs regeneration in new branding or replacement with a mermaid equivalent). what-is-quip.md §4.2 table cell also says "Compute (Sinnet)" |
 | R11 | `network/token.md` vs new architecture | Token page describes QUIP as a compute credit; confirm the QuipSwap payment-rail framing on the new overview page is consistent with tokenomics before removing its draft banner |
 | R12 | Compute group vs incoming XQuad docs | An XQuad documentation category will be CI-synced into THIS GitBook by the toolchain team (decision 2026-08-06; Linear QUI-980, and QUI-853 restructuring the xquad docs tree, due 2026-08-09). The Compute group here must be coordinated with that incoming category before merge, or the two will collide. Do not link the PyPI package READMEs until QUI-977 (24 dead repo-relative links) lands |
-| R13 | `protocols/encrypt.md` placement | Sitting under the Interlock group is defensible only if the page is reframed as an account-layer capability; no current source ties encryption to the interlock construction itself. Alternative: move it beside Quip Accounts or back out of the group |
+| R13 | resolved: `encrypt.md` deleted in the streamline pass | Sitting under the Interlock group is defensible only if the page is reframed as an account-layer capability; no current source ties encryption to the interlock construction itself. Alternative: move it beside Quip Accounts or back out of the group |
 | R14 | Compute group, future page | Newest architecture (2026-08-06) names three job-request paths: direct off-chain (primary today), via an EVM contract, via a PVM/Rust contract. Worth one page once the XQuad category lands |
 | R16 | Quip Client page | **Resolved by Brent 2026-08-07: page folded away.** No standalone client artifact exists (npm 404s, no public repo). The WalletConnect / wallet-adapter compatibility sentence moved to the Quip SDK page; nav entry removed; `getting-started/firewall` redirects to the SDK page in `.gitbook.yaml`. If a standalone client ever ships, it gets a new page with a real download |
 | R15 | Whole branch, urgency | `docs.quip.network` CNAME setup started 2026-08-07 (QUI-981). Once the domain goes live this GitBook becomes the canonical public docs, so the R1 to R7 answers and this branch's merge decision should land before that switch |
