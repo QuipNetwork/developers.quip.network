@@ -67,7 +67,7 @@ Every page on this site has a markdown mirror: add `.md` to the end of the page 
 * **Claude:** `https://claude.ai/new?q=Read <page URL>.md so I can ask questions about it.`
 * **ChatGPT:** `https://chatgpt.com/?q=Read <page URL>.md so I can ask questions about it.`
 
-For example, to work with the [QuipSwap](../interlock/quipswap.md) page, point your assistant at `https://quip.gitbook.io/docs/interlock/quipswap.md`.
+For example, to work with the [QuipSwap](../interlock/quipswap.md) page, copy the page's address from your browser and add `.md` to the end. The [`/llms.txt` index](use-with-ai.md#give-a-model-the-whole-site) lists the exact mirror URL for every page.
 
 ### Give a model the whole site
 

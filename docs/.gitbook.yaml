@@ -1,0 +1,14 @@
+root: ./
+
+structure:
+  readme: README.md
+  summary: SUMMARY.md
+
+# Old published URLs for pages whose nav group changed in the
+# Interlock restructure. GitBook resolves each target file to its
+# new URL, so old links and bookmarks keep working after merge.
+redirects:
+  basics/quip-the-quantum-unit-interlock-pathway: basics/quip-the-quantum-unit-interlock-pathway.md
+  basics/quip-lifecycle: basics/quip-lifecycle.md
+  protocols/encrypt: protocols/encrypt.md
+  protocols/accelerate: protocols/accelerate.md
