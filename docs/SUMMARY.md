@@ -6,7 +6,6 @@
 
 * [Quickstart](getting-started/quickstart.md)
 * [What is Quip Network?](getting-started/what-is-quip.md)
-* [Install the Quip SDK](getting-started/install-sdk.md)
 * [Quip SDK](getting-started/quip-sdk.md)
 * [Quip Client](getting-started/firewall.md)
 * [Use These Docs with AI](getting-started/use-with-ai.md)

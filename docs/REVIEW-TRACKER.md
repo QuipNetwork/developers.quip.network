@@ -32,7 +32,7 @@ Every new page opens with a warning banner ("Draft — pending technical review"
 | # | Page | File | Written by | Status |
 | --- | --- | --- | --- | --- |
 | D1 | How Quip Fits Together | `interlock/how-quip-fits-together.md` | assembled from the 2026-08-06 founder walkthrough + specs | needs review |
-| D2 | Install the Quip SDK | `getting-started/install-sdk.md` | package facts verified against npm/PyPI on 2026-08-07 | needs review |
+| D2 | Quip SDK: Install section | merged into `getting-started/quip-sdk.md` (Brent, 2026-08-07: install belongs with the SDK page, not before it) | package facts verified against npm/PyPI on 2026-08-07 | needs review |
 | D3 | Quip Accounts | `interlock/quip-accounts.md` | research agents from Notion specs | needs review |
 | D4 | QuipSwap | `interlock/quipswap.md` | research agents from Notion specs | needs review |
 | D5 | Quantum Randomness (QVRF) | `compute/qvrf.md` | research agents from Notion specs, concepts only | needs review |
