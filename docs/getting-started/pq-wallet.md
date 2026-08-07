@@ -1,4 +1,7 @@
 ---
+description: >-
+  A post-quantum wallet extension compatible with WalletConnect and Solana
+  wallet-adapter, for hosts serving clients that use QUIPs.
 icon: wallet
 ---
 

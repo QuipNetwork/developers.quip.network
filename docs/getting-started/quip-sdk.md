@@ -1,5 +1,7 @@
 ---
-icon: folder-tree
+description: >-
+  The two SDKs Quip Network publishes, and which one to reach for.
+icon: cube
 ---
 
 # Quip SDK

@@ -1,14 +1,18 @@
 ---
-icon: atom
+description: >-
+  Why a decentralized quantum compute network is necessary, and the
+  coordination problems that must be solved before millions of processors
+  can work on one problem.
+icon: lightbulb
 ---
 
 # Motivation
 
 ### The Worldwide Quantum Computer
 
-There will come a day not long from now, when quantum communication is so good that it is easier to scale your quantum computer horizontally than it is to build a more densely packed quantum processor—when we can entangle millions of processors around the world in a quantum internet all bending their capacities toward the same problem.
+There will come a day not long from now, when quantum communication is so good that it is easier to scale your quantum computer horizontally than it is to build a more densely packed quantum processor, when we can entangle millions of processors around the world in a quantum internet all bending their capacities toward the same problem.
 
-When this day comes—if we want to solve the world's toughest problems, addressable only by such massively concurrent quantum computation—we will have to split jobs across heterogeneous processors owned by potentially untrustworthy operators. These operators may have incentives to lie or cheat on their work, to sabotage other computers in the network, or to snoop on the data submitted to their machines. We will have to have solutions to complex coordination problems.
+When this day comes, if we want to solve the world's toughest problems, addressable only by such massively concurrent quantum computation, we will have to split jobs across heterogeneous processors owned by potentially untrustworthy operators. These operators may have incentives to lie or cheat on their work, to sabotage other computers in the network, or to snoop on the data submitted to their machines. We will have to have solutions to complex coordination problems.
 
 But this tradeoff will be worth it. It is only with such a large network that we can answer questions unknowable by any other means, and discover hidden patterns in diverse industries such as materials design, commerce, logistics, artificial intelligence, and more.
 
@@ -26,7 +30,7 @@ The time for this level of fidelity in quantum communication has not yet arrived
 
 Nonetheless, people do not believe that quantum advantage has arrived, and they are unclear on how these research examples translate into real-world value. Skeptics point out that these types of quantum advantage stunts are contrived, or that they elide pre-processing and post-processing steps required as parcel to the computation, which negatively impact the advantage that industrial applications can realistically expect to achieve with a quantum processor.
 
-Furthermore, the truly advantageous application of a quantum computer is the fruit of close attention and rigorous optimization. The most likely purchasers of a $20 million machine have likely already spent hundreds of millions on optimizing solutions using existing hardware, so the quantum computing manufacturers are not entering a vacuum. They must insert themselves into a highly optimized pipeline, where the latency of communicating with a manufacturer's cloud over a thousand miles away could easily swamp the advantage achieved by using the quantum processor. Of course, this latency wouldn't exist if the client purchased a computer and colocated it with their high-performance infrastructure, but they will want to see a proof of outperformance before making the purchase. What a quandary!
+Furthermore, the truly advantageous application of a quantum computer is the fruit of close attention and rigorous optimization. The most likely purchasers of a $20 million machine have likely already spent hundreds of millions on optimizing solutions using existing hardware, so the quantum computing manufacturers are not entering a vacuum. They must insert themselves into a highly optimized pipeline, where the latency of communicating with a manufacturer's cloud over a thousand miles away could easily swamp the advantage achieved by using the quantum processor. Of course, this latency wouldn't exist if the client purchased a computer and colocated it with their high-performance infrastructure, but they will want to see a proof of outperformance before making the purchase. What a quandary.
 
 For this reason, most manufacturers are their own cloud providers, and the current status quo is to contact each manufacturer directly and ask if you can use their platform. If you seem like a likely prospect to purchase a $70,000 recurring license to the cloud or to purchase a computer, they will help you enter a three to six month consulting process to arrive at your highly optimized solution and demonstrate the value of their processors for your business usecase. This is a very costly onboarding pipeline for both parties, and it filters out a large segment of the population of potential users who both desire and can afford the product.
 
@@ -44,7 +48,7 @@ By getting these platforms to compete against each other in a gradually escalati
 
 Once we have deployed the proof of work, then we can open up a smart contract layer that supports highly optimized submissions from algorithm designers which provide the necessary pre-processing and post-processing steps to convert business data into the Ising model, and reconvert the answer back into the relevant subject domain. This cryptographically anonymized smart contract layer unlocks talent from the top firms and provides meaningful paths to revenue for researchers working at passion projects with little upside.
 
-A potential consumer of these jobs can submit their data to a job queue with a bid of protocol tokens, and a miner can choose whether or not to fulfill this job for the proposed bid. After the job has run, the protocol, the algorithm designer, and the miner all split the proceeds from the consumer's bid, and the consumer walks away with an efficient, highly optimized answer to their question which they can compare to their existing infrastructural solutions. No more six month consulting process to get your high quality answer!
+A potential consumer of these jobs can submit their data to a job queue with a bid of protocol tokens, and a miner can choose whether or not to fulfill this job for the proposed bid. After the job has run, the protocol, the algorithm designer, and the miner all split the proceeds from the consumer's bid, and the consumer walks away with an efficient, highly optimized answer to their question which they can compare to their existing infrastructural solutions. No more six month consulting process to get your high quality answer.
 
 This is also a boon for the quantum computer operator, as now they can earn token rewards with their unused compute, defraying the cost of keeping their computer online and providing a default amortization schedule for any loans used to purchase the machine. Operating in a cryptographically encrypted network with heterogeneous platforms allows the operator to maintain optionality in revealing their identity to the network as a whole, and gives consumers confidence that they're really receiving the highest quality and fastest possible answers that any machine can provide.
 
@@ -72,7 +76,9 @@ It is an enormous volume of research that will be required, but the rewards that
 
 ### Conclusion
 
-It took over seventy years from the first 10Kb computer to the first large language models that define today's current hopes for the future of artificial intelligence and clearly outperform the median human on a huge variety of tasks. It will be another seventy years before we begin to see the fruits made possible by the advent of the worldwide quantum computer, but it is imperative that we begin planting those seeds today.Quantum computing threat vectors are imminent. Over the past few years, there has been a steady stream of results published by quantum computing researchers demonstrating significant increases in physical qubit counts, tremendous reductions in error rates, and other substantial improvements to practical computing factors relevant to real-world deployments. These improvements taken as a whole paint a compelling picture that the first quantum computers capable of compromising widely used cryptographic algorithms, like ECC256 or RSA2048, will arrive before the end of the decade.
+It took over seventy years from the first 10Kb computer to the first large language models that define today's current hopes for the future of artificial intelligence and clearly outperform the median human on a huge variety of tasks. It will be another seventy years before we begin to see the fruits made possible by the advent of the worldwide quantum computer, but it is imperative that we begin planting those seeds today.
+
+Quantum computing threat vectors are imminent. Over the past few years, there has been a steady stream of results published by quantum computing researchers demonstrating significant increases in physical qubit counts, tremendous reductions in error rates, and other substantial improvements to practical computing factors relevant to real-world deployments. These improvements taken as a whole paint a compelling picture that the first quantum computers capable of compromising widely used cryptographic algorithms, like ECC256 or RSA2048, will arrive before the end of the decade.
 
 ### Coda: Post-quantum Cryptography
 

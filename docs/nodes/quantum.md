@@ -1,4 +1,8 @@
 ---
+description: >-
+  Quantum miners are any platform supporting entanglement, from adiabatic
+  annealers to gate-based neutral atom, trapped ion, superconducting, and
+  photonic hardware.
 icon: atom
 ---
 
@@ -17,6 +21,10 @@ The first Proof of Useful Work is finding the ground state energy of a Hamiltoni
 The first Proofs of Useful Work may include things like Verifiable Random Functions, Hidden Subgroup Problems, Search, Quantum Key Distribution, or otherwise.
 
 The network currently publishes Qiskit and Ocean SDK solutions for the Ising subnet. If you have another framework or instruction set you would like to support, please submit an issue at our [Github](https://github.com/quipnetwork).
+
+{% hint style="danger" %}
+**Under review (R7).** Newer internal records show the July 2026 toolchain shipped CPU, GPU, and D-Wave (Ocean) solvers, with gate-model support (which Qiskit implies) still unbuilt. The Qiskit claim above may be premature. Pending engineering confirmation, see REVIEW-TRACKER.md.
+{% endhint %}
 
 #### Run a Node
 

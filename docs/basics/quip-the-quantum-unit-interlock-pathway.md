@@ -1,5 +1,8 @@
 ---
-icon: message-smile
+description: >-
+  The QUIP is the basic primitive of the network: a lockbox that protects
+  user funds with a post-quantum signature.
+icon: route
 ---
 
 # QUIP: The Quantum Unit Interlock Pathway

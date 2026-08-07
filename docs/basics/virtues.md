@@ -1,4 +1,7 @@
 ---
+description: >-
+  What the QUIP primitive makes possible, from ACID transaction guarantees
+  to staking, swaps, and cross-chain settlement.
 icon: compass
 ---
 
@@ -18,4 +21,4 @@ QUIPs represent a paradigm shift in blockchain security and interoperability. By
 
 Beyond security, QUIPs unlock unprecedented possibilities for institutional adoption and innovation with the ability to seamlessly move assets across transaction networks while maintaining quantum protection. They enable new forms of cross-chain communication, universal liquidity and shared flow, and heretofore unseen applications. For the first time, institutions can secure their assets against quantum attacks while maintaining full access to the entire digital asset ecosystem.
 
-As quantum computing advances accelerate, QUIPs stand ready to safeguard the future of digital infrastructure everywhere. This elegant solution bridges the gap between quantum security and decentralized computing networks, establishing a new standard for institutional-grade decentralized ledger infrastructure that will shape the next generation of online and financial services.\
+As quantum computing advances accelerate, QUIPs stand ready to safeguard the future of digital infrastructure everywhere. This elegant solution bridges the gap between quantum security and decentralized computing networks, establishing a new standard for institutional-grade decentralized ledger infrastructure that will shape the next generation of online and financial services.

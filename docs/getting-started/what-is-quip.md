@@ -1,5 +1,8 @@
 ---
-icon: atom
+description: >-
+  Quip is two orthogonal layers, a compute network and a post-quantum
+  security layer, that can be adopted together or separately.
+icon: circle-question
 ---
 
 # What is Quip?
@@ -8,6 +11,10 @@ Quip is **not** a single blockchain or a single quantum computer. Think of it as
 
 1. **Compute-Consensus Layer (Quip Network)** – a new Nakamoto-style chain whose proof-of-work _is a useful optimization job_. This turns spare classical/quantum hardware into block-production while producing answers clients are willing to pay for.
 2. **Asset Layer (QUIP Account & Interlock)** – a post-quantum wrapper you deploy _on any existing chain_ to lock, move, or atomically swap value without bridges or oracles. It upgrades security today without requiring any hardware or protocol changes.
+
+{% hint style="danger" %}
+**Under review (R2).** Newer internal specifications indicate that block production and useful-work mining are separate tracks: validators produce blocks while miners solve jobs and are rewarded alongside, rather than proof-of-work itself producing blocks. The description above and in section 2.3 may reflect the earlier design. Pending engineering confirmation, see REVIEW-TRACKER.md.
+{% endhint %}
 
 These layers share the **same token (QUIP)** and the same validator/miner economy, but either layer can function on its own:
 
@@ -25,6 +32,10 @@ The outcome? We secure existing value, monetize idle quantum-classical hardware,
 
 ### 2. Core Components
 
+{% hint style="danger" %}
+**Under review (R3).** Newer internal documentation indicates two changes to what follows: the account signature scheme has moved from rotating WOTS+ key chains to SHRINCS hash-based signatures (July 2026), and the swap design described in 2.2 (per-swap wallets exchanging quantum-resistant keys) was superseded in March 2026 by a single shared settlement contract per chain using hash locks, with post-quantum authentication in the wallet layer. Pending engineering confirmation, see REVIEW-TRACKER.md and the [QuipSwap](../interlock/quipswap.md) draft.
+{% endhint %}
+
 #### 2.1. QUIP Account
 
 * Deposit on any chain → vault ID & first WOTS+ public key.
@@ -36,7 +47,7 @@ The outcome? We secure existing value, monetize idle quantum-classical hardware,
 * Two parties can perform atomic swaps across chains by cryptographically exchanging quantum-resistant private keys
 * With their single use keys, each party encrypts a new quip wallet holding the assets they want to trade with a commitment to the details of the receiver and transferred tokens, and this begins a timer
 * If one executes their half of the trade, they reveal the information necessary for the other to execute the other half of the trade. If neither party acts, the expired timers allow refunds
-* No bridges or oracles required!
+* No bridges or oracles required.
 
 #### 2.3. Consensus – Quantum PoW (QPoW)
 
@@ -89,6 +100,10 @@ User Data → Template → Graph Reduce → Embed → Algo Select → HW Select 
 Key points: universal denomination, predictable costs, deflationary burn, security-fee coupling.
 
 #### 4.3 Emission Outline
+
+{% hint style="danger" %}
+**Under review (R4).** This outline disagrees with the [Token](../network/token.md) page, which states a total emission duration of 10 years. One of the two needs correcting. Pending confirmation, see REVIEW-TRACKER.md.
+{% endhint %}
 
 * **Years 0-2:** heavy miner + validator issuance.
 * **Years 2-5:** taper; rely on fees & royalties.

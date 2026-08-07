@@ -1,4 +1,8 @@
 ---
+description: >-
+  The four properties the network must exhibit: hardware and implementation
+  agnosticism, layered abstraction, computational tractability, and consumer
+  legibility.
 icon: key
 ---
 
@@ -62,6 +66,3 @@ Splitting liquidity is an enormous problem for consumers in the cryptocurrency i
 
 Ultimately, the Quip architecture should enable a process whereby any funds on any chain can be wrapped in a post-quantum signature and used as collateral or consideration for equivalent value on any other chain.
 
-{% hint style="info" %}
-If you have multiple files, GitBook makes it easy to import full repositories too — allowing you to keep your GitBook content in sync.
-{% endhint %}

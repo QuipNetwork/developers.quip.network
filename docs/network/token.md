@@ -1,10 +1,13 @@
 ---
+description: >-
+  QUIP is a shared compute credit across every operator in the protocol, and
+  the asset used to reserve capacity.
 icon: coin-front
 ---
 
 # Token
 
-The QUIP token is a shared compute credit across all the operators in the decentralized decentralized compute protocol. In addition to being used to reserve spot capacity on quantum and classical hardware, it is an integral component to the functioning of the protocol.
+The QUIP token is a shared compute credit across all the operators in the decentralized compute protocol. In addition to being used to reserve spot capacity on quantum and classical hardware, it is an integral component to the functioning of the protocol.
 
 #### Token Purpose & Value Accrual
 

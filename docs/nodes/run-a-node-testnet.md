@@ -1,4 +1,6 @@
 ---
+description: >-
+  Run a Quip testnet node using the node manager application.
 icon: person-running
 ---
 

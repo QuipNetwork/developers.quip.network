@@ -1,4 +1,7 @@
 ---
+description: >-
+  Classical miners are the compute platforms that do not support
+  entanglement: CPUs, GPUs, TPUs, NPUs, and the like.
 icon: server
 ---
 
