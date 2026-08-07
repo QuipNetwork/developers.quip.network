@@ -22,7 +22,7 @@ The first Proof of Useful Work is finding the ground state energy of a Hamiltoni
 The network currently publishes Qiskit and Ocean SDK solutions for the Ising subnet. If you have another framework or instruction set you would like to support, please submit an issue at our [Github](https://github.com/quipnetwork).
 
 {% hint style="danger" %}
-**Under review (R7).** Newer internal records show the July 2026 toolchain shipped CPU, GPU, and D-Wave (Ocean) solvers, with gate-model support (which Qiskit implies) still unbuilt. The Qiskit claim above may be premature. If you know the current solver lineup, answer on the [Quip Docs Review page](https://app.notion.com/p/3b5db8c6a08881788c00e65ad15ad6c4).
+**Needs review.** Newer internal records show the July 2026 toolchain shipped CPU, GPU, and D-Wave (Ocean) solvers, with gate-model support (which Qiskit implies) still unbuilt. The Qiskit claim above may be premature. If you know the current solver lineup, answer under **R7 — Qiskit** on the [Quip Docs Review page](https://app.notion.com/p/3b5db8c6a08881788c00e65ad15ad6c4).
 {% endhint %}
 
 #### Run a Node

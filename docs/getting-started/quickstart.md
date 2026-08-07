@@ -16,7 +16,7 @@ For more node running options see the [Nodes section](../nodes/run-a-node-testne
 Right now there's not much to do other than mine blocks, generate some quantum-resistant keys through our wallets on Ethereum, Solana, their L2s, and the Bitcoin L2s Arch and Midl, but we are building out the smart contract layer so you can take advantage of the quantum computers too.
 
 {% hint style="danger" %}
-**Under review (R5).** Newer internal records indicate Solana support was switched off in June 2026 and remains off, and that current wallet availability is narrower than the list above. If you know which chains work today, answer on the [Quip Docs Review page](https://app.notion.com/p/3b5db8c6a08881788c00e65ad15ad6c4).
+**Needs review.** Newer internal records indicate Solana support was switched off in June 2026 and remains off, and that current wallet availability is narrower than the list above. If you know which chains work today, answer under **R5 — Chain support** on the [Quip Docs Review page](https://app.notion.com/p/3b5db8c6a08881788c00e65ad15ad6c4).
 {% endhint %}
 
 You can generate post-quantum keys to prepare for the smart contract layer by using our wallets at [account.quip.network](https://account.quip.network/) or you can use the libraries below.
@@ -30,7 +30,7 @@ You can generate post-quantum keys to prepare for the smart contract layer by us
 Quip's implementation of various hash algorithms, especially the preferred Winternitz One-Time Signature (WOTS+), is available as a library for [rust](https://crates.io/crates/hashsigs-rs), [c++](https://github.com/quipnetwork/hashsigs-cpp), [typescript](https://www.npmjs.com/package/@quip.network/hashsigs), and [solidity](https://www.npmjs.com/package/@quip.network/hashsigs-solidity). If you do not want to use these libraries directly, you can use the interface at [account.quip.network](https://account.quip.network/).
 
 {% hint style="danger" %}
-**Under review (R6).** The libraries above are the previous generation. The current packages and the tags to install them with are listed on [Quip SDK](quip-sdk.md). If you can confirm the tag guidance, answer on the [Quip Docs Review page](https://app.notion.com/p/3b5db8c6a08881788c00e65ad15ad6c4).
+**Needs review.** The libraries above are the previous generation. The current packages and the tags to install them with are listed on [Quip SDK](quip-sdk.md). If you can confirm the tag guidance, answer under **R6 — npm tags** on the [Quip Docs Review page](https://app.notion.com/p/3b5db8c6a08881788c00e65ad15ad6c4).
 {% endhint %}
 
 All Quip Network libraries and contracts are available for review at our [Github](https://github.com/QuipNetwork).
