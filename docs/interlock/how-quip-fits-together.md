@@ -8,7 +8,7 @@ icon: diagram-project
 # How Quip Network Fits Together
 
 {% hint style="warning" %}
-**Draft — pending technical review.** This page was assembled from internal specifications on 7 August 2026 and has not been approved by engineering. Details may change before this notice is removed. Reviewing? Answers and feedback go on the "Quip Docs Review — Staging" page in Notion.
+**Draft — pending technical review.** This page was assembled from internal specifications on 7 August 2026 and has not been approved by engineering. Details may change before this notice is removed. If you are reviewing, put your answers and feedback on the [Quip Docs Review page](https://app.notion.com/p/3b5db8c6a08881788c00e65ad15ad6c4).
 {% endhint %}
 
 Quip is easiest to understand as a chain of four pieces, where each piece exists because of the one before it. This page walks that chain once, and every other page in this section covers one link in depth.
