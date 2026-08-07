@@ -24,20 +24,24 @@ Quip is easiest to understand as a chain of four pieces, where each piece exists
 
 ```mermaid
 flowchart LR
-    subgraph HOME["Chains you already use: Ethereum, Base, and more"]
-        A["Quip Account<br/>your assets stay here,<br/>secured by a post-quantum key"]
-        S["QuipSwap<br/>atomic trades sealed by<br/>one shared secret"]
+    U["You and<br/>your wallet"]
+    subgraph YC["Your chain: Ethereum, Base, and more"]
+        A["Quip Account<br/>a Quip contract,<br/>your assets stay here"]
+        S["QuipSwap<br/>a Quip contract,<br/>atomic trades"]
     end
-    subgraph NET["Quip Network"]
-        OPT["Optimization subnet<br/>solves real optimization jobs"]
-        RND["Randomness subnet<br/>serves quantum randomness (QVRF)"]
+    subgraph QN["Quip Network: the Quip chain"]
+        OPT["Optimization<br/>Subnet 1,<br/>solves jobs"]
+        RND["Randomness<br/>Subnet 2,<br/>serves QVRF"]
     end
-    I["The QUIP interlock<br/>the shared-secret construction<br/>QuipSwap is built on"]
+    U --> A
     A -->|authorises| S
-    S ==>|"pays for work,<br/>settled over QuipSwap"| NET
-    NET -->|returns the result| S
-    S -.->|built on| I
+    S ==>|pays for work| QN
+    QN -->|returns the result| S
+    classDef quip fill:#FFEDEE,stroke:#C93A3F,color:#1A1618
+    class A,S,OPT,RND quip
 ```
+
+Reading the picture: you and your wallet sit outside everything. The two highlighted contracts on your chain are Quip components deployed where your assets already live. The Quip Network itself is the box on the right, the chain that runs the two subnets. QuipSwap's trades are sealed by the QUIP interlock, the shared-secret construction the protocol is named for; [QUIP: The Quantum Unit Interlock Pathway](../basics/quip-the-quantum-unit-interlock-pathway.md) explains it.
 
 Notice what is missing from the picture: a bridge. Your assets never cross to the Quip Network. The swap carries the value instead, which means there is no bridge for anyone to attack, and no third-party bridge contract that Quip would depend on but could never upgrade.
 
@@ -48,18 +52,12 @@ Notice what is missing from the picture: a bridge. Your assets never cross to th
 The network is a stack of participants, and every payment between layers settles the same way. This replaces the older whitepaper diagram that showed the layers with unlabeled payment arrows: the arrows now have a name, QuipSwap.
 
 ```mermaid
-flowchart TB
-    CC["Compute Consumers<br/>finance, logistics, materials"]
-    AD["Application Developers<br/>web, mobile, and desktop apps"]
-    ALG["Algorithm Developers<br/>smart contracts"]
-    PD["Protocol Developers<br/>the subnets: optimization and randomness"]
-    CP["Compute Providers<br/>QPU, GPU, CPU"]
-    LP["Liquidity Providers"]
-    CC -->|"pays USD"| AD
-    AD -->|"pays QUIP"| ALG
-    ALG -->|"pays QUIP"| PD
-    PD -->|"pays QUIP"| CP
-    LP <-->|"USD to QUIP conversion,<br/>settled over QuipSwap"| AD
+flowchart LR
+    CC["Compute<br/>Consumers"] -->|USD| AD["Application<br/>Developers"]
+    AD -->|QUIP| ALG["Algorithm<br/>Developers"]
+    ALG -->|QUIP| PD["Protocol<br/>Developers"]
+    PD -->|QUIP| CP["Compute Providers<br/>QPU, GPU, CPU"]
+    LP["Liquidity<br/>Providers"] <-->|"USD to QUIP,<br/>via QuipSwap"| AD
 ```
 
 Consumers pay in ordinary money for answers. Application developers pay algorithm developers in QUIP for the smart contracts they build on. Algorithm developers pay the protocol, and the protocol pays the operators who run the hardware. Liquidity providers sit at the edge converting between the two currencies. Every QUIP hop in that chain is a payment for work one layer down, and cross-chain payments settle over the QuipSwap protocol.

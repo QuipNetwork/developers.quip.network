@@ -12,7 +12,7 @@ How to use it: work through section 3 first (each row ends in a yes/no question)
 
 Nav positions only. **No file was moved on disk and no page content was changed by the restructure.** One correction discovered on the staging site (2026-08-07): GitBook builds published URLs from SUMMARY *group* slugs, so the four moved pages DO get new URLs after merge (e.g. `/basics/quip-lifecycle` becomes `/quip-interlock-protocol/quip-lifecycle`). `.gitbook.yaml` now carries a `redirects:` map covering all four old URLs; verify the redirects resolve on staging before merge. The new grouping follows the architecture described by Colton on 6 August 2026: the Interlock is the umbrella primitive, and compute is what the payment rail exists to sell.
 
-**Staging site:** synced from this branch at `https://rdyplayerb.gitbook.io/rdyplayerb-docs` (user's personal GitBook org, Ultimate trial active — the "Ask" assistant chat visible there is trial-only and will not exist on the free-tier production site).
+**Staging site:** synced from this branch at `https://rdyplayerb.gitbook.io/quip-docs-staging` (user's personal GitBook org, Ultimate trial active — the "Ask" assistant chat visible there is trial-only and will not exist on the free-tier production site). Known platform annoyance: GitBook's mermaid widget captures touchpad scroll as zoom; diagrams are kept compact and horizontal to minimize it, and there is no repo-side setting to disable it. If it stays irritating, the fallback is exporting the diagrams as static images (losing theme-awareness).
 
 | Page | Was | Now | Why |
 | --- | --- | --- | --- |
