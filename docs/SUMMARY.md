@@ -37,6 +37,3 @@
 * [Run A Node (TestNet)](nodes/run-a-node-testnet.md)
 * [Miners](nodes/miners.md)
 
-## Review
-
-* [Review Guide (Internal)](review-guide.md)
