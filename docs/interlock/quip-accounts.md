@@ -11,13 +11,13 @@ icon: lock
 **Draft — pending technical review.** This page was assembled from internal specifications on 7 August 2026 and has not been approved by engineering. Details may change before this notice is removed.
 {% endhint %}
 
-A Quip Account is where your assets live under post-quantum protection. This page explains what the account is, how you reach it, how its signatures work, and the one signature behaviour every integrator needs to understand before relying on it.
+A Quip Account is where your assets live under post-quantum protection. This page explains what the account is, how you reach it, how its signatures work, and the one signature behavior every integrator needs to understand before relying on it.
 
 ### A lockbox on the chain you already use
 
 A Quip Account is a smart contract deployed on the blockchain you already use. It works like a lockbox: your assets sit inside the contract, and the contract releases them only when it is shown a valid signature from a quantum-resistant key. The signature scheme is hash-based, which means its security rests on the strength of a hash function rather than on the mathematical problems that a quantum computer could one day solve.
 
-Nothing about your assets moves to a new network. You keep using the chain, the tokens, and the tooling you already have. Your existing wallet still has a job: it submits transactions to the network and pays the fees. The quantum-resistant signature is what authorises the movement of assets.
+Nothing about your assets moves to a new network. You keep using the chain, the tokens, and the tooling you already have. Your existing wallet still has a job: it submits transactions to the network and pays the fees. The quantum-resistant signature is what authorizes the movement of assets.
 
 A factory contract creates each account, and the account's address is derived deterministically from its creation inputs rather than assigned at random.
 
@@ -63,7 +63,7 @@ The specific size of the slot budget is an implementation parameter and is not d
 
 ### Signature checks by other contracts are not one-time
 
-Third-party contracts, such as exchanges with off-chain order books or permit-style token approvals, can ask a Quip Account whether it authorised a message through the standard contract-signature interface, ERC-1271 (Ethereum Request for Comments 1271).
+Third-party contracts, such as exchanges with off-chain order books or permit-style token approvals, can ask a Quip Account whether it authorized a message through the standard contract-signature interface, ERC-1271 (Ethereum Request for Comments 1271).
 
 {% hint style="danger" %}
 **ERC-1271 checks are view-only and do not consume a slot.** A signature verified through `isValidSignature` remains valid for as long as the key it was made with stays installed on the account. The one-time-use guarantee that applies to every other signature path does **not** apply here. This is a deliberate design choice, not an oversight.
@@ -97,7 +97,7 @@ Quip Accounts are built on public, citable standards rather than proprietary cry
 - Quip Accounts Specification v0.2 — https://app.notion.com/p/320db8c6a08881e09d23ff263df76689 — 2026-07-18 (lockbox model, classical owner submits and pays fees, deterministic addressing, opt-in upgrades UPG-USER-001/002 and UPG-TEAM-001, signature compatibility SIG-1271-001, FIPS 202, ERC-4337)
 - SHRINCS Implementations — https://app.notion.com/p/3a8db8c6a088819e96eae772ff8da19c — 2026-07-28 (two-path construction; stateful path consumes one leaf per signature up to a budget; stateless break-glass path needs no signer state; signer state including used-leaf tracking and budgets belongs to the integrating account; RFC 8391 and FIPS 205 lineage; ERC-7913 verifier surface; no budget figure published per embargo)
 - Quip Swap, External Audit Scope — https://app.notion.com/p/37bdb8c6a088808db6c0eda788e5ec97 — 2026-07-27 (current account architecture: ShrincsWallet, WalletFactory, paymaster; SHRINCS wallet named as the V1 wallet; the "hybrid post-quantum + ECDSA" phrasing in this document conflicts with the v0.2 spec's sole-authority statement, so this page deliberately makes no claim about the ordinary key's authority)
-- Ethereum SDK Audit (revised) — https://app.notion.com/p/b62db8c6a0888270b98701882a20b6b3 — 2026-07-18 (source for the ERC-1271 behaviour: isValidSignature is view-only and non-consuming by deliberate design; the review explicitly asked for this to be documented prominently; no findings, severities, or commits reproduced here)
+- Ethereum SDK Audit (revised) — https://app.notion.com/p/b62db8c6a0888270b98701882a20b6b3 — 2026-07-18 (source for the ERC-1271 behavior: isValidSignature is view-only and non-consuming by deliberate design; the review explicitly asked for this to be documented prominently; no findings, severities, or commits reproduced here)
 - Weekly Team Standup and Project Status Update (meeting transcript) — https://app.notion.com/p/3aadb8c6a08881d888f7df89b0ecc089 — meeting 2026-07-27 (extension is a second client wrapping the existing web app; web app built around a signing extension; transcript-grade evidence)
 - Founder guidance relayed 2026-08-07: Chrome users route to the extension, all other users to the web app (no written spec located; flagged for review inline and in the tracker)
 - Linear QUI-230 "user-upgradeable wallet contracts" — Done 2026-07-13; Linear QUI-744 "Add SHRINCS support, replacing keysets" — Done 2026-07-24 (per docs gap assessment of 2026-08-07)

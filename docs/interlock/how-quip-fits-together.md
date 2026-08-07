@@ -24,24 +24,29 @@ Quip is easiest to understand as a chain of four pieces, where each piece exists
 
 ```mermaid
 flowchart LR
-    U["You and<br/>your wallet"]
-    subgraph YC["Your chain: Ethereum, Base, and more"]
-        A["Quip Account<br/>a Quip contract,<br/>your assets stay here"]
-        S["QuipSwap<br/>a Quip contract,<br/>atomic trades"]
+    SC["Supported chains<br/>Ethereum, Base, and more"]
+    JS["Job submitters<br/>post problems with rewards"]
+    OP["Operators<br/>quantum and classical miners"]
+    subgraph QN["Quip Network"]
+        A["Quip Account<br/>your assets stay here"]
+        S["QuipSwap<br/>atomic trades"]
+        subgraph SUB["Subnets"]
+            OPT["Optimization<br/>Subnet 1"]
+            RND["Randomness, QVRF<br/>Subnet 2"]
+        end
     end
-    subgraph QN["Quip Network: the Quip chain"]
-        OPT["Optimization<br/>Subnet 1,<br/>solves jobs"]
-        RND["Randomness<br/>Subnet 2,<br/>serves QVRF"]
-    end
-    U --> A
-    A -->|authorises| S
-    S ==>|pays for work| QN
-    QN -->|returns the result| S
+    SC --> A
+    A -->|authorizes| S
+    S ==>|pays for work| SUB
+    SUB -->|returns the result| S
+    JS -->|submit jobs| SUB
+    OP -->|mine solutions| SUB
+    style SUB fill:#FFFFFF,stroke:#8B8083
     classDef quip fill:#FFEDEE,stroke:#C93A3F,color:#1A1618
-    class A,S,OPT,RND quip
+    class A,S quip
 ```
 
-Reading the picture: you and your wallet sit outside everything. The two highlighted contracts on your chain are Quip components deployed where your assets already live. The Quip Network itself is the box on the right, the chain that runs the two subnets. QuipSwap's trades are sealed by the QUIP interlock, the shared-secret construction the protocol is named for; [QUIP: The Quantum Unit Interlock Pathway](../basics/quip-the-quantum-unit-interlock-pathway.md) explains it.
+Reading the picture: everything inside the box is the Quip Network. The account and swap contracts are deployed onto the supported chains at the left, so your assets never leave the chain they live on, and the subnets do the network's actual work. Three kinds of participant enter from outside: asset holders arriving from supported chains, job submitters posting problems with rewards attached, and operators mining solutions on quantum and classical hardware. QuipSwap's trades are sealed by the QUIP interlock, the shared-secret construction the protocol is named for; [QUIP: The Quantum Unit Interlock Pathway](../basics/quip-the-quantum-unit-interlock-pathway.md) explains it.
 
 Notice what is missing from the picture: a bridge. Your assets never cross to the Quip Network. The swap carries the value instead, which means there is no bridge for anyone to attack, and no third-party bridge contract that Quip would depend on but could never upgrade.
 

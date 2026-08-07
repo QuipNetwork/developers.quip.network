@@ -69,7 +69,7 @@ User Data → Template → Graph Reduce → Embed → Algo Select → HW Select 
 | Actor                                | Role                               | Earns                    |
 | ------------------------------------ | ---------------------------------- | ------------------------ |
 | **Compute Miner** (CPU/GPU/ASIC/QPU) | Solve jobs, broadcast blocks       | Block reward + job fees  |
-| **Validator**                        | Batch QUIP tx, finalise blocks     | Network fees + emissions |
+| **Validator**                        | Batch QUIP tx, finalize blocks     | Network fees + emissions |
 | **Canary Node**                      | Track reorgs, checkpoint vaults    | Fees + emissions         |
 | **Algorithm/Pipeline Designer**      | Publish templates, reducers, algos | Royalty on every call    |
 | **Nominator**                        | Delegate QUIP to validators        | Share of validator yield |
