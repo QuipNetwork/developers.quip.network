@@ -93,6 +93,12 @@ Each flag is a red hint block in the page itself, labeled with the ID below. Ans
 
 ## 5. Polish recommendations for existing pages (from the writing-quality pass, 2026-08-07)
 
+**House rule (set by Brent, 2026-08-07): no marketing language anywhere in the docs.** Banned: hype adjectives with no measurable claim (amazing, blazingly fast, seamless, supercharged, incredible, revolutionary, unprecedented), investor-deck framing ("immediate value to your bottom line", "turn-key", "solve the world's toughest problems"), excitement performatives ("We're excited…"), and grandiosity markers ("paradigm shift", "heretofore unseen"). The test: a developer must be able to falsify the sentence. All nine existing occurrences were rewritten on 2026-08-07 (README, virtues.md, motivation.md, quip-sdk.md), facts preserved. Re-run before any merge:
+
+```sh
+grep -rniE "amazing|blazing|seamless|supercharg|turn-?key|revolutionar|cutting[- ]edge|world[- ]class|incredibl|unprecedented|paradigm shift|heretofore|game[- ]chang|we'?re excited|excited to|immediate value|bottom line|toughest problems|best-in-class" --include="*.md" .
+```
+
 Findings only; **no existing page was edited**. Rubric: Google developer style guide, Diataxis, Write the Docs, Stripe exemplar. Full per-finding detail with exact quotes lives in the polish-pass output; the highlights below are the ones worth acting on when each page is next touched. Ratings: 4 pages need rework, 11 need light polish, 1 is fine as-is (quip-lifecycle.md), and quip-sdk.md needs task links.
 
 | Page | Rating | Top recommendation |

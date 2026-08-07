@@ -8,7 +8,7 @@ icon: cube
 
 Quip Network publishes two SDKs:
 
-1. An SDK for quantum smart contracts and hybrid solvers, that helps you construct supercharged solutions for optimization and satisfiability problems, artificial intelligence tasks, or even Bitcoin mining.
+1. An SDK for quantum smart contracts and hybrid solvers, that helps you construct solutions for optimization and satisfiability problems, artificial intelligence tasks, or even Bitcoin mining.
 
 This SDK is meant to help you work with quantum computers of all kinds: adiabatic quantum computers like annealers, or gate-based quantum computers that support certain operations which make it easier to reason about generalized quantum computation.
 

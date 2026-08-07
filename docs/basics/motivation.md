@@ -12,7 +12,7 @@ icon: lightbulb
 
 There will come a day not long from now, when quantum communication is so good that it is easier to scale your quantum computer horizontally than it is to build a more densely packed quantum processor, when we can entangle millions of processors around the world in a quantum internet all bending their capacities toward the same problem.
 
-When this day comes, if we want to solve the world's toughest problems, addressable only by such massively concurrent quantum computation, we will have to split jobs across heterogeneous processors owned by potentially untrustworthy operators. These operators may have incentives to lie or cheat on their work, to sabotage other computers in the network, or to snoop on the data submitted to their machines. We will have to have solutions to complex coordination problems.
+When this day comes, if we want to solve problems addressable only by such massively concurrent quantum computation, we will have to split jobs across heterogeneous processors owned by potentially untrustworthy operators. These operators may have incentives to lie or cheat on their work, to sabotage other computers in the network, or to snoop on the data submitted to their machines. We will have to have solutions to complex coordination problems.
 
 But this tradeoff will be worth it. It is only with such a large network that we can answer questions unknowable by any other means, and discover hidden patterns in diverse industries such as materials design, commerce, logistics, artificial intelligence, and more.
 
@@ -82,7 +82,7 @@ Quantum computing threat vectors are imminent. Over the past few years, there ha
 
 ### Coda: Post-quantum Cryptography
 
-The incredible coherence values of superconducting qubit architectures like Google’s Willow chip and the startlingly low error rates of Riken’s fusion-based photonics platform represent significant leaps forward in the capabilities of contemporary quantum processing units. We are rapidly approaching a cost of attack of less than 4% of the value held in the largest Bitcoin wallets. Indeed, the marginal cost of an attack on RSA2048 for a well-equipped quantum computing lab is estimated to approach $20,000, and the cost of an attack on ECC256 is likely even lower.
+The coherence values of superconducting qubit architectures like Google’s Willow chip and the low error rates of Riken’s fusion-based photonics platform represent significant leaps forward in the capabilities of contemporary quantum processing units. We are rapidly approaching a cost of attack of less than 4% of the value held in the largest Bitcoin wallets. Indeed, the marginal cost of an attack on RSA2048 for a well-equipped quantum computing lab is estimated to approach $20,000, and the cost of an attack on ECC256 is likely even lower.
 
 Unfortunately, broad adoption of post-quantum cryptography has lagged behind the accelerating scale of the threat, and few agents in the world are prepared for quantum attackers. While Bitcoin’s pay-to-quantum-resistant-hash proposal has been reviewed by at least one commenter, the specification remains undecided and largely undiscussed. Similarly, the Ethereum improvement proposal offering solutions for EVM networks is likewise lacking in detail and serious discussion, with no further development on any of the EVM L2s or appchains. These approaches remain reactive rather than proactive, leaving room for grievous harm to users who might be caught unaware and unprepared.
 
