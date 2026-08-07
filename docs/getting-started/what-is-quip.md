@@ -28,7 +28,7 @@ Quip delivers **two coupled services**:
 1. **Decentralized compute marketplace** – miners solve real optimization jobs instead of wasteful hashes, proving quantum advantage under a single token economy.
 2. **Post-quantum asset security** – hash-based vaults wrap ECC keys with quantum-resistant WOTS+ keys, offering drop-in protection on any chain.
 
-The outcome? We secure existing value, monetize idle quantum-classical hardware, and fund open-source quantum research.
+This secures existing value, monetizes idle quantum-classical hardware, and funds open-source quantum research.
 
 ### 2. Core Components
 

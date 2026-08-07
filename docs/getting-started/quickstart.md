@@ -21,8 +21,6 @@ Right now there's not much to do other than mine blocks, generate some quantum-r
 
 You can generate post-quantum keys to prepare for the smart contract layer by using our wallets at [account.quip.network](https://account.quip.network/) or you can use the libraries below.
 
-If you want to understand the structure of what we're building, here's some key diagrams below:
-
 <figure><img src="../.gitbook/assets/stakeholder-categories-2.png" alt=""><figcaption><p>The structure of the Quip Network</p></figcaption></figure>
 
 <figure><img src="../.gitbook/assets/quip_whitepaper_consensus.png" alt=""><figcaption><p>Quip Network interactions with other chains</p></figcaption></figure>

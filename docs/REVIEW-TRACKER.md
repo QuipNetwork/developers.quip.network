@@ -93,7 +93,13 @@ Each flag is a red hint block in the page itself, labeled with the ID below. Ans
 
 ## 5. Polish recommendations for existing pages (from the writing-quality pass, 2026-08-07)
 
-**House rule (set by Brent, 2026-08-07): no marketing language anywhere in the docs.** Banned: hype adjectives with no measurable claim (amazing, blazingly fast, seamless, supercharged, incredible, revolutionary, unprecedented), investor-deck framing ("immediate value to your bottom line", "turn-key", "solve the world's toughest problems"), excitement performatives ("We're excited…"), and grandiosity markers ("paradigm shift", "heretofore unseen"). The test: a developer must be able to falsify the sentence. All nine existing occurrences were rewritten on 2026-08-07 (README, virtues.md, motivation.md, quip-sdk.md), facts preserved. Re-run before any merge:
+**House rule 2 (set by Brent, 2026-08-07): no narrating what the reader can see, no manufactured intrigue.** Banned: prose that restates a diagram, table, or layout ("Reading the picture...", "Notice that...", "As you can see", "here's some diagrams below"), meta-commentary about the docs themselves ("this replaces the older diagram"), and rhetorical suspense or reveals ("Notice what is missing...", "The outcome?", "What a quandary."). State facts directly, ideally as comparisons ("Unlike most Web3 platforms, Quip's atomic swaps require no bridge"). The test: does the sentence add anything the figure does not show, stated plainly? Sweep before merge:
+
+```sh
+grep -rniE "reading the picture|as you can see|notice what|notice that|diagram above|diagrams below|here's some|as shown in|the following diagram|below is a" --include="*.md" .
+```
+
+**House rule 1 (set by Brent, 2026-08-07): no marketing language anywhere in the docs.** Banned: hype adjectives with no measurable claim (amazing, blazingly fast, seamless, supercharged, incredible, revolutionary, unprecedented), investor-deck framing ("immediate value to your bottom line", "turn-key", "solve the world's toughest problems"), excitement performatives ("We're excited…"), and grandiosity markers ("paradigm shift", "heretofore unseen"). The test: a developer must be able to falsify the sentence. All nine existing occurrences were rewritten on 2026-08-07 (README, virtues.md, motivation.md, quip-sdk.md), facts preserved. Re-run before any merge:
 
 ```sh
 grep -rniE "amazing|blazing|seamless|supercharg|turn-?key|revolutionar|cutting[- ]edge|world[- ]class|incredibl|unprecedented|paradigm shift|heretofore|game[- ]chang|we'?re excited|excited to|immediate value|bottom line|toughest problems|best-in-class" --include="*.md" .
