@@ -67,16 +67,6 @@ flowchart LR
 
 Every QUIP hop is a payment for work one layer down, and cross-chain payments settle over the QuipSwap protocol.
 
-### A worked example: buying an NFT
-
-Suppose you buy a collectible NFT whose traits are generated from quantum randomness. In that single purchase, and without needing to understand any of it, you would have:
-
-1. Created a post-quantum account that holds the NFT.
-2. Paid across chains without touching a bridge.
-3. Consumed quantum compute, because the randomness that shaped your NFT would have been generated on real quantum hardware and paid for through the swap.
-
-The purchase is the whole system in miniature. Everything else in these docs is detail on one of those three steps.
-
 ### Where to go next
 
 | If you want to | Read |
