@@ -16,7 +16,7 @@ For more node running options see the [Nodes section](../nodes/run-a-node-testne
 Right now there's not much to do other than mine blocks, generate some quantum-resistant keys through our wallets on Ethereum, Solana, their L2s, and the Bitcoin L2s Arch and Midl, but we are building out the smart contract layer so you can take advantage of the quantum computers too.
 
 {% hint style="danger" %}
-**Under review (R5).** Newer internal records indicate Solana support was switched off in June 2026 and remains off, and that current wallet availability is narrower than the list above. The exact chain list is pending engineering confirmation, see REVIEW-TRACKER.md.
+**Under review (R5).** Newer internal records indicate Solana support was switched off in June 2026 and remains off, and that current wallet availability is narrower than the list above. The exact chain list is pending engineering confirmation; reviewers can answer on the "Quip Docs Review — Staging" page in Notion.
 {% endhint %}
 
 You can generate post-quantum keys to prepare for the smart contract layer by using our wallets at [account.quip.network](https://account.quip.network/) or you can use the libraries below.
