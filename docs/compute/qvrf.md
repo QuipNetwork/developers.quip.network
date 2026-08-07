@@ -46,6 +46,8 @@ Randomness is the Quip Network's second subnet, alongside the optimization subne
 
 QVRF is designed to be the first product sold over Quip's swap-protocol payment rail. QuipSwap, Quip's peer-to-peer swap protocol, lets two parties settle a trade directly across chains, and QVRF uses that same mechanism as its payment path. In practice, payment does not tie you to one network: you can purchase randomness from any supported chain. <!-- REVIEW: Is "the first product purchasable over the QuipSwap payment rail, from any supported chain" the approved public positioning for QVRF? -->
 
+The first consumer of QVRF is [Echoes](https://quantumechoes.quip.network/), a collection of Quantum Forged Tokens (QFTs). Each mint requests a seed from the QVRF coordinator, and the token's traits are derived from the quantum randomness that comes back. <!-- REVIEW: launch-gated. The Echoes mint moved to September (TBD); this paragraph publishes with the branch at launch. Confirm the URL (quantumechoes.quip.network) and have engineering sign off the phrasing: "quantum randomness" is used here without a certification claim, per Security Model 1's caution that current output should not be described as certified. -->
+
 {% hint style="info" %}
 The request interface, the fee model, and the exact certification parameters are still being finalized. Integration documentation with installable packages and code examples will follow once those details settle.
 {% endhint %}
