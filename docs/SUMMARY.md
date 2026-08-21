@@ -32,3 +32,8 @@
 
 * [Encrypt](protocols/encrypt.md)
 * [Accelerate](protocols/accelerate.md)
+
+## XQuad
+
+* [Toolchain](xquad/toolchain.md)
+* [Documentation](https://docs.quip.network/xquad/)
