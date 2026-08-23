@@ -90,7 +90,7 @@ Many skeptics point out that P2PKH transactions on Bitcoin remain secure as long
 
 Advocates for delaying adoption of post-quantum commitments claim that other targets are more likely to take priority over cryptocurrency addresses, and such advocates will often proclaim that a swift upgrade will deploy upon discovery of a viable quantum attack. However, we find this argument unconvincing, as many such large targets have immense incentives to keep any compromise a secret, and the deployment of a chain upgrade closes its eyes to the possibility of a rewind attack through a chainwide block reorganization which impacts significantly more wallets than a single private key.
 
-Exacerbating matters, traditional financial firms and certificate authorities show similar vulnerabilities to cryptocurrency networks, relying on insecure algorithms that provide guarantees sufficient only for classical computing. The Hoover Institute estimates that over $3.3 trillion in value hangs in the balance as financial contagion threatens to expand damages from the first quantum victim to the rest of the free market.
+Exacerbating matters, traditional financial firms and certificate authorities show similar vulnerabilities to cryptocurrency networks, relying on insecure algorithms that provide guarantees sufficient only for classical computing. The Hudson Institute estimates that over $3.3 trillion in value hangs in the balance as financial contagion threatens to expand damages from the first quantum victim to the rest of the free market.
 
 ### Challenges & Opportunities in Post-quantum Readiness
 

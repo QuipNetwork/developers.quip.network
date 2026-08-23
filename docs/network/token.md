@@ -23,7 +23,7 @@ The $QUIP token serves as the incentive layer that ensures Quip Network remains 
 $QUIP implements a value accrual mechanism:
 
 1. Users pay transaction and network fees in $QUIP
-2. A portion of these fees purchase stables and relock in 50/50 liquidity pools
+2. A portion of these fees buys $QUIP back off the market and pairs it into permanent 50/50 liquidity pools — nothing is ever burned
 3. Smart contract deployers earn tokens of their choice for each execution
 4. Node operators earn $QUIP for providing services
 5. The protocol earns AMM transaction fees when consumers buy or sell $QUIP
@@ -42,13 +42,13 @@ This creates a $QUIP-native economy where the protocol continuously earns a larg
 #### Tokenomics Overview
 
 * Ticker: $QUIP
-* Total Supply: 1 Billion Tokens
+* Initial allocation: 1 billion QUIP will have been emitted when all pre-mine allocations finish vesting, split 40% subnet emissions / 20% Quip Foundation / 15% early investors / 15% builders / 10% community programs
+* Emission: 40 million QUIP per year, fixed and flat — emissions continue at this rate after the first billion has vested, so the first billion is not a maximum supply
+* Implicit decay: each new subnet competes for a share of the same 40M annual emission, so issuance per subnet falls as the network grows — no halvings, no burns
 * Token Standard: PSP-3 on Substrate, ERC-20 on Ethereum, SPL on Solana
-
-Total Emission Duration: 10 Years
 
 #### Governance
 
-Early adopters of QUIP vaults will be rewarded with the $QUIP token, which in addition to powering the Quip Network’s multi-party computation, will be used in governance of the network’s DAO. The DAO will initially be populated with well-known and established cryptographers who are close associates to the team, and who will lead standardization efforts with high-quality peer reviewed implementations.
+Emissions are routed by the Quip Control Asset (QCA). In its canonical implementation, veQUIP, holders lock QUIP in an Interlock-enforced escrow to gain control weight that grows with lock duration, then vote each epoch to divide the fixed emission among subnets. The escrowed position remains liquid — it can be lent, borrowed, or posted as collateral while it votes.
 
-Owning the token is an opportunity to influence the QUIP standards in much the same way that ENS allows major institutions like Coinbase to influence the usage of the .eth namespace.
+The Control Asset binds to a zero-knowledge identity credential so the protocol can apply per-identity limits, such as quadratic decay in marginal control weight, that a token-only system cannot enforce against an actor splitting a balance across wallets. Subnet backers can also pay veQUIP voters through an explicit, permissionless incentive market, turning emission routing into a transparent auction that prices demand for each problem class.
