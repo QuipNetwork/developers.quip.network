@@ -27,3 +27,5 @@ Developers can download, compile, and run a node here:\
 [https://gitlab.com/quip.network/quip-protocol/](https://gitlab.com/quip.network/quip-protocol/)
 
 We do not recommend doing this UNLESS you are experimenting&#x20;
+
+For what your hardware will actually be solving once the node is running, see [Miners](miners.md). To generate quantum-resistant keys as well, see the [Quickstart](../getting-started/quickstart.md).

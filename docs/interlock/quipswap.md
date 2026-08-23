@@ -69,6 +69,8 @@ QuipSwap is a settlement primitive, and it keeps its scope narrow on purpose.
 
 Quip's network sells quantum computing work. QuipSwap is the payment rail that makes that work purchasable: it lets you exchange value from the chain you are already on, without migrating your assets to a new chain first. A swap is how assets on any supported chain become buying power on the Quip network, which is why Quip built the swap protocol rather than wait for a third party to provide one.
 
+The propose, approve, and claim state machine underneath these steps is set out in [QUIP Lifecycle](../basics/quip-lifecycle.md).
+
 <!-- SOURCES (for reviewers, not rendered):
 - Quip Swap Interlock Specification — https://app.notion.com/p/314db8c6a088805dba42d4d255c4b921 — 2026-07-18 (architecture, commit/execute/reclaim lifecycle, terminal states, atomicity and fairness, timeout analysis, asset categories, non-goals incl. trade broadcast, slashing exclusion rationale, hash locks replacing signature checks in the initial version per Section 9)
 - QuipSwap Gating Argument — https://app.notion.com/p/38fdb8c6a088804dbec5df6d80fede11 — 2026-07-18 (gate kept; guided client is part of the safety boundary; removal treated as a future security decision)

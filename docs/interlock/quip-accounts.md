@@ -93,6 +93,8 @@ Quip Accounts are built on public, citable standards rather than proprietary cry
 | [ERC-4337](https://eips.ethereum.org/EIPS/eip-4337) | Account Abstraction Using Alt Mempool | The smart-account execution model the account contracts follow |
 | [ERC-7913](https://eips.ethereum.org/EIPS/eip-7913) | Signature Verifiers | The interface exposed by the on-chain signature verifier contracts |
 
+A Quip Account is one of four pieces that make up the network. [How Quip Network Fits Together](how-quip-fits-together.md) shows how it connects to [QuipSwap](quipswap.md) and the compute network.
+
 <!-- SOURCES (for reviewers, not rendered):
 - Quip Accounts Specification v0.2 — https://app.notion.com/p/320db8c6a08881e09d23ff263df76689 — 2026-07-18 (lockbox model, classical owner submits and pays fees, deterministic addressing, opt-in upgrades UPG-USER-001/002 and UPG-TEAM-001, signature compatibility SIG-1271-001, FIPS 202, ERC-4337)
 - SHRINCS Implementations — https://app.notion.com/p/3a8db8c6a088819e96eae772ff8da19c — 2026-07-28 (two-path construction; stateful path consumes one leaf per signature up to a budget; stateless break-glass path needs no signer state; signer state including used-leaf tracking and budgets belongs to the integrating account; RFC 8391 and FIPS 205 lineage; ERC-7913 verifier surface; no budget figure published per embargo)

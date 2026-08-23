@@ -19,3 +19,5 @@ When multiple parties exchange QUIPs, there are also two timeout cases:
 
 1. _Cancellable proposal timeout_: A user can cancel a proposed QUIP once an initial timer expires with no counterparty matching the proposal. This resets the QUIP state.
 2. _Slashable approval timeout_: If a user has approved a matching proposal and a second timer expires without all parties’ approval, any approver can slash QUIPs belonging to the delinquent parties.
+
+These states are what a cross-chain trade moves through in practice; see [QuipSwap](../interlock/quipswap.md) for how two parties use them to settle without a bridge or a custodian.

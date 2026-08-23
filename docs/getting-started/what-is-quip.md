@@ -30,6 +30,8 @@ Quip delivers **two coupled services**:
 
 This secures existing value, monetizes idle quantum-classical hardware, and funds open-source quantum research.
 
+For why the network is built this way, see [Motivation](../basics/motivation.md); for the constraints the design has to satisfy, see [Key Properties](../basics/key-properties.md). [How Quip Network Fits Together](../interlock/how-quip-fits-together.md) puts both layers in a single diagram.
+
 ## 2. Core Components
 
 {% hint style="danger" %}

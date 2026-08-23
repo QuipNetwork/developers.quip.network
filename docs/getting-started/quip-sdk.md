@@ -55,6 +55,8 @@ There is no public `@quip.network/quip-swap` or `@quip.network/sdk` package, and
 
 The Winternitz One-Time Signature (WOTS+) libraries remain published for the earlier account generation: [`@quip.network/hashsigs`](https://www.npmjs.com/package/@quip.network/hashsigs) (TypeScript), [`@quip.network/hashsigs-solidity`](https://www.npmjs.com/package/@quip.network/hashsigs-solidity) (Solidity), [hashsigs-cpp](https://github.com/quipnetwork/hashsigs-cpp) (C++), and the [hashsigs-rs](https://crates.io/crates/hashsigs-rs) crate (Rust). New integrations should use the packages in the tables above.
 
+Working with an AI assistant? Every page here has a markdown mirror and the site runs an MCP server: see [Use These Docs with AI](use-with-ai.md).
+
 <!-- SOURCES (for reviewers, not rendered):
 - npm registry, verified directly 2026-08-07: ethereum-sdk dist-tags latest=0.1.7 (2025-06-03) / beta=0.3.0-beta.5 (2026-08-03); hashsigs-wasm dist-tags latest=0.1.0-rc1 / rc=0.2.0-rc.2 (2026-07-21); quip-swap and sdk return 404
 - PyPI, verified directly 2026-08-07: xqsa 0.3.1, xquad 0.3.1

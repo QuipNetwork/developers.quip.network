@@ -26,3 +26,5 @@ The QUIP is a versatile building block:
 5. Exchange of funds requires no oracles or cross-chain messaging.
 6. Post-quantum guarantees are agnostic to the network consensus model and cryptographic architecture.
 7. Clients need only rely on the chains to validate transactions: no state comparisons, intermediate networks, or zero knowledge proofs are necessary to perform the needed validations, beyond those required by the host network consensus model.
+
+The states a QUIP moves through are described in [QUIP Lifecycle](quip-lifecycle.md), and the contract that holds the funds is described in [Quip Accounts](../interlock/quip-accounts.md).

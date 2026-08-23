@@ -52,3 +52,5 @@ Total Emission Duration: 10 Years
 Early adopters of QUIP vaults will be rewarded with the $QUIP token, which in addition to powering the Quip Network’s multi-party computation, will be used in governance of the network’s DAO. The DAO will initially be populated with well-known and established cryptographers who are close associates to the team, and who will lead standardization efforts with high-quality peer reviewed implementations.
 
 Owning the token is an opportunity to influence the QUIP standards in much the same way that ENS allows major institutions like Coinbase to influence the usage of the .eth namespace.
+
+For who earns and spends $QUIP, see [Participants](participants.md). To buy compute with it, see [Submit Your First Compute Job](../compute/submit-a-job.md).

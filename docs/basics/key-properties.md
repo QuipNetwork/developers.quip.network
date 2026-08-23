@@ -66,3 +66,4 @@ Splitting liquidity is an enormous problem for consumers in the cryptocurrency i
 
 Ultimately, the Quip architecture should enable a process whereby any funds on any chain can be wrapped in a post-quantum signature and used as collateral or consideration for equivalent value on any other chain.
 
+These properties follow from the problems set out in [Motivation](motivation.md). The primitive that delivers them is described in [QUIP: The Quantum Unit Interlock Pathway](quip-the-quantum-unit-interlock-pathway.md).

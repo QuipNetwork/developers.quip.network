@@ -101,3 +101,5 @@ Any serious attempt to rectify the lackluster adoption of these necessary upgrad
 | Initial costs of a quantum computing attack filter viable targets down to very large wallets, and larger post-quantum signatures create significant negative externalities. | be adoptable in part or in whole by individuals without any requirements for change to the underlying protocols.                    |
 | Clients do not wish to give up any capabilities of their assets for post-quantum security or otherwise split liquidity.                                                     | use native primitives on each network and maintain external interfaces of standard user accounts while staying post-quantum secure. |
 | There is a huge risk associated with moving locked funds onto a less secure ledger.                                                                                         | provide the same security guarantees wherever the client chooses to transact.                                                       |
+
+The four properties any solution to these problems has to exhibit are set out in [Key Properties](key-properties.md).

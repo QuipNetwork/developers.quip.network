@@ -139,3 +139,5 @@ Arguably one of the most important participants in the network, these enterprisi
 This activity creates a more resilient ecosystem of decentralized services, and will increase demand for the security guarantees provided by the Quip Network and the remaining secure algorithms. The more any one algorithm is preferred by the validators, the larger incentive remains for a white hat to claim their pro rata share of the stake.
 {% endtab %}
 {% endtabs %}
+
+The $QUIP token these participants earn and spend is described in [Token](token.md), and the properties the network has to hold to for them is set out in [Key Properties](../basics/key-properties.md).
