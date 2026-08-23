@@ -8,7 +8,7 @@ icon: lightbulb
 
 # Motivation
 
-### The Worldwide Quantum Computer
+## The Worldwide Quantum Computer
 
 There will come a day not long from now, when quantum communication is so good that it is easier to scale your quantum computer horizontally than it is to build a more densely packed quantum processor, when we can entangle millions of processors around the world in a quantum internet all bending their capacities toward the same problem.
 
@@ -22,11 +22,11 @@ The purpose of the Quip Network is to facilitate this shared computation worldwi
 
 Quip Network is this protocol. It forms the foundation of the world's shared quantum computer, and it will do the jobs which quite literally no other platform on Earth can do.
 
-### Starting Where We Are
+## Starting Where We Are
 
 The time for this level of fidelity in quantum communication has not yet arrived, but we can begin to build the foundations for it today. Quantum advantage is here, for both adiabatic and logic-based platforms as demonstrated by [D-Wave](https://www.science.org/doi/10.1126/science.ado6285) and [Google](https://www.nature.com/articles/s41586-025-09526-6) in their respective experiments racing against the Frontier supercomputer at Oak Ridge National Labs.
 
-#### The Core Challenges
+### The Core Challenges
 
 Nonetheless, people do not believe that quantum advantage has arrived, and they are unclear on how these research examples translate into real-world value. Skeptics point out that these types of quantum advantage stunts are contrived, or that they elide pre-processing and post-processing steps required as parcel to the computation, which negatively impact the advantage that industrial applications can realistically expect to achieve with a quantum processor.
 
@@ -38,7 +38,7 @@ As a result, the computers often sit around under-utilized, and as super-cooled 
 
 Finally, the industrial applications for these computers are limited by the talent pool that can explore them. There are maybe 4,000 quantum programmers and algorithm designers in the world, if we are generous. These highly educated experts tend to work either for a government, in which case their work is top secret; a quantum manufacturer, in which case their work is proprietary; or for a university, in which case they are not getting paid commensurately for their contributions. This has a chilling effect on the production and dissemination of meaningful applications, and demands a new market incentive to socialize new algorithms and monetize their usage.
 
-#### An Immediate Solution
+### An Immediate Solution
 
 The Quip Network aims to solve all of these incentive problems and inadequate equilibria with its first Proof of Useful Work network, which requires miners of any kind to solve optimization problems in the form of Ising models.
 
@@ -54,11 +54,11 @@ This is also a boon for the quantum computer operator, as now they can earn toke
 
 This initial Proof of Useful Work network solving Ising models is the first of many like it, but it is the most important for understanding the capabilities and limitations of the verification model today. It is only the beginning, and the prelude to a much more ambitious network.
 
-### Expanding the Solution Space
+## Expanding the Solution Space
 
 Once we have vetted and proven the first proof of work, we will introduce additional proofs of work to expand the industrial applications and consumer footprint of the Quip Network. Candidate applications for the first networks include quantum random number generation, quantum variational autoencoders, Shor's algorithm for factoring, Grover's algorithm for search, or even quantum memory and storage. The number of subnets will be limited only by our community's imagination, and they are bound to surprise the world with the applications that they make possible.
 
-#### Mapping Capabilities
+### Mapping Capabilities
 
 The same platforms that win the most blocks on the primary subnet may not be the ones that excel elsewhere. Part of the benefit of this model is that we can map the performance space of many applications of quantum computers, and it may turn out that cold atom processors have unique qualities that allow them to outperform superconducting processors on specific proofs of work.
 
@@ -66,7 +66,7 @@ Building this diverse network of processors, sensors, storage media, and communi
 
 Indeed, some manufacturers may wish to use the public dataset and the proposed subnets to inform the development of future capabilities and technology. We anticipate providing some incentive mechanism design that supports consumers in requesting this kind of development through bounties for deploying novel and useful subnets, as well as programmatic rewards for demonstrating new performance profiles within each subnet.
 
-#### Breaking Ground
+### Breaking Ground
 
 Once we have established this leadership, we will actually develop the first quantum interconnects and invest in physical infrastructure which operates on the network. We are already working with community colleges, universities, NGOs, and government labs to facilitate training programs and research collaborations to this end.
 
@@ -74,13 +74,13 @@ The ultimate goal is that we are publishing novel research in distributed quantu
 
 It is an enormous volume of research that will be required, but the rewards that lie at the end of the journey are sure to justify much greater expenditures in the pursuit thereof. If all goes well, we will have created the new http for quantum information and established the standards that generations of quantum programmers and experimentalists will use for decades to come.
 
-### Conclusion
+## Conclusion
 
 It took over seventy years from the first 10Kb computer to the first large language models that define today's current hopes for the future of artificial intelligence and clearly outperform the median human on a huge variety of tasks. It will be another seventy years before we begin to see the fruits made possible by the advent of the worldwide quantum computer, but it is imperative that we begin planting those seeds today.
 
 Quantum computing threat vectors are imminent. Over the past few years, there has been a steady stream of results published by quantum computing researchers demonstrating significant increases in physical qubit counts, tremendous reductions in error rates, and other substantial improvements to practical computing factors relevant to real-world deployments. These improvements taken as a whole paint a compelling picture that the first quantum computers capable of compromising widely used cryptographic algorithms, like ECC256 or RSA2048, will arrive before the end of the decade.
 
-### Coda: Post-quantum Cryptography
+## Coda: Post-quantum Cryptography
 
 The coherence values of superconducting qubit architectures like Google’s Willow chip and the low error rates of Riken’s fusion-based photonics platform represent significant leaps forward in the capabilities of contemporary quantum processing units. We are rapidly approaching a cost of attack of less than 4% of the value held in the largest Bitcoin wallets. Indeed, the marginal cost of an attack on RSA2048 for a well-equipped quantum computing lab is estimated to approach $20,000, and the cost of an attack on ECC256 is likely even lower.
 
@@ -92,7 +92,7 @@ Advocates for delaying adoption of post-quantum commitments claim that other tar
 
 Exacerbating matters, traditional financial firms and certificate authorities show similar vulnerabilities to cryptocurrency networks, relying on insecure algorithms that provide guarantees sufficient only for classical computing. The Hoover Institute estimates that over $3.3 trillion in value hangs in the balance as financial contagion threatens to expand damages from the first quantum victim to the rest of the free market.
 
-### Challenges & Opportunities in Post-quantum Readiness
+## Challenges & Opportunities in Post-quantum Readiness
 
 Any serious attempt to rectify the lackluster adoption of these necessary upgrades must grapple with the challenges that have hindered uptake in previous post-quantum protocols:\\
 

@@ -8,7 +8,7 @@ icon: key
 
 # Key Properties
 
-### Distributed Compute Protocol
+## Distributed Compute Protocol
 
 In order to ensure the successful adoption of the distributed compute standard, the Quip Network must exhibit four properties: hardware and implementation agnosticism, layered abstraction for specialists, computational tractability, and consumer legibility.
 
@@ -38,7 +38,7 @@ The most important element of the protocol is that the use thereof has to be und
 
 The protocol must prioritize tools for discovery, understanding, and quick delivery of useful results.
 
-### Interlock Protocol
+## Interlock Protocol
 
 In order to ensure the successful adoption of the quantum-resistant standard, the Quip Network must exhibit four pairs of properties: post-quantum and classically secure, native and portable, transparent and composable, liquid and bondable.
 

@@ -15,13 +15,13 @@ QVRF (Quantum Verifiable Random Function) is Quip Network's quantum randomness s
 
 This page covers concepts only. The request interface is not yet final, so no function names or parameters appear here.
 
-### The name is historical: QVRF is not a VRF
+## The name is historical: QVRF is not a VRF
 
 Despite the name, QVRF is not a verifiable random function (VRF) in the cryptographic sense, and you should not reason about it as if it were one.
 
 In the cryptographic literature, a VRF is a keyed pseudorandom function: a secret key turns an input into an output, along with a proof that anyone can check against the matching public key. QVRF is a different kind of object. It is a physical randomness source with a verification record: the randomness comes from quantum measurements, and the record lets you check where and when those measurements happened. If you are assessing QVRF for your application, do not import the standard VRF security definitions, because they do not apply. This correction comes from Quip's own security model, which keeps the project name and flags the distinction so that reviewers start from the right definitions.
 
-### Why quantum hardware
+## Why quantum hardware
 
 A classical random number generator is a formula. Anyone who learns the formula and its inputs can reproduce every number it will ever produce. A measurement on a quantum computer is different: the outcome does not exist until the measurement is taken. That is the core guarantee quantum hardware adds. The number was created at a known moment, and only the party who generated it could have known it before delivery.
 
@@ -30,7 +30,7 @@ The certification design supports that guarantee from two sides, both described 
 - **A timing threshold.** The challenge that decides which quantum measurements to take is derived from a public source of randomness, so nobody can know it in advance, and a valid answer must come back within a short deadline. Producing a convincing answer by classical simulation would take far longer than the deadline allows, so a fast, valid answer is evidence that a quantum computer produced it. The blockchain records both ends of that time window, a technique the design calls carbon dating, which makes the timeline publicly checkable.
 - **A fidelity score.** After the fact, verifiers use classical simulation to check a sample of the returned measurements and score how closely they match what the requested quantum process should produce. A sufficiently high score is evidence that a quantum device genuinely ran the process rather than guessing.
 
-### What V0 guarantees, and what it does not
+## What V0 guarantees, and what it does not
 
 V0 is the first version of the service, and its trust model is deliberately simple. Integrate with these three facts in mind:
 
@@ -40,7 +40,7 @@ V0 is the first version of the service, and its trust model is deliberately simp
 
 If your application needs stronger guarantees than this, treat V0 as a trusted randomness feed with a public commitment trail, and revisit as the trust model evolves in later versions.
 
-### Where QVRF fits
+## Where QVRF fits
 
 Randomness is the Quip Network's second subnet, alongside the optimization subnet described in [Submit Your First Compute Job](submit-a-job.md). Quantum miners produce the raw randomness by running sampling circuits, and classical miners verify the results, so the service is itself a form of the network's proof of useful work. <!-- REVIEW: is this subnet-level positioning (randomness as QPoUW subnet 2, quantum miners generate, classical miners verify) cleared for public docs at concept level? -->
 

@@ -15,7 +15,7 @@ Anyone can post an optimization problem to Quip Network with a reward attached, 
 
 This page walks you through installing the tools, describing a problem, and following your job from submission to result.
 
-### Install the tools
+## Install the tools
 
 You need two Python packages, both published on the Python Package Index (PyPI). Both are at version 0.3.1 as of August 2026 and require Python 3.13 or newer.
 
@@ -34,7 +34,7 @@ The chain interfaces behind the `[quip]` extra are pre-release. The package's ow
 {% endhint %}
 <!-- REVIEW: Is xqsa 0.3.1 with the [quip] extra the install path engineering wants external developers to use today? -->
 
-### Describe your problem as an Ising model
+## Describe your problem as an Ising model
 
 The network's miners solve one kind of problem: an Ising model. The format is simpler than the name suggests.
 
@@ -79,7 +79,7 @@ print(result.sample, result.energy)
 
 You need two things to construct the solver: the WebSocket remote procedure call (RPC) address of a Quip node, and a funded account (a seed or a keystore file, which is created for you on first use if it does not exist). You can also set a reward explicitly; if you do not, the solver uses the chain's configured minimum. Connection details for the public test network have not been published yet, so this page cannot include a node address. <!-- REVIEW: Is there now a public node endpoint the docs may publish for SolverQuip's url parameter? -->
 
-### What makes a set of answers acceptable
+## What makes a set of answers acceptable
 
 Miners do not submit one answer; they submit a set of candidate answers. When you post a job you can set three quality floors, each optional:
 
@@ -89,13 +89,13 @@ Miners do not submit one answer; they submit a set of candidate answers. When yo
 
 Diversity is measured pairwise across the submitted set, using a distance that accounts for the mirror symmetry of Ising models (flipping every spin in an answer produces the same energy, so a flipped copy does not count as different). The practical effect is that a miner cannot pad a submission with twenty copies of the same answer: duplicates collapse to one, and a set that fails your floors is rejected.
 
-### Your problem must fit a registered topology
+## Your problem must fit a registered topology
 
 At present, a submitted problem must fit inside a hardware topology that is registered on the chain and marked as mineable. Concretely, the solver places your model's variables onto the nodes of a registered topology, so your problem's graph must be a subgraph of one of those registered shapes. Arbitrary problem shapes are not yet supported. <!-- REVIEW: Is the subgraph-of-a-registered-mineable-topology constraint still current, with no committed date for lifting it? -->
 
 `SolverQuip` checks that the target topology is both registered and mineable before your reward is committed, and the placement step fails with a clear error if your graph does not fit. You lose nothing by trying a shape that does not work.
 
-### What happens to your job
+## What happens to your job
 
 From your `solve()` call to the answer coming back:
 

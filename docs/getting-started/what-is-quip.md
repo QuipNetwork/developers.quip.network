@@ -21,7 +21,7 @@ These layers share the **same token ($QUIP)** and the same validator/miner econo
 * **Only need useful-work mining?** Point your QPU/GPU/CPU farm at the Quip Network; earn $QUIP even if you never lock assets.
 * **Only need PQ security?** Use wallets on Ethereum/Solana/Bitcoin/Substrate with no exposure to mining.
 
-### 1. Mission & Scope
+## 1. Mission & Scope
 
 Quip delivers **two coupled services**:
 
@@ -30,33 +30,33 @@ Quip delivers **two coupled services**:
 
 This secures existing value, monetizes idle quantum-classical hardware, and funds open-source quantum research.
 
-### 2. Core Components
+## 2. Core Components
 
 {% hint style="danger" %}
 **Needs review.** Newer internal documentation indicates two changes to what follows: the account signature scheme has moved from rotating WOTS+ key chains to SHRINCS hash-based signatures (July 2026), and the swap design described in 2.2 (per-swap wallets exchanging quantum-resistant keys) was superseded in March 2026 by a single shared settlement contract per chain using hash locks, with post-quantum authentication in the wallet layer. See the [QuipSwap](../interlock/quipswap.md) draft, and if you can confirm the current design, answer under **R3 — Swap design and signatures** on the [Quip Docs Review page](https://app.notion.com/p/3b5db8c6a08881788c00e65ad15ad6c4).
 {% endhint %}
 
-#### 2.1. QUIP Account
+### 2.1. QUIP Account
 
 * Deposit on any chain → vault ID & first WOTS+ public key.
 * Each action signed with next WOTS+ key → immutable hash-chain of ownership.
 * Safe through host-chain reorgs; can always withdraw back to native chain.
 
-#### 2.2. Interlock
+### 2.2. Interlock
 
 * Two parties can perform atomic swaps across chains by cryptographically exchanging quantum-resistant private keys
 * With their single use keys, each party encrypts a new quip wallet holding the assets they want to trade with a commitment to the details of the receiver and transferred tokens, and this begins a timer
 * If one executes their half of the trade, they reveal the information necessary for the other to execute the other half of the trade. If neither party acts, the expired timers allow refunds
 * No bridges or oracles required.
 
-#### 2.3. Consensus – Quantum PoW (QPoW)
+### 2.3. Consensus – Quantum PoW (QPoW)
 
 * **Canonical chain:** Random Ising models are generated using a block header `prevHash‖Merkle‖height‖addr‖keys` with difficulty determined by chain clock speed
 * **Side-chains/uncles:** Jobs submitted by consumers can be included as an uncle block in any chain: different processors can mine same job class, and publish alternate solutions to validate quality
 * Miner must output **N** low-energy, pairwise-distant solutions.
 * Identity = {ECDSA, rolling WOTS+}; difficulty & streak bonuses bind to key.
 
-#### 2.4 Subnet & Pipeline Marketplace
+### 2.4 Subnet & Pipeline Marketplace
 
 * Each arrow is pluggable; component authors earn royalties.
 * First subnet = Optimization (QUBO -> Ising: knapsack, TSP, SVP, job scheduling…).
@@ -64,7 +64,7 @@ This secures existing value, monetizes idle quantum-classical hardware, and fund
 
 User Data → Template → Graph Reduce → Embed → Algo Select → HW Select → Compute
 
-### 3 Actors & Incentives
+## 3 Actors & Incentives
 
 | Actor                                | Role                               | Earns                    |
 | ------------------------------------ | ---------------------------------- | ------------------------ |
@@ -74,16 +74,16 @@ User Data → Template → Graph Reduce → Embed → Algo Select → HW Select 
 | **Algorithm/Pipeline Designer**      | Publish templates, reducers, algos | Royalty on every call    |
 | **Nominator**                        | Delegate $QUIP to validators       | Share of validator yield |
 
-### 4 Token Economics
+## 4 Token Economics
 
-#### 4.1 Supply (fixed commitments)
+### 4.1 Supply (fixed commitments)
 
 * **Investors:** 15 %
 * **Team / Ecosystem:** 15 %
 * **Community / Testnet:** 10 %
 * **Treasury & Emissions:** 60 %
 
-#### 4.2 Utilities
+### 4.2 Utilities
 
 | Layer                | Action          | Payer           | $QUIP sink            |
 | -------------------- | --------------- | --------------- | --------------------- |
@@ -99,7 +99,7 @@ User Data → Template → Graph Reduce → Embed → Algo Select → HW Select 
 
 Key points: universal denomination, predictable costs, deflationary burn, security-fee coupling.
 
-#### 4.3 Emission Outline
+### 4.3 Emission Outline
 
 {% hint style="danger" %}
 **Needs review.** This outline disagrees with the [Token](../network/token.md) page, which states a total emission duration of 10 years. One of the two needs correcting. If you know which schedule is right, answer under **R4 — Emissions** on the [Quip Docs Review page](https://app.notion.com/p/3b5db8c6a08881788c00e65ad15ad6c4).

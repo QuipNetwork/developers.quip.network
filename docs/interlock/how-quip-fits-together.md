@@ -13,14 +13,14 @@ icon: diagram-project
 
 Quip is easiest to understand as a chain of four pieces, where each piece exists because of the one before it. This page walks that chain once, and every other page in this section covers one link in depth.
 
-### The four pieces
+## The four pieces
 
 1. **The Quantum Unit Interlock Pathway (QUIP) is the primitive.** A lockbox that releases funds only against a post-quantum signature. Everything else is built on it. See [QUIP: The Quantum Unit Interlock Pathway](../basics/quip-the-quantum-unit-interlock-pathway.md).
 2. **A Quip Account is that lockbox, holding your assets.** It lives on the chain you already use (Ethereum, Base, and others), so you get post-quantum protection without moving anything. See [Quip Accounts](quip-accounts.md).
 3. **QuipSwap lets two accounts trade atomically.** One shared secret settles both sides of a trade, or neither. Because that works across chains, value can move without a bridge. See [QuipSwap](quipswap.md).
 4. **That same swap mechanism pays for quantum compute.** Operators are paid through the swap, so you can request work from whatever chain your assets are on. Quantum randomness is designed to be the first product sold this way. See [Quantum Randomness (QVRF)](../compute/qvrf.md).
 
-### The whole system in one diagram
+## The whole system in one diagram
 
 ```mermaid
 flowchart LR
@@ -52,7 +52,7 @@ Unlike most Web3 platforms, Quip's atomic swaps require no bridge. The swap carr
 
 <!-- REVIEW: confirm that Grover's and Shor's subnets from the whitepaper remain future roadmap rather than current components. (Subnet names confirmed against QPoUW Subnet 2 spec, 2026-08-01, and the Quantum Job Mempool spec, 2026-07-18.) -->
 
-### Who pays whom
+## Who pays whom
 
 The network is a stack of participants, and every payment between layers settles the same way.
 
@@ -67,7 +67,7 @@ flowchart LR
 
 Every $QUIP hop is a payment for work one layer down, and cross-chain payments settle over the QuipSwap protocol.
 
-### Where to go next
+## Where to go next
 
 | If you want to | Read |
 | --- | --- |

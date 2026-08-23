@@ -10,7 +10,7 @@ coverY: 0
 
 # Welcome to Quip Network
 
-### Jump right in
+## Jump right in
 
 <table data-view="cards"><thead><tr><th></th><th></th><th data-hidden data-card-cover data-type="files"></th><th data-hidden></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><strong>Getting Started</strong></td><td>Get a quantum-resistant wallet and run a node</td><td></td><td></td><td><a href="getting-started/quickstart.md">quickstart.md</a></td></tr><tr><td><strong>Network Basics</strong></td><td>Get to know the QUantum Interlock Pathway (QUIP)</td><td></td><td></td><td><a href="basics/quip-the-quantum-unit-interlock-pathway.md">quip-the-quantum-unit-interlock-pathway.md</a></td></tr><tr><td><strong>Network Structure</strong></td><td>Peer-to-peer or delegated to a network of validators</td><td></td><td></td><td><a href="network/participants.md">participants.md</a></td></tr><tr><td><strong>Quantum Quirks</strong></td><td>Learn the basics of working with quantum computers</td><td></td><td></td><td><a href="nodes/miners.md">miners.md</a></td></tr><tr><td><strong>Post-quantum Pads</strong></td><td>Protecting your assets, contracts, and keys responsibly</td><td></td><td></td><td><a href="interlock/quip-accounts.md">quip-accounts.md</a></td></tr><tr><td><strong>Requesting Jobs</strong></td><td>Solve problems unsolveable by any other means</td><td></td><td></td><td><a href="compute/submit-a-job.md">submit-a-job.md</a></td></tr></tbody></table>
 
@@ -24,6 +24,6 @@ Because we run a quantum computing network, we also secure client digital assets
 
 The long-term mission is a worldwide quantum computer: a network that can solve problems no single platform can. These docs cover how to use that network today, and how to keep your assets secure from anyone who might misuse it.
 
-### Licensing and contact
+## Licensing and contact
 
 Quip Network publishes its quantum-resistant technology under the open-source AGPL 3.0 license, free for open-source projects. For private commercial licensing, contact legal@quip.network. For professional services around post-quantum accounts, cryptography, and quantum algorithms, contact Postquant Labs at bd@postquant.xyz.

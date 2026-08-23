@@ -9,7 +9,7 @@ icon: coin-front
 
 The $QUIP token is a shared compute credit across all the operators in the decentralized compute protocol. In addition to being used to reserve spot capacity on quantum and classical hardware, it is an integral component to the functioning of the protocol.
 
-#### Token Purpose & Value Accrual
+## Token Purpose & Value Accrual
 
 The $QUIP token serves as the incentive layer that ensures Quip Network remains secure, performant, and decentralized:
 
@@ -18,7 +18,7 @@ The $QUIP token serves as the incentive layer that ensures Quip Network remains 
 * Simplify consumer experience with a shared compute credit
 * Facilitate quantum-resistant transactions across chains
 
-#### Buy & LP Mechanism
+## Buy & LP Mechanism
 
 $QUIP implements a value accrual mechanism:
 
@@ -39,7 +39,7 @@ More quantum demand = more $QUIP buy pressure = more $QUIP liquidity
 
 This creates a $QUIP-native economy where the protocol continuously earns a larger portion of transaction volume denominated in $QUIP. The more activity on Quip Network, the more $QUIP flows into buying and locking active trading pairs in captive liquidity pools, creating price stability and token scarcity.
 
-#### Tokenomics Overview
+## Tokenomics Overview
 
 * Ticker: $QUIP
 * Total Supply: 1 Billion Tokens
@@ -47,7 +47,7 @@ This creates a $QUIP-native economy where the protocol continuously earns a larg
 
 Total Emission Duration: 10 Years
 
-#### Governance
+## Governance
 
 Early adopters of QUIP vaults will be rewarded with the $QUIP token, which in addition to powering the Quip Network’s multi-party computation, will be used in governance of the network’s DAO. The DAO will initially be populated with well-known and established cryptographers who are close associates to the team, and who will lead standardization efforts with high-quality peer reviewed implementations.
 

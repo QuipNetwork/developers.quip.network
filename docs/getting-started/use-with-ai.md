@@ -21,7 +21,7 @@ These docs are built to be read by AI tools as well as people. Every page has a 
 | Asking questions about one page | [Open the page in your assistant](use-with-ai.md#ask-an-assistant-about-one-page) |
 | Feeding the docs to your own tool, agent, or evaluation | [The site indexes](use-with-ai.md#give-a-model-the-whole-site), never scrape the HTML |
 
-### Connect via MCP
+## Connect via MCP
 
 The docs run a hosted MCP server. Connect once and your agent can search and read the current documentation while you work, no copy-pasting required.
 
@@ -54,7 +54,7 @@ Any other MCP-capable tool, add an HTTP server manually:
 
 <!-- REVIEW: the MCP endpoint URL is tied to the current quip.gitbook.io/docs address. When docs.quip.network goes live (QUI-981), confirm whether the MCP URL follows the custom domain and update this section and the Cursor deeplink payload. -->
 
-### Ask an assistant about one page
+## Ask an assistant about one page
 
 Every page on this site has a markdown mirror: add `.md` to the end of the page URL.
 
@@ -69,7 +69,7 @@ Every page on this site has a markdown mirror: add `.md` to the end of the page 
 
 For example, to work with the [QuipSwap](../interlock/quipswap.md) page, copy the page's address from your browser and add `.md` to the end. The [`/llms.txt` index](use-with-ai.md#give-a-model-the-whole-site) lists the exact mirror URL for every page.
 
-### Give a model the whole site
+## Give a model the whole site
 
 **What it does.** Two standing indexes cover the entire documentation at once.
 

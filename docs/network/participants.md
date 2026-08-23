@@ -7,7 +7,7 @@ icon: people-group
 
 # Participants
 
-### Distributed Compute Protocol
+## Distributed Compute Protocol
 
 Many different consumers, developers, operators, and liquidity providers come together to participate in the Quip Network. Each serves an irreplaceable function in the whole of the protocol.
 
@@ -76,7 +76,7 @@ The most important thing is to make the token useful for more than just reservin
 {% endtab %}
 {% endtabs %}
 
-### Interlock Protocol
+## Interlock Protocol
 
 While QUIPs can be created and executed on a peer to peer basis, significant additional value will be created given a public index of all the active quips on various networks. As such, we endeavor to form the Quip Network, comprising several parties who collaborate to make the world a safer place to transact:
 

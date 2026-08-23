@@ -15,7 +15,7 @@ In its simplest form, the user can withdraw their funds from a QUIP by signing a
 
 QUIPs provide the ultimate protection for anyone worried about quantum computers. While funds are inside the QUIP they are safe even in the advent of a quantum zero day attack. An enterprising quantum attacker will be unable to provide the necessary post-quantum signature, which means they cannot provide a valid classical hash to the host transaction network, and thus they cannot create a valid QUIP transaction to remove the funds from the wallet. This guarantee holds true even if they can break the host transaction network’s consensus or steal funds from classical unprotected wallets.
 
-### Properties
+## Properties
 
 The QUIP is a versatile building block:
 

@@ -13,7 +13,7 @@ icon: lock
 
 A Quip Account is where your assets live under post-quantum protection. This page explains what the account is, how you reach it, how its signatures work, and the one signature behavior every integrator needs to understand before relying on it.
 
-### A lockbox on the chain you already use
+## A lockbox on the chain you already use
 
 A Quip Account is a smart contract deployed on the blockchain you already use. It works like a lockbox: your assets sit inside the contract, and the contract releases them only when it is shown a valid signature from a quantum-resistant key. The signature scheme is hash-based, which means its security rests on the strength of a hash function rather than on the mathematical problems that a quantum computer could one day solve.
 
@@ -21,7 +21,7 @@ Nothing about your assets moves to a new network. You keep using the chain, the 
 
 A factory contract creates each account, and the account's address is derived deterministically from its creation inputs rather than assigned at random.
 
-### One account, two doors
+## One account, two doors
 
 Quip Network provides two clients for the same account: a browser extension and the web application at [account.quip.network](https://account.quip.network/). They are two doors into one account, not two wallets. The account itself is the contract on chain. Both clients read the same balances and history and produce signatures for the same account, so nothing you create through one client is trapped in the other.
 
@@ -29,7 +29,7 @@ If your application points users at Quip, route Chrome users to the extension an
 
 <!-- REVIEW: is the browser extension publicly installable at the time this page ships, and is "Chrome users get the extension, everyone else gets the web app" the routing guidance the team wants in public docs? -->
 
-### How signing works
+## How signing works
 
 Quip Accounts sign with hash-based one-time signatures, packaged in a construction called SHRINCS. A hash-based one-time key can safely sign exactly one message, so SHRINCS commits to a large collection of one-time keys under a single compact public commitment and gives the account two ways to use them:
 
@@ -47,7 +47,7 @@ graph TD
 
 The chain verifies signatures; it does not manage your signing state. Which slots have been consumed is state that belongs to the signer, and the Quip clients track it for you.
 
-### If you build your own signer, track your slots
+## If you build your own signer, track your slots
 
 This is the one discipline that makes Quip Accounts different from a classical wallet integration. A classical key can sign any number of times. A slot in a Quip Account key bundle must sign at most once.
 
@@ -61,7 +61,7 @@ The specific size of the slot budget is an implementation parameter and is not d
 
 <!-- REVIEW: is "read the remaining budget from the account rather than assuming a constant" achievable with the current SDK surface, yes or no? -->
 
-### Signature checks by other contracts are not one-time
+## Signature checks by other contracts are not one-time
 
 Third-party contracts, such as exchanges with off-chain order books or permit-style token approvals, can ask a Quip Account whether it authorized a message through the standard contract-signature interface, ERC-1271 (Ethereum Request for Comments 1271).
 
@@ -71,7 +71,7 @@ Third-party contracts, such as exchanges with off-chain order books or permit-st
 
 The consequence for integrators: if your protocol assumes a signature can only be used once, you must enforce that yourself. Common approaches are tracking nonces in your own contract, binding signatures to an expiry, or treating the account's verification key as something to be replaced once its signature has served its purpose. Do not assume replay protection on the ERC-1271 surface, because the account does not provide it there.
 
-### Upgrades are yours to accept
+## Upgrades are yours to accept
 
 Account logic will improve over time, and the upgrade model is designed around user consent:
 
@@ -80,7 +80,7 @@ Account logic will improve over time, and the upgrade model is designed around u
 
 <!-- REVIEW: do both current clients surface the "new version available" prompt described in the specification? -->
 
-### Standards lineage
+## Standards lineage
 
 Quip Accounts are built on public, citable standards rather than proprietary cryptography.
 
