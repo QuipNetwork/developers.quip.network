@@ -11,7 +11,7 @@ icon: people-group
 
 Many different consumers, developers, operators, and liquidity providers come together to participate in the Quip Network. Each serves an irreplaceable function in the whole of the protocol.
 
-<figure><img src="../.gitbook/assets/stakeholder-categories-2.png" alt=""><figcaption><p>The different participants in the compute protocol</p></figcaption></figure>
+<figure><img src="../.gitbook/assets/stakeholder-categories-2.png" alt="Five stacked participant layers, from Compute Consumers at the top through Application Developers, Algorithm Developers and Protocol Developers to Compute Providers at the bottom, with $QUIP passing down the stack and Liquidity Providers exchanging USD and $QUIP alongside it"><figcaption><p>The different participants in the compute protocol</p></figcaption></figure>
 
 | Payor                 | Payee                 | Request                                                           |
 | --------------------- | --------------------- | ----------------------------------------------------------------- |

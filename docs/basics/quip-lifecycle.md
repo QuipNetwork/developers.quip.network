@@ -9,7 +9,7 @@ icon: arrows-rotate-reverse
 
 A user creates a QUIP when they deposit funds to a QUIP-enabled smart contract or QUIP-enabled wallet. At any time, the user can transfer the QUIP to another owner using a regular cryptocurrency transaction. The QUIP also has three additional states that enable programmability:
 
-<figure><img src="../.gitbook/assets/quip_lifecycle.svg" alt=""><figcaption><p>The QUIP Lifecycle</p></figcaption></figure>
+<figure><img src="../.gitbook/assets/quip_lifecycle.svg" alt="State diagram titled A Quip's Journey: a new QUIP moves to Proposed, then Approved, then Claimable, while a proposal timeout diverts it to Cancellable and an approval timeout to Slashable, all enclosed by a post-quantum signature wall separating the coins from attacking qubits"><figcaption><p>The QUIP Lifecycle</p></figcaption></figure>
 
 1. _Propose_: A proposed QUIP signals that a user is ready to conduct a transaction&#x20;
 2. _Approve_: An approval accepts the proposal and enables changes to the network state
