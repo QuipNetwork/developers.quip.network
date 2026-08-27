@@ -9,15 +9,17 @@ icon: toolbox
 
 XQuad compiles quadratic optimization problems into bytecode for a single virtual machine, the XQVM, and runs that bytecode on whichever backend you point it at. A problem written once runs unchanged on a D-Wave quantum processor, a GPU annealer, a local CPU sampler, or the Quip Network. It plays the role LLVM plays for compilers: one intermediate representation, many targets.
 
-XQuad is an early public release. The instruction set, binary format, and public API may change before v1.0.
+{% hint style="info" %}
+**Early public release.** The instruction set, binary format, and public API may change before v1.0.
+{% endhint %}
 
-#### What it models
+## What it models
 
-Combinatorial problems that reduce to quadratic binary models: QUBO, Ising, and discrete formulations. Travelling salesman, graph coloring, knapsack, set cover, maximum independent set, and portfolio optimization all fall in range. You write the model in a constraint-programming DSL or in `.xqasm` assembly, compile it to a `.xqb` binary, and hand the result to a solver.
+Combinatorial problems that reduce to quadratic binary models: QUBO, Ising, and discrete formulations. Traveling salesman, graph coloring, knapsack, set cover, maximum independent set, and portfolio optimization all fall in range. You write the model in a constraint-programming DSL or in `.xqasm` assembly, compile it to a `.xqb` binary, and hand the result to a solver.
 
-#### Components
+## Components
 
-A Rust core does the execution. Python packages wrap it and add the modelling and solver layers.
+A Rust core does the execution. Python packages wrap it and add the modeling and solver layers.
 
 | Package | Language | Role |
 | --- | --- | --- |
@@ -32,7 +34,7 @@ A Rust core does the execution. Python packages wrap it and add the modelling an
 
 A written specification defines every behavior, and CI runs each conformance vector on both the Rust VM and the Python reference VM. If the two disagree, the build fails.
 
-#### Backends
+## Backends
 
 | Backend | Hardware | Install |
 | --- | --- | --- |
@@ -44,11 +46,13 @@ A written specification defines every behavior, and CI runs each conformance vec
 
 Extras compose: `pip install xquad[cuda,dwave]`.
 
-#### Getting started
+## Getting started
 
 ```sh
 pip install xquad          # Python toolchain
 cargo install xqcli        # the `xquad` binary
 ```
 
-The full documentation covers installation, modelling, the instruction set, worked examples for a dozen classic problems, and the reference for every package.
+The full documentation covers installation, modeling, the instruction set, worked examples for a dozen classic problems, and the reference for every package.
+
+To run a model on the Quip Network rather than on your own hardware, see [Submit Your First Compute Job](../compute/submit-a-job.md).

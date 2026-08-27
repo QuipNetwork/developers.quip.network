@@ -19,7 +19,7 @@ This page walks you through installing the tools, describing a problem, and foll
 
 You need two Python packages, both published on the Python Package Index (PyPI). Both are at version 0.3.1 as of August 2026 and require Python 3.13 or newer.
 
-* **`xquad`** is the umbrella package for the XQuad toolchain and the one most users install: it provides the modelling and program interface and re-exports the lower-level packages, including the solvers, under one namespace.
+* **`xquad`** is the umbrella package for the [XQuad toolchain](../xquad/toolchain.md) and the one most users install: it provides the modeling and program interface and re-exports the lower-level packages, including the solvers, under one namespace.
 * **`xqsa`** contains the solver adapters. Every solver exposes the same `solve()` call, whether it runs on your own machine or on the Quip Network, so you can develop locally and switch to the network by changing one line.
 
 ```sh
