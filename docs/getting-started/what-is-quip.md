@@ -68,28 +68,30 @@ User Data → Template → Graph Reduce → Embed → Algo Select → HW Select 
 
 ## 3 Actors & Incentives
 
-| Actor                                | Role                               | Earns                    |
-| ------------------------------------ | ---------------------------------- | ------------------------ |
-| **Compute Miner** (CPU/GPU/ASIC/QPU) | Solve jobs, broadcast blocks       | Block reward + job fees  |
-| **Validator**                        | Batch QUIP tx, finalize blocks     | Network fees + emissions |
-| **Canary Node**                      | Track reorgs, checkpoint vaults    | Fees + emissions         |
-| **Algorithm/Pipeline Designer**      | Publish templates, reducers, algos | Royalty on every call    |
-| **Nominator**                        | Delegate $QUIP to validators       | Share of validator yield |
+| Actor                                | Role                                             | Earns                    |
+| ------------------------------------ | ------------------------------------------------ | ------------------------ |
+| **Miner** (CPU/GPU/ASIC/QPU)         | Solve Proofs of Useful Work, broadcast blocks    | Block reward + job fees  |
+| **Validator**                        | Batch QUIP tx, finalize blocks, track reorgs     | Network fees + emissions |
+| **Algorithm/Pipeline Designer**      | Publish templates, reducers, algos               | Royalty on every call    |
+| **Nominator**                        | Delegate $QUIP to validators                     | Share of validator yield |
 
 ## 4 Token Economics
 
 ### 4.1 Supply (fixed commitments)
 
-* **Investors:** 15 %
-* **Team / Ecosystem:** 15 %
-* **Community / Testnet:** 10 %
-* **Treasury & Emissions:** 60 %
+One billion QUIP will have been emitted when all pre-mine allocations finish vesting — and emissions continue at 40M/year after that, so this is not a maximum supply:
+
+* **Subnet Emissions:** 40 %
+* **Quip Foundation:** 20 %
+* **Early Investors:** 15 %
+* **Builders:** 15 %
+* **Community Programs:** 10 %
 
 ### 4.2 Utilities
 
 | Layer                | Action          | Payer           | $QUIP sink            |
 | -------------------- | --------------- | --------------- | --------------------- |
-| **Asset (Wallet)**   | Account deposit | Creator         | Flat fee + % burn     |
+| **Asset (Wallet)**   | Account deposit | Creator         | Flat fee (protocol fee) |
 |                      | Transfer        | Sender          | Flat fee → validators |
 |                      | Contract exec   | Caller          | % routed to treasury  |
 |                      | Swap open       | Both parties    | Escrow (slashable)    |
@@ -99,13 +101,9 @@ User Data → Template → Graph Reduce → Embed → Algo Select → HW Select 
 |                      | Staking bond    | Validators/Noms | Locked collateral     |
 |                      | Bounty payout   | Treasury        | Stream release        |
 
-Key points: universal denomination, predictable costs, deflationary burn, security-fee coupling.
+Key points: universal denomination, predictable costs, treasury buyback into permanent liquidity (no burn), security-fee coupling.
 
 ### 4.3 Emission Outline
 
-{% hint style="danger" %}
-**Needs review.** This outline disagrees with the [Token](../network/token.md) page, which states a total emission duration of 10 years. One of the two needs correcting. If you know which schedule is right, answer under **R4 — Emissions** on the [Quip Docs Review page](https://app.notion.com/p/3b5db8c6a08881788c00e65ad15ad6c4).
-{% endhint %}
-
-* **Years 0-2:** heavy miner + validator issuance.
-* **Years 2-5:** taper; rely on fees & royalties.
+* **Fixed and flat:** 40 million QUIP per year, regardless of price, activity, or subnet count — no halvings.
+* **Implicit decay:** each new subnet competes for a share of the same annual emission, so QUIP emitted per unit of compute falls as the network grows.
