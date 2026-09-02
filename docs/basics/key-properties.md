@@ -1,10 +1,14 @@
 ---
+description: >-
+  The four properties the network must exhibit: hardware and implementation
+  agnosticism, layered abstraction, computational tractability, and consumer
+  legibility.
 icon: key
 ---
 
 # Key Properties
 
-### Distributed Compute Protocol
+## Distributed Compute Protocol
 
 In order to ensure the successful adoption of the distributed compute standard, the Quip Network must exhibit four properties: hardware and implementation agnosticism, layered abstraction for specialists, computational tractability, and consumer legibility.
 
@@ -20,7 +24,7 @@ In general, industrial consumers of computation are not specialists in quantum p
 
 The system must divide out the layers of abstraction so specialists can easily interface with subject matter experts outside their domain of focus. We choose to make these layers of abstraction explicit in the network design, with a) consumers specializing in their industry, b) application developers specializing in professional services for that industry, c) smart contract developers specializing in data transformation and ETL, d) algorithm and protocol designers specializing in quantum computation and computational equivalence, e) hardware operators and manufacturers who specialize in fine-tuning for compiler targets, and f) liquidity providers who are trying to efficiently discover the true price of the spot compute capacity available on the network.
 
-<figure><img src="../.gitbook/assets/stakeholder-categories-2.png" alt=""><figcaption><p>The layers of the Quip Network Protocol</p></figcaption></figure>
+<figure><img src="../.gitbook/assets/stakeholder-categories-2.png" alt="Five stacked participant layers, from Compute Consumers at the top through Application Developers, Algorithm Developers and Protocol Developers to Compute Providers at the bottom, with $QUIP passing down the stack and Liquidity Providers exchanging USD and $QUIP alongside it"><figcaption><p>The layers of the Quip Network Protocol</p></figcaption></figure>
 
 3. **Computational tractability**
 
@@ -34,7 +38,7 @@ The most important element of the protocol is that the use thereof has to be und
 
 The protocol must prioritize tools for discovery, understanding, and quick delivery of useful results.
 
-### Interlock Protocol
+## Interlock Protocol
 
 In order to ensure the successful adoption of the quantum-resistant standard, the Quip Network must exhibit four pairs of properties: post-quantum and classically secure, native and portable, transparent and composable, liquid and bondable.
 
@@ -62,6 +66,4 @@ Splitting liquidity is an enormous problem for consumers in the cryptocurrency i
 
 Ultimately, the Quip architecture should enable a process whereby any funds on any chain can be wrapped in a post-quantum signature and used as collateral or consideration for equivalent value on any other chain.
 
-{% hint style="info" %}
-If you have multiple files, GitBook makes it easy to import full repositories too — allowing you to keep your GitBook content in sync.
-{% endhint %}
+These properties follow from the problems set out in [Motivation](motivation.md). The primitive that delivers them is described in [QUIP: The Quantum Unit Interlock Pathway](quip-the-quantum-unit-interlock-pathway.md).

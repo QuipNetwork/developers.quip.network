@@ -1,14 +1,17 @@
 ---
+description: >-
+  The consumers, developers, operators, and liquidity providers that make up
+  the network, and the function each one serves.
 icon: people-group
 ---
 
 # Participants
 
-### Distributed Compute Protocol
+## Distributed Compute Protocol
 
 Many different consumers, developers, operators, and liquidity providers come together to participate in the Quip Network. Each serves an irreplaceable function in the whole of the protocol.
 
-<figure><img src="../.gitbook/assets/stakeholder-categories-2.png" alt=""><figcaption><p>The different participants in the compute protocol</p></figcaption></figure>
+<figure><img src="../.gitbook/assets/stakeholder-categories-2.png" alt="Five stacked participant layers, from Compute Consumers at the top through Application Developers, Algorithm Developers and Protocol Developers to Compute Providers at the bottom, with $QUIP passing down the stack and Liquidity Providers exchanging USD and $QUIP alongside it"><figcaption><p>The different participants in the compute protocol</p></figcaption></figure>
 
 | Payor                 | Payee                 | Request                                                           |
 | --------------------- | --------------------- | ----------------------------------------------------------------- |
@@ -47,7 +50,7 @@ The network's role is to make this process of writing, deploying, and optimizing
 {% endtab %}
 
 {% tab title="Protocol Developers" %}
-Protocol developers maintain the network and submit parameters for every new Proof of Useful Work. Quantum computers exist in an odd complexity class where some of their outputs can be computed efficiently by classical computers (eg calculating Hamiltonian ground states), some can only be verified efficiently by classical computers (eg elliptic curve discrete logarithm problem), and some can only be verified by other quantum computers (eg quantum merlin-arthur problems)!
+Protocol developers maintain the network and submit parameters for every new Proof of Useful Work. Quantum computers exist in an odd complexity class where some of their outputs can be computed efficiently by classical computers (eg calculating Hamiltonian ground states), some can only be verified efficiently by classical computers (eg elliptic curve discrete logarithm problem), and some can only be verified by other quantum computers (eg quantum merlin-arthur problems).
 
 Every solved block and every Proof of Useful Work provides a percentage of fees back to the network in order to fund its maintenance and improvement. Protocol developers also deploy new implementations for different hardware architectures so that Proofs of Useful Work can benefit from state of the art algorithmic improvements.
 
@@ -73,11 +76,21 @@ The most important thing is to make the token useful for more than just reservin
 {% endtab %}
 {% endtabs %}
 
-### Interlock Protocol
+## Interlock Protocol
 
 While QUIPs can be created and executed on a peer to peer basis, significant additional value will be created given a public index of all the active quips on various networks. As such, we endeavor to form the Quip Network, comprising several parties who collaborate to make the world a safer place to transact:
 
-<figure><img src="../.gitbook/assets/quip_whitepaper_value_flow_dark.png" alt=""><figcaption><p>Payment flows and services between participants</p></figcaption></figure>
+```mermaid
+flowchart LR
+    C["Client"] -->|pays fees| TN["Transaction<br/>network"]
+    TN -->|stores and<br/>processes QUIPs| C
+    TN -->|splits fees| V["Quip Network<br/>validators"]
+    V -->|publishes QUIP<br/>commitments| TN
+    V -->|pays yield| N["Nominators"]
+    N -->|stake funds| V
+    N -->|pays bounties| W["Whitehat<br/>hackers"]
+    W -->|proves algorithm<br/>security| N
+```
 
 | Payor                   | Payee                   | Service                       |
 | ----------------------- | ----------------------- | ----------------------------- |
@@ -88,7 +101,7 @@ While QUIPs can be created and executed on a peer to peer basis, significant add
 
 {% tabs %}
 {% tab title="Clients" %}
-Clients come in many shapes and sizes, from retail to institutional, as lenders, traders, insurers, and end-users of the underlying protocol. To take advantage of a QUIP, they simply pay fees for the necessary computation and storage on the underlying transaction network and the QUIP extension will determine any additional fee retained by the protocol. Wallet providers and treasury management solutions may wish to integrate QUIPs as a secure add-on for their clients, in order to streamline the process of forming and executing more complex QUIP exchanges.
+Clients come in many shapes and sizes, from retail to institutional, as lenders, traders, insurers, and end-users of the underlying protocol. To take advantage of a QUIP, they pay fees for the necessary computation and storage on the underlying transaction network and the QUIP extension will determine any additional fee retained by the protocol. Wallet providers and treasury management solutions may wish to integrate QUIPs as a secure add-on for their clients, in order to streamline the process of forming and executing more complex QUIP exchanges.
 
 Institutions may wish to employ QUIPs as a second layer of security on their cold storage funds, or else integrate QUIPs directly into low volume hot wallet transactions that touch more sensitive and valuable assets. Even transaction networks with highly sensitive contracts, such as Ethereum’s validator staking contract that holds more than 45% of all ETH, may wish to integrate a QUIP directly into the contract so that stakers can rest secure in the knowledge their funds are safe.
 {% endtab %}
@@ -100,14 +113,11 @@ If the Quip Validators are unable to show that certain accepted post-quantum sig
 {% endtab %}
 
 {% tab title="Validators" %}
-In addition to the developers and the foundation, the Quip Network will employ Nominated Proof of Stake Validators to maintain and upgrade services for any transaction network that has not yet implemented post-quantum security, and to provide automation to individual depositors and clients who do not wish to directly manage the Quip Protocol on a peer-to-peer basis. There will be two types of nodes in the Quip Network who will receive the QUIP token for participating in the protocol:
+In addition to the developers and the foundation, the Quip Network will employ Nominated Proof of Stake Validators to maintain and upgrade services for any transaction network that has not yet implemented post-quantum security, and to provide automation to individual depositors and clients who do not wish to directly manage the Quip Protocol on a peer-to-peer basis. Alongside the miners who solve Proofs of Useful Work and broadcast winning blocks, validators are one of the three consensus roles — validators, miners, and nominators — that receive the $QUIP token for running the chain.
 
-1. _Validator Nodes_\
-   \
-   A full node, these infrastructure providers maintain indices of all proposed quips and process messages and transactions between willing counter-parties in return for QUIP. They can aggregate together multiparty quip transaction signatures and batch the processing for cost savings, provide mixnet or privacy-preserving functionality, and execute other post-quantum multi-party computation services. In return for locking up funds on target networks to facilitate liquidity and collateral, these node providers receive yield in the form of network fees on the indexed networks, as well as QUIP emissions.
-2. _Canary Nodes_\
-   \
-   A lite node, these infrastructure providers maintain only a limited subset of the available quips and track the current state of the host transaction network to ensure that the quip has not been orphaned by a block reorganization or other malicious attack on consensus. These records can be used by host networks as a canonical checkpoint in case of a rewind attack by a quantum attacker, and can improve the security of the underlying transaction network. In return for storing and attesting the presence of quips on the host network, these node providers receive fees from the attestations, as well as QUIP emissions.
+A validator is a full node. These infrastructure providers maintain indices of all proposed quips and process messages and transactions between willing counter-parties in return for $QUIP. They can aggregate together multiparty quip transaction signatures and batch the processing for cost savings, provide mixnet or privacy-preserving functionality, and execute other post-quantum multi-party computation services. In return for locking up funds on target networks to facilitate liquidity and collateral, these node providers receive yield in the form of network fees on the indexed networks, as well as $QUIP emissions.
+
+Validators also track the current state of each host transaction network to ensure that no quip has been orphaned by a block reorganization or other malicious attack on consensus. These records can be used by host networks as a canonical checkpoint in case of a rewind attack by a quantum attacker — the commitment-omission defense — and can improve the security of the underlying transaction network. Storing and attesting the presence of quips on host networks earns attestation fees on top of emissions.
 
 For enterprising node providers with insufficient funds to meet the minimum bond required of a trusted validator, they can accept stakes from nominators and share yield from validation.
 {% endtab %}
@@ -126,3 +136,5 @@ Arguably one of the most important participants in the network, these enterprisi
 This activity creates a more resilient ecosystem of decentralized services, and will increase demand for the security guarantees provided by the Quip Network and the remaining secure algorithms. The more any one algorithm is preferred by the validators, the larger incentive remains for a white hat to claim their pro rata share of the stake.
 {% endtab %}
 {% endtabs %}
+
+The $QUIP token these participants earn and spend is described in [Token](token.md), and the properties the network has to hold to for them is set out in [Key Properties](../basics/key-properties.md).

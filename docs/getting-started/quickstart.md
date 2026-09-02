@@ -1,33 +1,40 @@
 ---
+description: >-
+  Download the node runner, generate quantum-resistant keys, and start
+  mining blocks on the Quip testnet.
 icon: bullseye-arrow
 ---
 
 # Quickstart
 
-The Quip protocol is published as open source software on [GitHub](https://github.com/quipnetwork/) and [GitLab](https://gitlab.com/quip.network). If you wish to run a node, you can download the desktop node runner on Windows, Linux, or Mac OSX which will guide you through setting up your environment:\
+The Quip Network protocol is published as open source software on [GitHub](https://github.com/quipnetwork/) and [GitLab](https://gitlab.com/quip.network). There are two things you can do with it today: run a node, and generate quantum-resistant keys. This page covers both.
+
+## Run a node
+
+If you wish to run a node, you can download the desktop node runner on Windows, Linux, or Mac OSX which will guide you through setting up your environment:\
 \
 [https://gitlab.com/quip.network/quip-node-manager/-/releases](https://gitlab.com/quip.network/quip-node-manager/-/releases)&#x20;
 
-For more node running options see the [Nodes section](/broken/pages/OWaNOJMKuKqbB9m0Tzzn).
+For more node running options see the [Nodes section](../nodes/run-a-node-testnet.md), which covers server deployment with docker-compose and building from source.
 
-Right now there's not much to do other than mine blocks, generate some quantum-resistant keys through our wallets on Ethereum, Solana, their L2s, and the Bitcoin L2s Arch and Midl, but we are building out the smart contract layer so you can take advantage of the quantum computers too!
+## Generate quantum-resistant keys
+
+Right now there's not much to do other than mine blocks, generate some quantum-resistant keys through our wallets on Ethereum, Solana, their L2s, and the Bitcoin L2s Arch and Midl, but we are building out the smart contract layer so you can take advantage of the quantum computers too.
 
 You can generate post-quantum keys to prepare for the smart contract layer by using our wallets at [account.quip.network](https://account.quip.network/) or you can use the libraries below.
 
-If you want to understand the structure of what we're building, here's some key diagrams below:
-
-<figure><img src="../.gitbook/assets/stakeholder-categories-2.png" alt=""><figcaption><p>The structure of the Quip Network</p></figcaption></figure>
-
-<figure><img src="../.gitbook/assets/quip_whitepaper_consensus.png" alt=""><figcaption><p>Quip Network interactions with other chains</p></figcaption></figure>
-
-<figure><img src="../.gitbook/assets/image.png" alt=""><figcaption><p>The QUIP Lifecycle</p></figcaption></figure>
+## Use the libraries directly
 
 Quip's implementation of various hash algorithms, especially the preferred Winternitz One-Time Signature (WOTS+), is available as a library for [rust](https://crates.io/crates/hashsigs-rs), [c++](https://github.com/quipnetwork/hashsigs-cpp), [typescript](https://www.npmjs.com/package/@quip.network/hashsigs), and [solidity](https://www.npmjs.com/package/@quip.network/hashsigs-solidity). If you do not want to use these libraries directly, you can use the interface at [account.quip.network](https://account.quip.network/).
 
-All Quip Network libraries and contracts are available for review at our [Github](https://github.com/QuipNetwork).
+All Quip Network libraries and contracts are available for review on [GitHub](https://github.com/QuipNetwork).
 
-More coming soon
+## Where to go next
+
+If you are new to the network, [What is Quip Network?](what-is-quip.md) explains the two layers and how they relate, and [How Quip Network Fits Together](../interlock/how-quip-fits-together.md) shows the whole system in one diagram.
+
+For building, start from the [Quip SDK](quip-sdk.md). To put a problem in front of the compute network, see [Submit Your First Compute Job](../compute/submit-a-job.md).
 
 {% hint style="info" %}
-Want to learn more about QUIPs from scratch? Head to the [Basics](https://gitlab.com/piqued/gitbook/-/blob/main/getting-started/broken-reference/README.md) section to learn more.
+Want to learn more about QUIPs from scratch? Head to the [Basics](../basics/quip-the-quantum-unit-interlock-pathway.md) section to learn more.
 {% endhint %}
