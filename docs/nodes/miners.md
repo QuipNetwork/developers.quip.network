@@ -19,7 +19,7 @@ Node requirements are minimal. There is no barrier to entry for running a node, 
 
 The first Proof of Useful Work is finding the ground state energy of a Hamiltonian, often called an Ising Model problem. These solutions can be used in a variety of optimization and constraint programming problems, providing useful outputs for real businesses. Future Proofs of Useful Work may include things like Verifiable Random Functions, Hidden Subgroup Problems, Search, Quantum Key Distribution, or otherwise.
 
-The network currently publishes Qiskit and Ocean SDK solutions for the Ising subnet. If you have another framework or instruction set you would like to support, please submit an issue at our [Github](https://github.com/quipnetwork).
+The network currently publishes Qiskit and Ocean SDK solutions for the Ising subnet. If you have another framework or instruction set you would like to support, please submit an issue on [GitHub](https://github.com/quipnetwork).
 
 ## Run a Node
 

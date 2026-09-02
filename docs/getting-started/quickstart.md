@@ -27,7 +27,7 @@ You can generate post-quantum keys to prepare for the smart contract layer by us
 
 Quip's implementation of various hash algorithms, especially the preferred Winternitz One-Time Signature (WOTS+), is available as a library for [rust](https://crates.io/crates/hashsigs-rs), [c++](https://github.com/quipnetwork/hashsigs-cpp), [typescript](https://www.npmjs.com/package/@quip.network/hashsigs), and [solidity](https://www.npmjs.com/package/@quip.network/hashsigs-solidity). If you do not want to use these libraries directly, you can use the interface at [account.quip.network](https://account.quip.network/).
 
-All Quip Network libraries and contracts are available for review at our [Github](https://github.com/QuipNetwork).
+All Quip Network libraries and contracts are available for review on [GitHub](https://github.com/QuipNetwork).
 
 ## Where to go next
 
