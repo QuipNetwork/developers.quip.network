@@ -13,14 +13,13 @@ This page walks you through installing the tools, describing a problem, and foll
 
 ## Install the tools
 
-You need two Python packages, both published on the Python Package Index (PyPI). Both are at version 0.3.1 as of August 2026 and require Python 3.13 or newer.
+Install the `xquad` package from the Python Package Index (PyPI). It requires Python 3.13 or newer and installs the compatible versions of the lower-level packages it uses.
 
-* **`xquad`** is the umbrella package for the [XQuad toolchain](../xquad/toolchain.md) and the one most users install: it provides the modeling and program interface and re-exports the lower-level packages, including the solvers, under one namespace.
-* **`xqsa`** contains the solver adapters. Every solver exposes the same `solve()` call, whether it runs on your own machine or on the Quip Network, so you can develop locally and switch to the network by changing one line.
+* **`xquad`** is the umbrella package for the [XQuad toolchain](../xquad/toolchain.md): it provides the modeling and program interface and installs compatible versions of the lower-level packages, including `xqsa`.
+* **`xqsa`** contains the solver adapters. Its `quip` extra is included by the `xquad[quip]` install below. Every solver exposes the same `solve()` call, whether it runs on your own machine or on the Quip Network, so you can develop locally and switch to the network by changing one line.
 
 ```sh
-pip install xquad
-pip install "xqsa[quip]"
+pip install "xquad[quip]"
 ```
 
 The base install of `xqsa` includes a local simulated annealing solver that runs on your central processing unit (CPU), so you can test a model without touching the network or spending anything. The `[quip]` extra adds the two pieces that the network backend, `SolverQuip`, needs: a chain client and a signing extension that produces the hybrid (classical plus post-quantum) signatures Quip transactions require. Every other solver in `xqsa` installs and runs without the extra.

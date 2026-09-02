@@ -21,7 +21,7 @@ However, sometimes contracts may require token allowances, specialized permissio
 
 ## Install
 
-The packages Quip Network publishes today, verified directly against the public registries on 7 August 2026.
+The packages below are published in the public registries. Pre-release npm packages use the named distribution tags so the install command continues to select the current build in that release channel.
 
 ### JavaScript and TypeScript (npm)
 
@@ -31,8 +31,8 @@ Install with the tags shown below. A plain `npm install` resolves the `latest` t
 
 | Package | Install | What it is |
 | --- | --- | --- |
-| `@quip.network/ethereum-sdk` | `npm install @quip.network/ethereum-sdk@beta` | The account client for EVM chains. The `beta` tag (0.3.0-beta.5, August 2026) is the current generation; `latest` still resolves to 0.1.7 from June 2025. |
-| `@quip.network/hashsigs-wasm` | `npm install @quip.network/hashsigs-wasm@rc` | The current hash-based signature signer and verifier (SHRINCS), compiled from the audited Rust implementation to WebAssembly. Works in Node.js and the browser. The `rc` tag is 0.2.0-rc.2; `latest` resolves to an older release candidate. |
+| `@quip.network/ethereum-sdk` | `npm install @quip.network/ethereum-sdk@beta` | The account client for EVM chains. Use the `beta` tag for the current generation; `latest` still points to the earlier generation. |
+| `@quip.network/hashsigs-wasm` | `npm install @quip.network/hashsigs-wasm@rc` | The current hash-based signature signer and verifier (SHRINCS), compiled from the audited Rust implementation to WebAssembly. Works in Node.js and the browser. Use the `rc` tag; `latest` points to an earlier release candidate. |
 
 ### Python (PyPI)
 
