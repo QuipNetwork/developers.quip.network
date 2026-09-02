@@ -8,17 +8,13 @@ icon: right-left
 
 # QuipSwap
 
-{% hint style="warning" %}
-**Draft — pending technical review.** This page was assembled from internal specifications on 7 August 2026 and has not been approved by engineering. Details may change before this notice is removed. If you are reviewing, put your answers and feedback on the [Quip Docs Review page](https://app.notion.com/p/3b5db8c6a08881788c00e65ad15ad6c4).
-{% endhint %}
-
-QuipSwap is Quip Network's protocol for trading assets directly with another party. You agree on the terms of a trade, then each of you locks the assets you are giving up in a shared settlement contract on your own chain. A single secret connects the two locks. When one side reveals the secret to claim their new assets, that same reveal lets the other side claim theirs. If the trade stalls, each side takes back what they locked once a deadline passes. The trade can run across two chains or entirely on one chain, and at no point does a bridge, an exchange, or any other custodian hold your money. <!-- REVIEW: Are same-chain swaps supported in the shipped contract, as the formal verification flowcharts (same chain and cross chain runs) suggest? -->
+QuipSwap is Quip Network's protocol for trading assets directly with another party. You agree on the terms of a trade, then each of you locks the assets you are giving up in a shared settlement contract on your own chain. A single secret connects the two locks. When one side reveals the secret to claim their new assets, that same reveal lets the other side claim theirs. If the trade stalls, each side takes back what they locked once a deadline passes. The trade can run across two chains or entirely on one chain, and at no point does a bridge, an exchange, or any other custodian hold your money.
 
 ## Quantum protection comes first
 
 QuipSwap's design leads with what protects the assets. The bridgeless design is a benefit, but a secondary one.
 
-The assets in a swap are held and moved by Quip accounts, the quantum-resistant wallet layer described in [Quip Accounts](quip-accounts.md). Every authorization above the settlement layer is protected there by post-quantum signatures. The settlement contract itself deliberately uses a simpler tool: a hash lock, a lock that opens only for whoever knows a chosen secret. Hash locks rest on hash functions, and hash functions are not weakened by the known quantum attacks that break ordinary wallet keys. The result is a trade in which no step depends on the kind of mathematics a quantum computer can break: quantum-resistant authentication in the wallet layer above, hash-based locks in the contract below. <!-- REVIEW: Correct that the settlement contract verifies no post-quantum signatures itself today, with quantum-resistant authentication living entirely in the wallet layer? -->
+The assets in a swap are held and moved by Quip accounts, the quantum-resistant wallet layer described in [Quip Accounts](quip-accounts.md). Every authorization above the settlement layer is protected there by post-quantum signatures. The settlement contract itself deliberately uses a simpler tool: a hash lock, a lock that opens only for whoever knows a chosen secret. Hash locks rest on hash functions, and hash functions are not weakened by the known quantum attacks that break ordinary wallet keys. The result is a trade in which no step depends on the kind of mathematics a quantum computer can break: quantum-resistant authentication in the wallet layer above, hash-based locks in the contract below.
 
 The contract accepts the asset kinds you would expect on a smart contract chain: the chain's native coin, fungible tokens, and non-fungible tokens (NFTs), in any combination on either side of the trade.
 
@@ -50,13 +46,13 @@ The settlement protocol assumes you and your counterparty have already found eac
 
 A **maker** posts an order: a statement of intent to swap that says what they are offering and what they want in return. A **taker** browses the open orders and takes one. Both parties then commit on-chain, and settlement proceeds through the same commit, execute, and reclaim flow described above. The order book is a convenience layer that runs off-chain; it helps people find each other, and the protocol does not care how the negotiation happened as long as both parties agree on the terms.
 
-A maker order works like a request for quote (RFQ) run in reverse: instead of asking counterparties to quote a price, the maker publishes the full terms and waits for someone to accept them. If the maker leaves the amount of the counter asset open, the order becomes a classic request for quote, and takers respond with the price they are willing to give. <!-- REVIEW: Is this reverse-RFQ framing the way the team wants the marketplace described publicly? -->
+A maker order works like a request for quote (RFQ) run in reverse: instead of asking counterparties to quote a price, the maker publishes the full terms and waits for someone to accept them. If the maker leaves the amount of the counter asset open, the order becomes a classic request for quote, and takers respond with the price they are willing to give.
 
 ## Who can start a swap today
 
 The settlement contract is gated: only Quip wallet contracts can initiate a swap. You cannot drive a swap from an ordinary account or from your own contract today.
 
-The gate is deliberate. The guided wallet flow is part of the protocol's safety boundary, not a convenience: the wallet can observe both chains, bind you to the intended swap instance, and reject unsafe timing that the contract alone cannot check. Opening the contract to arbitrary callers would expose users to workflow-bypass, phishing, and timing-misuse risks that the wallet flow exists to reduce, so the team treats removing the gate as a future protocol-hardening decision, not a configuration switch. <!-- REVIEW: Is "only Quip wallet contracts can initiate" still the exact gating rule in the deployed contract, or does a second permitted path now exist? -->
+The gate is deliberate. The guided wallet flow is part of the protocol's safety boundary, not a convenience: the wallet can observe both chains, bind you to the intended swap instance, and reject unsafe timing that the contract alone cannot check. Opening the contract to arbitrary callers would expose users to workflow-bypass, phishing, and timing-misuse risks that the wallet flow exists to reduce, so the team treats removing the gate as a future protocol-hardening decision, not a configuration switch.
 
 ## What QuipSwap does not do
 
@@ -70,11 +66,3 @@ QuipSwap is a settlement primitive, and it keeps its scope narrow on purpose.
 Quip's network sells quantum computing work. QuipSwap is the payment rail that makes that work purchasable: it lets you exchange value from the chain you are already on, without migrating your assets to a new chain first. A swap is how assets on any supported chain become buying power on the Quip network, which is why Quip built the swap protocol rather than wait for a third party to provide one.
 
 The propose, approve, and claim state machine underneath these steps is set out in [QUIP Lifecycle](../basics/quip-lifecycle.md).
-
-<!-- SOURCES (for reviewers, not rendered):
-- Quip Swap Interlock Specification — https://app.notion.com/p/314db8c6a088805dba42d4d255c4b921 — 2026-07-18 (architecture, commit/execute/reclaim lifecycle, terminal states, atomicity and fairness, timeout analysis, asset categories, non-goals incl. trade broadcast, slashing exclusion rationale, hash locks replacing signature checks in the initial version per Section 9)
-- QuipSwap Gating Argument — https://app.notion.com/p/38fdb8c6a088804dbec5df6d80fede11 — 2026-07-18 (gate kept; guided client is part of the safety boundary; removal treated as a future security decision)
-- Weekly Team Standup and Project Status Update (transcript) — https://app.notion.com/p/3b1db8c6a0888197b580c45d07557d38 — 2026-08-03 (maker/taker order book framing; order book off-chain as a convenience layer; open intents kick off the standard escrow flow; same-chain and cross-chain protocol runs)
-- Candidate Review, Hiring Decision, and Product Naming (transcript) — https://app.notion.com/p/3b2db8c6a088817cb3e1d747655ad7d4 — 2026-08-04 (QuipSwap kept as the name; built to sell compute without requiring users to migrate chains)
-- Weekly Team Standup and Project Status Update — https://app.notion.com/p/3aadb8c6a08881d888f7df89b0ecc089 — 2026-08-03 (post-quantum verification gated at the wallet level rather than redundant on-chain checks)
--->

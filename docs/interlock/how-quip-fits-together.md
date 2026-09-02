@@ -7,10 +7,6 @@ icon: diagram-project
 
 # How Quip Network Fits Together
 
-{% hint style="warning" %}
-**Draft — pending technical review.** This page was assembled from internal specifications on 7 August 2026 and has not been approved by engineering. Details may change before this notice is removed. If you are reviewing, put your answers and feedback on the [Quip Docs Review page](https://app.notion.com/p/3b5db8c6a08881788c00e65ad15ad6c4).
-{% endhint %}
-
 Quip is easiest to understand as a chain of four pieces, where each piece exists because of the one before it. This page walks that chain once, and every other page in this section covers one link in depth.
 
 ## The four pieces
@@ -50,8 +46,6 @@ The account and swap contracts are deployed onto the supported chains themselves
 
 Unlike most Web3 platforms, Quip's atomic swaps require no bridge. The swap carries the value between chains, so there is no bridge for anyone to attack and no third-party bridge contract for Quip to depend on.
 
-<!-- REVIEW: confirm that Grover's and Shor's subnets from the whitepaper remain future roadmap rather than current components. (Subnet names confirmed against QPoUW Subnet 2 spec, 2026-08-01, and the Quantum Job Mempool spec, 2026-07-18.) -->
-
 ## Who pays whom
 
 The network is a stack of participants, and every payment between layers settles the same way.
@@ -76,10 +70,3 @@ Every $QUIP hop is a payment for work one layer down, and cross-chain payments s
 | Buy quantum randomness | [Quantum Randomness (QVRF)](../compute/qvrf.md) |
 | Submit an optimization job | [Submit Your First Compute Job](../compute/submit-a-job.md) |
 | Run hardware and earn | [Run A Node](../nodes/run-a-node-testnet.md) |
-
-<!-- SOURCES (for reviewers, not rendered):
-- Founder architecture walkthrough (Colton/Brent weekly), 2026-08-06: interlock as umbrella, swap as payment rail, two-subnet testnet MVP, NFT worked example
-- Quip Swap Interlock Specification — https://app.notion.com/p/314db8c6a088805dba42d4d255c4b921 — 2026-07-18
-- Quantum Job Mempool Specification — https://app.notion.com/p/33edb8c6a08881f59d2de2a1f5a712c7 — 2026-07-18
-- Whitepaper stack diagram (stakeholder-categories-2.png) — basis for the who-pays-whom diagram, now with labeled rails and two subnets
--->

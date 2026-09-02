@@ -7,10 +7,6 @@ icon: lock
 
 # Quip Accounts
 
-{% hint style="warning" %}
-**Draft — pending technical review.** This page was assembled from internal specifications on 7 August 2026 and has not been approved by engineering. Details may change before this notice is removed. If you are reviewing, put your answers and feedback on the [Quip Docs Review page](https://app.notion.com/p/3b5db8c6a08881788c00e65ad15ad6c4).
-{% endhint %}
-
 A Quip Account is where your assets live under post-quantum protection. This page explains what the account is, how you reach it, how its signatures work, and the one signature behavior every integrator needs to understand before relying on it.
 
 ## A lockbox on the chain you already use
@@ -26,8 +22,6 @@ A factory contract creates each account, and the account's address is derived de
 Quip Network provides two clients for the same account: a browser extension and the web application at [account.quip.network](https://account.quip.network/). They are two doors into one account, not two wallets. The account itself is the contract on chain. Both clients read the same balances and history and produce signatures for the same account, so nothing you create through one client is trapped in the other.
 
 If your application points users at Quip, route Chrome users to the extension and everyone else to the web app. The web app requires no installation and runs in any modern browser. The extension wraps the same account surface and adds the click-the-icon flow and the decentralised application (dApp) connection surface that Chrome users expect from a wallet.
-
-<!-- REVIEW: is the browser extension publicly installable at the time this page ships, and is "Chrome users get the extension, everyone else gets the web app" the routing guidance the team wants in public docs? -->
 
 ## How signing works
 
@@ -59,8 +53,6 @@ If you integrate at the level of the signing libraries rather than through the Q
 
 The specific size of the slot budget is an implementation parameter and is not documented here. Design your integration to read the budget from the account rather than assume it.
 
-<!-- REVIEW: is "read the remaining budget from the account rather than assuming a constant" achievable with the current SDK surface, yes or no? -->
-
 ## Signature checks by other contracts are not one-time
 
 Third-party contracts, such as exchanges with off-chain order books or permit-style token approvals, can ask a Quip Account whether it authorized a message through the standard contract-signature interface, ERC-1271 (Ethereum Request for Comments 1271).
@@ -78,8 +70,6 @@ Account logic will improve over time, and the upgrade model is designed around u
 * **Opt-in only.** You are prompted when a new account version is available, and nothing changes until you explicitly approve the upgrade. Quip never upgrades your account for you.
 * **Your address is preserved.** An upgrade replaces the account's executable logic while the address, balance, and state stay where they are. Funds do not move, and integrations that reference your address keep working.
 
-<!-- REVIEW: do both current clients surface the "new version available" prompt described in the specification? -->
-
 ## Standards lineage
 
 Quip Accounts are built on public, citable standards rather than proprietary cryptography.
@@ -94,14 +84,3 @@ Quip Accounts are built on public, citable standards rather than proprietary cry
 | [ERC-7913](https://eips.ethereum.org/EIPS/eip-7913) | Signature Verifiers | The interface exposed by the on-chain signature verifier contracts |
 
 A Quip Account is one of four pieces that make up the network. [How Quip Network Fits Together](how-quip-fits-together.md) shows how it connects to [QuipSwap](quipswap.md) and the compute network.
-
-<!-- SOURCES (for reviewers, not rendered):
-- Quip Accounts Specification v0.2 — https://app.notion.com/p/320db8c6a08881e09d23ff263df76689 — 2026-07-18 (lockbox model, classical owner submits and pays fees, deterministic addressing, opt-in upgrades UPG-USER-001/002 and UPG-TEAM-001, signature compatibility SIG-1271-001, FIPS 202, ERC-4337)
-- SHRINCS Implementations — https://app.notion.com/p/3a8db8c6a088819e96eae772ff8da19c — 2026-07-28 (two-path construction; stateful path consumes one leaf per signature up to a budget; stateless break-glass path needs no signer state; signer state including used-leaf tracking and budgets belongs to the integrating account; RFC 8391 and FIPS 205 lineage; ERC-7913 verifier surface; no budget figure published per embargo)
-- Quip Swap, External Audit Scope — https://app.notion.com/p/37bdb8c6a088808db6c0eda788e5ec97 — 2026-07-27 (current account architecture: ShrincsWallet, WalletFactory, paymaster; SHRINCS wallet named as the V1 wallet; the "hybrid post-quantum + ECDSA" phrasing in this document conflicts with the v0.2 spec's sole-authority statement, so this page deliberately makes no claim about the ordinary key's authority)
-- Ethereum SDK Audit (revised) — https://app.notion.com/p/b62db8c6a0888270b98701882a20b6b3 — 2026-07-18 (source for the ERC-1271 behavior: isValidSignature is view-only and non-consuming by deliberate design; the review explicitly asked for this to be documented prominently; no findings, severities, or commits reproduced here)
-- Weekly Team Standup and Project Status Update (meeting transcript) — https://app.notion.com/p/3aadb8c6a08881d888f7df89b0ecc089 — meeting 2026-07-27 (extension is a second client wrapping the existing web app; web app built around a signing extension; transcript-grade evidence)
-- Founder guidance relayed 2026-08-07: Chrome users route to the extension, all other users to the web app (no written spec located; flagged for review inline and in the tracker)
-- Linear QUI-230 "user-upgradeable wallet contracts" — Done 2026-07-13; Linear QUI-744 "Add SHRINCS support, replacing keysets" — Done 2026-07-24 (per docs gap assessment of 2026-08-07)
-- Deliberately omitted per embargo: any slot-budget number, which wallet implementation is live on mainnet, whether the ordinary key is a co-signer, chain lists, gasless availability, all audit findings
--->

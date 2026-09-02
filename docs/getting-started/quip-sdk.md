@@ -21,10 +21,6 @@ However, sometimes contracts may require token allowances, specialized permissio
 
 ## Install
 
-{% hint style="warning" %}
-**Draft — pending technical review.** The sections below were assembled from internal specifications on 7 August 2026 and have not been approved by engineering. Details may change before this notice is removed. If you are reviewing, put your answers and feedback on the [Quip Docs Review page](https://app.notion.com/p/3b5db8c6a08881788c00e65ad15ad6c4).
-{% endhint %}
-
 The packages Quip Network publishes today, verified directly against the public registries on 7 August 2026.
 
 ### JavaScript and TypeScript (npm)
@@ -37,8 +33,6 @@ Install with the tags shown below. A plain `npm install` resolves the `latest` t
 | --- | --- | --- |
 | `@quip.network/ethereum-sdk` | `npm install @quip.network/ethereum-sdk@beta` | The account client for EVM chains. The `beta` tag (0.3.0-beta.5, August 2026) is the current generation; `latest` still resolves to 0.1.7 from June 2025. |
 | `@quip.network/hashsigs-wasm` | `npm install @quip.network/hashsigs-wasm@rc` | The current hash-based signature signer and verifier (SHRINCS), compiled from the audited Rust implementation to WebAssembly. Works in Node.js and the browser. The `rc` tag is 0.2.0-rc.2; `latest` resolves to an older release candidate. |
-
-<!-- REVIEW: should the docs keep steering people to the beta and rc tags, or will the dist-tags be moved so that latest resolves to the current builds? If the tags move, simplify this section. -->
 
 ### Python (PyPI)
 
@@ -56,9 +50,3 @@ There is no public `@quip.network/quip-swap` or `@quip.network/sdk` package, and
 The Winternitz One-Time Signature (WOTS+) libraries remain published for the earlier account generation: [`@quip.network/hashsigs`](https://www.npmjs.com/package/@quip.network/hashsigs) (TypeScript), [`@quip.network/hashsigs-solidity`](https://www.npmjs.com/package/@quip.network/hashsigs-solidity) (Solidity), [hashsigs-cpp](https://github.com/quipnetwork/hashsigs-cpp) (C++), and the [hashsigs-rs](https://crates.io/crates/hashsigs-rs) crate (Rust). New integrations should use the packages in the tables above.
 
 Working with an AI assistant? Every page here has a markdown mirror and the site runs an MCP server: see [Use These Docs with AI](use-with-ai.md).
-
-<!-- SOURCES (for reviewers, not rendered):
-- npm registry, verified directly 2026-08-07: ethereum-sdk dist-tags latest=0.1.7 (2025-06-03) / beta=0.3.0-beta.5 (2026-08-03); hashsigs-wasm dist-tags latest=0.1.0-rc1 / rc=0.2.0-rc.2 (2026-07-21); quip-swap and sdk return 404
-- PyPI, verified directly 2026-08-07: xqsa 0.3.1, xquad 0.3.1
-- Ethereum SDK Audit, revised — https://app.notion.com/p/b62db8c6a0888270b98701882a20b6b3 — 2026-07-18
--->

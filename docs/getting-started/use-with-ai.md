@@ -7,10 +7,6 @@ icon: robot
 
 # Use These Docs with AI
 
-{% hint style="warning" %}
-**Draft — pending technical review.** This page was assembled from internal specifications on 7 August 2026 and has not been approved by engineering. Details may change before this notice is removed. If you are reviewing, put your answers and feedback on the [Quip Docs Review page](https://app.notion.com/p/3b5db8c6a08881788c00e65ad15ad6c4).
-{% endhint %}
-
 These docs are built to be read by AI tools as well as people. Every page has a plain-markdown mirror, the whole site is indexed for language models, and a Model Context Protocol (MCP) server lets coding agents search the docs from inside your editor. All of it is live today.
 
 **Which option should you use?**
@@ -52,8 +48,6 @@ Any other MCP-capable tool, add an HTTP server manually:
 }
 ```
 
-<!-- REVIEW: the MCP endpoint URL is tied to the current quip.gitbook.io/docs address. When docs.quip.network goes live (QUI-981), confirm whether the MCP URL follows the custom domain and update this section and the Cursor deeplink payload. -->
-
 ## Ask an assistant about one page
 
 Every page on this site has a markdown mirror: add `.md` to the end of the page URL.
@@ -85,11 +79,3 @@ For example, to work with the [QuipSwap](../interlock/quipswap.md) page, copy th
 {% hint style="info" %}
 These endpoints reflect the published documentation. If a page is not on the live site yet, it is not in the indexes or the MCP search either.
 {% endhint %}
-
-<!-- REVIEW: once the GitBook "Page actions" menu is confirmed enabled for this site, add a short section pointing readers at the on-page menu (Copy page, Open in ChatGPT, Open in Claude) so they discover these actions without visiting this page. -->
-
-<!-- SOURCES (for reviewers, not rendered):
-- All URLs on this page verified live against quip.gitbook.io/docs on 2026-08-07: llms.txt (HTTP 200), llms-full.txt (HTTP 200), per-page .md mirrors (HTTP 200), and the MCP endpoint /~gitbook/mcp (initialize handshake, tools/list returning searchDocumentation + getPage, and a live searchDocumentation call all succeeded)
-- These are GitBook-native features (free tier), dependent on the site's "Page actions" setting staying enabled; see REVIEW-TRACKER.md prerequisites
-- Presentation modeled on 0x's "Using AI with 0x" page (docs.0x.org, Fern platform): the what/when/how structure per option, the opinionated routing table, the manual MCP JSON block, and the prompt phrasing are their conventions, adapted
--->

@@ -12,10 +12,6 @@ Quip is **not** a single blockchain or a single quantum computer. Think of it as
 1. **Compute-Consensus Layer (Quip Network)** – a new Nakamoto-style chain whose proof-of-work _is a useful optimization job_. This turns spare classical/quantum hardware into block-production while producing answers clients are willing to pay for.
 2. **Asset Layer (QUIP Account & Interlock)** – a post-quantum wrapper you deploy _on any existing chain_ to lock, move, or atomically swap value without bridges or oracles. It upgrades security today without requiring any hardware or protocol changes.
 
-{% hint style="danger" %}
-**Needs review.** Newer internal specifications indicate that block production and useful-work mining are separate tracks: validators produce blocks while miners solve jobs and are rewarded alongside, rather than proof-of-work itself producing blocks. The description above and in section 2.3 may reflect the earlier design. If you can confirm how block production works today, answer under **R2 — Consensus** on the [Quip Docs Review page](https://app.notion.com/p/3b5db8c6a08881788c00e65ad15ad6c4).
-{% endhint %}
-
 These layers share the **same token ($QUIP)** and the same validator/miner economy, but either layer can function on its own:
 
 * **Only need useful-work mining?** Point your QPU/GPU/CPU farm at the Quip Network; earn $QUIP even if you never lock assets.
@@ -33,10 +29,6 @@ This secures existing value, monetizes idle quantum-classical hardware, and fund
 For why the network is built this way, see [Motivation](../basics/motivation.md); for the constraints the design has to satisfy, see [Key Properties](../basics/key-properties.md). [How Quip Network Fits Together](../interlock/how-quip-fits-together.md) puts both layers in a single diagram.
 
 ## 2. Core Components
-
-{% hint style="danger" %}
-**Needs review.** Newer internal documentation indicates two changes to what follows: the account signature scheme has moved from rotating WOTS+ key chains to SHRINCS hash-based signatures (July 2026), and the swap design described in 2.2 (per-swap wallets exchanging quantum-resistant keys) was superseded in March 2026 by a single shared settlement contract per chain using hash locks, with post-quantum authentication in the wallet layer. See the [QuipSwap](../interlock/quipswap.md) draft, and if you can confirm the current design, answer under **R3 — Swap design and signatures** on the [Quip Docs Review page](https://app.notion.com/p/3b5db8c6a08881788c00e65ad15ad6c4).
-{% endhint %}
 
 ### 2.1. QUIP Account
 
