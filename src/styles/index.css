@@ -1,0 +1,50 @@
+@import "tailwindcss" source(none);
+@import "../vendor/quip-design/styles/base.css";
+
+@source "../**/*.{astro,ts,tsx,js,jsx}";
+
+/*
+ * Never leave a single word alone on the last line. The panels are narrow and
+ * the notes are short, so orphans are common and conspicuous; `pretty` reflows
+ * the last two lines to prevent them. Headings use `balance` at the call site.
+ * Both degrade to normal wrapping where unsupported.
+ */
+p,
+li,
+dd {
+  text-wrap: pretty;
+}
+
+/*
+ * Two corrections to the shared tokens, scoped to this app.
+ *
+ * 1. Canonical coral. quip-design v1.0.0 sets coral to #ff6c78 and marks
+ *    #ff6467 as `--coral-legacy`, "the value code shipped for the site's first
+ *    year". packages/shared/base.css still ships the legacy value, so main,
+ *    hello, and agls all render it. Overriding here puts this app on the
+ *    canonical value without changing the other three, which is a brand-wide
+ *    change and needs design sign-off. Align base.css and this block can go.
+ *
+ * 2. An accent for small text. Raw coral fails AA against light surfaces below
+ *    roughly 24px, and every hover state on this page is 13px to 15px link
+ *    text. The design system's answer is a darkened coral reserved for text and
+ *    small glyphs; raw coral stays for focus rings, rules, and hovers on dark
+ *    surfaces, where it passes comfortably.
+ */
+@theme {
+  --color-coral: #ff6c78;
+  --color-accent-text: #c93a3f;
+
+  /*
+   * Audience tints from quip-design/tokens/audiences.json. The brand system
+   * keeps these opt-in and zinc is still the default rendering, so they are
+   * used in exactly one place: the glyph chip on each path profile. That gives
+   * each audience an identity without adding a second interactive accent.
+   */
+  --color-aud-dev-tint: #ffe2da;
+  --color-aud-dev-ink: #8b2a30;
+  --color-aud-ops-tint: #eefdca;
+  --color-aud-ops-ink: #0a832e;
+  --color-aud-eval-tint: #c2f8fd;
+  --color-aud-eval-ink: #0b5560;
+}

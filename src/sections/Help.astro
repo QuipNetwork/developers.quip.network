@@ -1,0 +1,112 @@
+---
+import Panel from "../components/Panel.astro";
+import LinkRow from "../components/LinkRow.astro";
+import { MonoLabel } from "@design/components/Headings";
+import { GreyButton } from "@design/components/Buttons";
+import { SOCIAL, NETWORK, SITE, LAST_UPDATED } from "../data/links";
+
+const SUPPORT = [
+  { label: "Discord", description: "Ask a person", href: SOCIAL.discord },
+  { label: "Telegram", description: "Announcements", href: SOCIAL.telegram },
+  {
+    label: "Research forum",
+    description: "Protocol proposals",
+    href: NETWORK.research,
+  },
+];
+
+const FOLLOW = [
+  { label: "Blog", description: "Writing and releases", href: SITE.blog },
+  { label: "X", description: "@quipnetwork", href: SOCIAL.x },
+  {
+    label: "Farcaster",
+    description: "quipnetwork.eth",
+    href: SOCIAL.farcaster,
+  },
+  { label: "LinkedIn", description: "Postquant Labs", href: SOCIAL.linkedin },
+];
+---
+
+<Panel
+  id="help"
+  eyebrow="06"
+  title="Help and feedback"
+  hint="Gaps in these docs are worth reporting"
+  tone="dark"
+>
+  <div class="grid grid-cols-12 gap-x-6 gap-y-5">
+    <div class="col-span-5 flex flex-col gap-3 max-md:col-span-12">
+      {
+        /*
+        No container here. A darker box on an already-dark panel recedes, which
+        is the opposite of what a callout must do, and zinc-950 on zinc-900 is
+        poor contrast for reading. The emphasis instead comes from the one solid
+        light button on the panel, which is the strongest affordance available on
+        a dark ground.
+      */
+      }
+      <div class="flex flex-col gap-2.5">
+        <MonoLabel size="xs" tone="inherit" className="text-(--color-accent)">
+          Report a problem
+        </MonoLabel>
+        <p class="m-0 text-[13px] leading-[1.5] text-zinc-200">
+          Something here sent you somewhere unhelpful, or a command did not
+          work? File it on the feedback board. It is read, and it is the input
+          that decides what gets fixed next.
+        </p>
+        <div class="mt-0.5">
+          <GreyButton href={NETWORK.feedback} external>
+            Open the feedback board
+          </GreyButton>
+        </div>
+        <p class="m-0 text-[11.5px] leading-[1.45] text-zinc-400">
+          One board for every Quip product, not developer-only. Say which
+          surface you were on so it routes correctly. A dedicated developer
+          channel does not exist yet.
+        </p>
+      </div>
+    </div>
+
+    <div class="col-span-3 flex flex-col gap-2 max-md:col-span-12">
+      <MonoLabel size="xs" tone="dark">Get help</MonoLabel>
+      <ul class="m-0 flex list-none flex-col p-0">
+        {
+          SUPPORT.map((item) => (
+            <LinkRow
+              label={item.label}
+              description={item.description}
+              href={item.href}
+              tone="dark"
+            />
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="col-span-4 flex flex-col gap-2 max-md:col-span-12">
+      <MonoLabel size="xs" tone="dark">Follow along</MonoLabel>
+      <ul class="m-0 flex list-none flex-col p-0">
+        {
+          FOLLOW.map((item) => (
+            <LinkRow
+              label={item.label}
+              description={item.description}
+              href={item.href}
+              tone="dark"
+            />
+          ))
+        }
+      </ul>
+    </div>
+
+    <div
+      class="col-span-12 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-t border-zinc-700 pt-3"
+    >
+      <MonoLabel size="xs" tone="dark">Last updated {LAST_UPDATED}</MonoLabel>
+      <span class="text-[12px] leading-[1.45] text-zinc-400">
+        Most recent release: QuipSwap SDK, hash-locked same-chain and
+        cross-chain swaps.
+      </span>
+    </div>
+  </div>
+</Panel>

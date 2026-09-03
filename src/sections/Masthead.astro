@@ -1,0 +1,141 @@
+---
+import { MonoLabel } from "@design/components/Headings";
+import { BlackButton, GreyButton } from "@design/components/Buttons";
+import { PersonaIcon } from "@design/components/PersonaIcon";
+import MastheadGraphic from "../components/MastheadGraphic.astro";
+import { NetworkPulse } from "../components/NetworkStatus";
+import { DOCS, SOCIAL, LAST_UPDATED } from "../data/links";
+import { EVM } from "../data/testnet";
+import { BRAND_GRADIENT } from "@design/components/pageLayout";
+
+/*
+ * Compact masthead. One headline, one sentence, two actions, and a status strip
+ * of the facts someone would otherwise scroll to find. The graphic is a masked
+ * band on the right, so it carries character without spending vertical space.
+ */
+
+const AUDIENCE_CHIPS = [
+  {
+    name: "Developer",
+    shape: "square" as const,
+    tint: "var(--color-aud-dev-tint)",
+    ink: "var(--color-aud-dev-ink)",
+  },
+  {
+    name: "Operator",
+    shape: "plus" as const,
+    tint: "var(--color-aud-ops-tint)",
+    ink: "var(--color-aud-ops-ink)",
+  },
+  {
+    name: "Evaluator",
+    shape: "circle" as const,
+    tint: "var(--color-aud-eval-tint)",
+    ink: "var(--color-aud-eval-ink)",
+  },
+];
+
+const FACTS = [
+  { label: "Chain ID", value: String(EVM.chainId) },
+  { label: "TS SDK", value: "@beta" },
+  { label: "Python", value: "xqsa[quip]" },
+  { label: "Updated", value: LAST_UPDATED },
+];
+---
+
+<section
+  class="relative overflow-hidden border border-(--color-border) bg-(--color-zinc-50)"
+>
+  <MastheadGraphic />
+
+  {
+    /* No eyebrow here: the top bar's "Developers" chip already establishes the
+      surface, so repeating it above the headline reads as a label on a label. */
+  }
+  <div class="relative flex flex-col gap-3 px-4 pt-5 pb-4">
+    <h1
+      class="m-0 max-w-[600px] [font-family:var(--font-heading)] text-[clamp(24px,2vw+16px,32px)] leading-[1.12] font-medium tracking-[-0.02em] [text-wrap:balance] text-zinc-950"
+    >
+      Build on the worldwide quantum computer
+    </h1>
+    <p
+      class="m-0 max-w-[560px] text-[13.5px] leading-[1.5] text-(--color-text-subtle)"
+    >
+      Post-quantum protection for assets on chains you already use, and
+      optimization jobs that run on real quantum hardware. Pick a path below for
+      the install command and the page that continues it.
+    </p>
+    <div class="mt-1 flex flex-wrap gap-2">
+      <BlackButton href={DOCS.quickstart} external>Read the Docs</BlackButton>
+      <GreyButton href={SOCIAL.discord} external>Get Support</GreyButton>
+    </div>
+
+    {
+      /* Audience jump. It sits below two buttons, so it needs enough weight to
+        read as its own decision rather than a caption: its own bordered band, a
+        chip large enough to look pressable, and a chevron pointing at the panel
+        it scrolls to. */
+    }
+    <div
+      class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-2 border border-(--color-border) bg-(--color-surface-1) px-3 py-2.5"
+    >
+      <MonoLabel size="sm" tone="subtle">I am a</MonoLabel>
+      {
+        AUDIENCE_CHIPS.map((chip) => (
+          <a
+            href="#paths"
+            class="inline-flex min-h-[32px] cursor-pointer items-center gap-2 border px-3 py-1.5 [font-family:var(--font-mono)] font-features-['case'] text-[12px] leading-none font-medium tracking-[0.4px] uppercase no-underline transition-[filter,box-shadow] duration-150 hover:shadow-[0_1px_0_0_rgba(9,9,11,0.12)] hover:brightness-[0.96]"
+            style={`background: ${chip.tint}; color: ${chip.ink}; border-color: color-mix(in oklab, ${chip.ink} 32%, transparent);`}
+          >
+            <PersonaIcon shape={chip.shape} />
+            {chip.name}
+            <svg
+              viewBox="0 0 16 16"
+              width="11"
+              height="11"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.75"
+              stroke-linecap="round"
+              aria-hidden="true"
+              class="shrink-0 opacity-70"
+            >
+              <path d="M4 6.25 8 10.25l4-4" />
+            </svg>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+
+  <dl
+    class="relative m-0 flex flex-wrap items-baseline gap-x-8 gap-y-2 border-t border-(--color-border) bg-(--color-surface-1) px-4 py-2.5"
+  >
+    <NetworkPulse client:load />
+    {
+      FACTS.map((fact) => (
+        <div class="flex items-baseline gap-2">
+          <MonoLabel as="dt" size="xs">
+            {fact.label}
+          </MonoLabel>
+          <dd class="m-0 [font-family:var(--font-mono)] text-[12px] leading-[1.4] font-medium text-zinc-950 tabular-nums">
+            {fact.value}
+          </dd>
+        </div>
+      ))
+    }
+  </dl>
+
+  {
+    /* The canonical six-stop brand gradient, static. The looping variant used
+      on other surfaces doubles the ramp across a 200%-wide background; at this
+      width the wrap math leaves flat lavender-to-yellow interpolations that
+      read as a pale band, with a hard seam at each cycle boundary. */
+  }
+  <div
+    aria-hidden="true"
+    class="h-[3px]"
+    style={{ backgroundImage: BRAND_GRADIENT }}
+  >
+  </div>
+</section>

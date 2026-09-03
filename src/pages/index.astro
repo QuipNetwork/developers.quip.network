@@ -1,0 +1,127 @@
+---
+import BaseLayout from "@design/layouts/BaseLayout.astro";
+import SideNav from "../components/SideNav.astro";
+import Masthead from "../sections/Masthead.astro";
+import Quickstart from "../sections/Quickstart.astro";
+import Paths from "../sections/Paths.astro";
+import BuildWithAi from "../sections/BuildWithAi.astro";
+import Network from "../sections/Network.astro";
+import Code from "../sections/Code.astro";
+import Help from "../sections/Help.astro";
+import { DOCS, SITE, NETWORK, CODE } from "../data/links";
+
+const SECTIONS = [
+  { id: "quickstart", label: "Quickstart" },
+  { id: "paths", label: "Paths" },
+  { id: "ai", label: "Build with AI" },
+  { id: "network", label: "Network" },
+  { id: "code", label: "Code" },
+  { id: "help", label: "Help" },
+];
+
+const topLinkClass =
+  "[font-family:var(--font-mono)] font-features-['case'] text-[11px] leading-[1.2] font-medium tracking-[0.4px] text-(--color-text-subtle) uppercase no-underline transition-colors duration-150 hover:text-zinc-950";
+---
+
+<BaseLayout
+  title="Quip Network for developers"
+  description="The starting point for building on Quip Network: quickstart commands for the SDKs and compute toolchain, testnet connection details, machine-readable docs for coding agents, and every repository in one place."
+  ogImage="/images/og/developers.png?v=1"
+>
+  <div class="flex min-h-screen flex-col bg-(--color-bg) text-zinc-950">
+    <!-- Slim application chrome. Deliberately not the marketing SiteHeader:
+         this surface is operated, not read, so the top bar carries actions. -->
+    <header
+      class="sticky top-0 z-40 flex h-14 items-center gap-4 border-b border-(--color-border) bg-(--color-bg)/95 px-4 backdrop-blur max-lg:h-12"
+    >
+      <a
+        href={SITE.home}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Quip Network"
+        class="shrink-0 no-underline"
+      >
+        <img
+          src="/images/quip-logo-with-icon.svg"
+          alt="Quip Network"
+          width="84"
+          height="26"
+          class="h-[26px] w-auto"
+        />
+      </a>
+      <span
+        class="border border-(--color-border) px-1.5 pt-1 pb-0.5 [font-family:var(--font-mono)] font-features-['case'] text-[10px] leading-none font-medium tracking-[0.4px] text-(--color-muted) uppercase max-md:hidden"
+      >
+        Developers
+      </span>
+
+      <nav class="ml-auto flex items-center gap-4 max-md:gap-3">
+        <a
+          href={DOCS.home}
+          target="_blank"
+          rel="noopener noreferrer"
+          class={topLinkClass}
+        >
+          Docs
+        </a>
+        <a
+          href={NETWORK.explorer}
+          target="_blank"
+          rel="noopener noreferrer"
+          class={topLinkClass}
+        >
+          Explorer
+        </a>
+        <a
+          href={CODE.gitlabGroup}
+          target="_blank"
+          rel="noopener noreferrer"
+          class={`${topLinkClass} max-md:hidden`}
+        >
+          GitLab
+        </a>
+        <a
+          href={NETWORK.feedback}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="hover:bg-zinc-750 inline-flex items-center border border-zinc-900 bg-zinc-900 px-2.5 pt-1.5 pb-1 [font-family:var(--font-mono)] font-features-['case'] text-[10.5px] leading-[1.2] font-medium tracking-[0.4px] text-zinc-50 uppercase no-underline transition-colors duration-150"
+        >
+          Feedback
+        </a>
+      </nav>
+    </header>
+
+    <div
+      class="mx-auto flex w-full max-w-[1320px] flex-1 gap-6 px-4 py-4 max-lg:flex-col max-lg:gap-0 max-lg:px-0 max-lg:py-0"
+    >
+      <div class="w-[172px] shrink-0 max-lg:w-full max-lg:px-4">
+        <SideNav items={SECTIONS} />
+      </div>
+
+      <main class="flex min-w-0 flex-1 flex-col gap-3 max-lg:px-4 max-lg:py-4">
+        <Masthead />
+        <Quickstart />
+        <Paths />
+        <BuildWithAi />
+        <Network />
+        <Code />
+        <Help />
+
+        <footer
+          class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 px-1 pt-1 pb-2 text-[11.5px] text-(--color-muted)"
+        >
+          <span class="font-features-['case']">
+            © 2026 Quantum Unit Interlock Protocol
+          </span>
+          <span class="font-features-['case']">
+            Agents: <a
+              href="/llms.txt"
+              class="underline underline-offset-2 transition-colors duration-150 hover:text-(--color-accent-text)"
+              >/llms.txt</a
+            >
+          </span>
+        </footer>
+      </main>
+    </div>
+  </div>
+</BaseLayout>

@@ -1,0 +1,126 @@
+---
+import Panel from "../components/Panel.astro";
+import LinkRow from "../components/LinkRow.astro";
+import { MonoLabel } from "@design/components/Headings";
+import { TextLink } from "@design/components/Buttons";
+import { CopyCommand } from "../components/CopyCommand";
+import { NetworkReadout } from "../components/NetworkStatus";
+import { NetworkScale } from "../components/NetworkScale";
+import { NodeMap } from "../components/NodeMap";
+import { NETWORK } from "../data/links";
+import { EVM, CHAIN } from "../data/testnet";
+
+/*
+ * Three stacked blocks rather than two tall columns: connect, then see the
+ * network, then go somewhere. The previous layout put six unrelated groups in
+ * one dense two-column grid and read as a wall.
+ */
+
+const FIELDS = [
+  { label: "Chain ID", value: `${EVM.chainId} · ${EVM.chainIdHex}` },
+  { label: "Token", value: `${EVM.currencySymbol} · ${EVM.decimals} decimals` },
+  { label: "Network name", value: EVM.chainName },
+  { label: "Substrate RPC", value: CHAIN.localRpc },
+];
+
+const SURFACES = [
+  {
+    label: "Explorer",
+    description: "Blocks and accounts",
+    href: NETWORK.explorer,
+  },
+  {
+    label: "Quip Account",
+    description: "Generate PQ keys",
+    href: NETWORK.account,
+  },
+  {
+    label: "Research forum",
+    description: "Protocol proposals",
+    href: NETWORK.research,
+  },
+];
+---
+
+<Panel
+  id="network"
+  eyebrow="04"
+  title="Network"
+  hint="Currently in testnet. Tokens hold no value and balances can reset."
+>
+  <div class="flex flex-col gap-5">
+    {/* Block 1 — connect, and confirm it is alive. */}
+    <div class="grid grid-cols-12 gap-x-6 gap-y-4">
+      <div class="col-span-7 flex flex-col gap-3 max-md:col-span-12">
+        <MonoLabel size="xs">EVM JSON-RPC, over HTTP</MonoLabel>
+        <CopyCommand
+          client:load
+          command={EVM.rpcUrl}
+          prompt={null}
+          label="the testnet RPC URL"
+        />
+        <dl class="m-0 grid grid-cols-2 gap-x-6 max-md:grid-cols-1">
+          {
+            FIELDS.map((field) => (
+              <div class="flex items-baseline justify-between gap-3 border-t border-(--color-border) py-1.5">
+                <MonoLabel as="dt" size="xs">
+                  {field.label}
+                </MonoLabel>
+                <dd class="m-0 [font-family:var(--font-mono)] text-[12px] leading-[1.4] text-zinc-950">
+                  {field.value}
+                </dd>
+              </div>
+            ))
+          }
+          <div
+            class="flex items-baseline justify-between gap-3 border-t border-(--color-border) py-1.5"
+          >
+            <MonoLabel as="dt" size="xs">Chain spec</MonoLabel>
+            <dd class="m-0 text-[12px] leading-[1.4]">
+              <TextLink href={NETWORK.chainSpec} external>
+                quip-testnet.json
+              </TextLink>
+            </dd>
+          </div>
+        </dl>
+        <div class="flex gap-2.5 bg-(--color-surface-1) px-3 py-2">
+          <span
+            class="shrink-0 [font-family:var(--font-mono)] font-features-['case'] text-[9.5px] leading-[18px] font-medium tracking-[0.4px] text-(--color-accent-text) uppercase"
+            >Note</span
+          >
+          <p class="m-0 text-[12px] leading-[1.5] text-(--color-text-subtle)">
+            No public faucet yet: ask in Discord for balance, or mine your own.
+          </p>
+        </div>
+      </div>
+
+      <div class="col-span-5 max-md:col-span-12">
+        <NetworkReadout client:load />
+      </div>
+    </div>
+
+    {/* Block 2 — the map, full width so clusters have room to separate. */}
+    <NodeMap client:load />
+
+    {/* Block 3 — scale, then where to go. */}
+    <div class="grid grid-cols-12 gap-x-6 gap-y-4">
+      <div class="col-span-8 max-md:col-span-12">
+        <NetworkScale />
+      </div>
+      <div class="col-span-4 flex flex-col gap-2 max-md:col-span-12">
+        <MonoLabel size="xs">Live surfaces</MonoLabel>
+        <ul class="m-0 flex list-none flex-col p-0">
+          {
+            SURFACES.map((surface) => (
+              <LinkRow
+                label={surface.label}
+                description={surface.description}
+                href={surface.href}
+              />
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </div>
+</Panel>

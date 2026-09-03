@@ -1,0 +1,219 @@
+---
+import Panel from "../components/Panel.astro";
+import LinkRow from "../components/LinkRow.astro";
+import { MonoLabel } from "@design/components/Headings";
+import { CopyCommand } from "../components/CopyCommand";
+import { DOCS, CODE } from "../data/links";
+
+interface Path {
+  tab: string;
+  runtime: string;
+  title: string;
+  body: string;
+  command: string;
+  note?: string;
+  steps: { label: string; description: string; href: string }[];
+}
+
+const PATHS: Path[] = [
+  {
+    tab: "Protect assets",
+    runtime: "TypeScript",
+    title: "Put a post-quantum lock on assets you already hold",
+    body: "A Quip Account is a contract-based lockbox on a chain you already use, secured by hash-based signatures rather than elliptic curves.",
+    command: "npm install @quip.network/ethereum-sdk@beta",
+    note: "Install the @beta tag. The default latest tag still resolves to 0.1.7, published in 2025, and predates the current signer.",
+    steps: [
+      {
+        label: "Quip SDK",
+        description: "Keys, signing, account lifecycle",
+        href: DOCS.sdk,
+      },
+      {
+        label: "Quip Accounts",
+        description: "How the lockbox works",
+        href: DOCS.accounts,
+      },
+      {
+        label: "QuipSwap",
+        description: "Hash-locked swaps, no bridge",
+        href: DOCS.quipswap,
+      },
+    ],
+  },
+  {
+    tab: "Run compute",
+    runtime: "Python",
+    title: "Send an optimization problem to real quantum hardware",
+    body: "XQuad expresses a problem once as an Ising model. XQSA points it at a solver: your own CPU while you iterate, then the network's miners without rewriting the model.",
+    command: 'pip install "xqsa[quip]"',
+    note: "Requires Python 3.13 or newer. Solve locally with SolverDWaveCPU before reaching for the network backend.",
+    steps: [
+      {
+        label: "Submit a job",
+        description: "Model to settled reward",
+        href: DOCS.submitAJob,
+      },
+      {
+        label: "Quantum randomness",
+        description: "QVRF, and its limits",
+        href: DOCS.qvrf,
+      },
+      { label: "xquad", description: "Toolchain source", href: CODE.xquad },
+    ],
+  },
+  {
+    tab: "Run a node",
+    runtime: "Desktop or server",
+    title: "Join the testnet and earn from useful work",
+    body: "Quip pays for solved optimization problems rather than discarded hashes. Run the desktop node manager on one machine, or deploy the compose stack for an always-on node.",
+    command: "git clone https://gitlab.com/quip.network/nodes.quip.network",
+    note: "Prefer the desktop app for a first run: it ships a GUI and a TUI for Windows, Linux, and macOS.",
+    steps: [
+      {
+        label: "Run a node",
+        description: "Requirements and install routes",
+        href: DOCS.runANode,
+      },
+      {
+        label: "Node manager",
+        description: "Signed desktop builds",
+        href: CODE.nodeManager,
+      },
+      {
+        label: "Miners",
+        description: "Classical and quantum",
+        href: DOCS.miners,
+      },
+    ],
+  },
+];
+
+const tabClass =
+  "inline-flex cursor-pointer items-center border border-(--color-border) bg-(--color-zinc-50) px-2.5 pt-1.5 pb-1 [font-family:var(--font-mono)] font-features-['case'] text-[10.5px] leading-[1.2] font-medium tracking-[0.4px] text-zinc-600 uppercase transition-colors duration-150 select-none hover:bg-(--color-surface-2) hover:text-zinc-950";
+---
+
+<Panel
+  id="quickstart"
+  eyebrow="01"
+  title="Quickstart"
+  hint="Pick the path that matches what you need Quip for"
+>
+  <div class="qs flex flex-col gap-4">
+    <div class="qs-tablist flex flex-wrap gap-1.5">
+      {
+        PATHS.map((path, index) => (
+          <Fragment>
+            <input
+              type="radio"
+              name="quickstart"
+              id={`qs-${index}`}
+              class="qs-radio"
+              checked={index === 0}
+            />
+            <label for={`qs-${index}`} class={tabClass}>
+              {path.tab}
+            </label>
+          </Fragment>
+        ))
+      }
+    </div>
+
+    <div class="qs-panels">
+      {
+        PATHS.map((path, index) => (
+          <div
+            class="qs-panel grid grid-cols-12 gap-x-6 gap-y-4"
+            data-panel={index}
+          >
+            <div class="col-span-7 flex flex-col gap-2.5 max-md:col-span-12">
+              <div class="flex items-baseline gap-2.5">
+                <MonoLabel size="xs">{path.runtime}</MonoLabel>
+                <h3 class="m-0 text-[14px] leading-[1.35] font-semibold text-zinc-950">
+                  {path.title}
+                </h3>
+              </div>
+              <p class="m-0 text-[12.5px] leading-[1.5] text-(--color-text-subtle)">
+                {path.body}
+              </p>
+              <CopyCommand
+                client:load
+                command={path.command}
+                label={`the ${path.tab.toLowerCase()} command`}
+              />
+              {path.note && (
+                <div class="flex gap-2.5 bg-(--color-surface-1) px-3 py-2">
+                  <span class="shrink-0 [font-family:var(--font-mono)] font-features-['case'] text-[9.5px] leading-[18px] font-medium tracking-[0.4px] text-(--color-accent-text) uppercase">
+                    Note
+                  </span>
+                  <p class="m-0 text-[12px] leading-[1.5] text-(--color-text-subtle)">
+                    {path.note}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div class="col-span-5 flex flex-col gap-2 max-md:col-span-12">
+              <MonoLabel size="xs">Then</MonoLabel>
+              <ul class="m-0 flex list-none flex-col p-0">
+                {path.steps.map((step) => (
+                  <LinkRow
+                    label={step.label}
+                    description={step.description}
+                    href={step.href}
+                  />
+                ))}
+              </ul>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</Panel>
+
+<style>
+  /*
+   * Tabs without JavaScript: a radio group drives the panels, so the section
+   * works before hydration and with scripting off entirely. A radio group is
+   * also arrow-key navigable for free.
+   *
+   * Each radio sits immediately before the label it controls, so the active tab
+   * needs only one adjacent-sibling rule. Panels are not siblings of the
+   * radios, so they match through `:has()` on the wrapper: one rule per panel,
+   * and a fourth path means a fourth selector there.
+   */
+  .qs-radio {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  .qs-panel {
+    display: none;
+  }
+
+  .qs:has(#qs-0:checked) .qs-panel[data-panel="0"],
+  .qs:has(#qs-1:checked) .qs-panel[data-panel="1"],
+  .qs:has(#qs-2:checked) .qs-panel[data-panel="2"] {
+    display: grid;
+  }
+
+  .qs-radio:checked + label {
+    background-color: var(--color-zinc-900);
+    border-color: var(--color-zinc-900);
+    color: var(--color-zinc-50);
+  }
+
+  /* The radio itself is visually hidden, so move its focus ring to the label. */
+  .qs-radio:focus-visible + label {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+</style>

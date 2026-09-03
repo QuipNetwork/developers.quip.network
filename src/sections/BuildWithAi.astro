@@ -1,0 +1,114 @@
+---
+import Panel from "../components/Panel.astro";
+import LinkRow from "../components/LinkRow.astro";
+import { MonoLabel } from "@design/components/Headings";
+import { GhostLink } from "@design/components/Buttons";
+import { CopyCommand } from "../components/CopyCommand";
+import { AI, DOCS } from "../data/links";
+import { EVM } from "../data/testnet";
+
+const MCP_INSTALL = `claude mcp add --transport http quip-docs ${AI.mcpEndpoint}`;
+
+// Everything an agent needs to start work, in one paste. Built from the same
+// constants the rest of the page renders, so it cannot drift from the facts
+// shown in the Network panel.
+const AGENT_PROMPT = [
+  "You are helping me build on Quip Network.",
+  `Docs index: ${AI.llmsTxt}. Any docs page returns markdown if you append .md to its URL.`,
+  `Testnet EVM JSON-RPC: ${EVM.rpcUrl} (chain ID ${EVM.chainId}). Verify on-chain results against https://explorer.testnet.quip.network.`,
+  "TypeScript SDK: @quip.network/ethereum-sdk@beta. Python compute toolchain: xquad, with xqsa[quip] for solvers.",
+].join("\n\n");
+
+const SURFACES = [
+  {
+    label: "llms.txt",
+    description: "Annotated page index",
+    href: AI.llmsTxt,
+  },
+  {
+    label: "llms-full.txt",
+    description: "Whole docs, one file",
+    href: AI.llmsFullTxt,
+  },
+  {
+    label: "Markdown mirrors",
+    description: "Append .md to any page",
+    href: DOCS.useWithAi,
+  },
+  {
+    label: "This portal's llms.txt",
+    description: "Routing for agents landing here",
+    href: "/llms.txt",
+  },
+];
+---
+
+<Panel
+  id="ai"
+  eyebrow="03"
+  title="Build with AI"
+  hint="Agents read these docs more than people do"
+  tone="dark"
+>
+  <div class="grid grid-cols-12 gap-x-6 gap-y-5">
+    <div class="col-span-7 flex flex-col gap-4 max-md:col-span-12">
+      <div class="flex flex-col gap-2">
+        <div class="flex items-baseline gap-2.5">
+          <MonoLabel size="xs" tone="dark">MCP server</MonoLabel>
+          <p class="m-0 text-[12.5px] leading-[1.45] text-zinc-400">
+            Hosted by GitBook. Exposes <code
+              class="[font-family:var(--font-mono)] text-[12px] text-zinc-200"
+              >searchDocumentation</code
+            > and <code
+              class="[font-family:var(--font-mono)] text-[12px] text-zinc-200"
+              >getPage</code
+            >.
+          </p>
+        </div>
+        <CopyCommand
+          client:load
+          command={MCP_INSTALL}
+          variant="dark"
+          label="the MCP install command"
+        />
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <div class="flex items-baseline gap-2.5">
+          <MonoLabel size="xs" tone="dark">Bootstrap prompt</MonoLabel>
+          <p class="m-0 text-[12.5px] leading-[1.45] text-zinc-400">
+            Docs index, testnet endpoint, and the right package names.
+          </p>
+        </div>
+        <CopyCommand
+          client:load
+          command={AGENT_PROMPT}
+          variant="dark"
+          prompt={null}
+          multiline
+          label="the agent bootstrap prompt"
+        />
+      </div>
+    </div>
+
+    <div class="col-span-5 flex flex-col gap-2 max-md:col-span-12">
+      <MonoLabel size="xs" tone="dark">Machine-readable docs</MonoLabel>
+      <ul class="m-0 flex list-none flex-col p-0">
+        {
+          SURFACES.map((surface) => (
+            <LinkRow
+              label={surface.label}
+              description={surface.description}
+              href={surface.href}
+              mono
+              tone="dark"
+            />
+          ))
+        }
+      </ul>
+      <div class="mt-1">
+        <GhostLink href={DOCS.useWithAi} external>Use Docs with AI</GhostLink>
+      </div>
+    </div>
+  </div>
+</Panel>

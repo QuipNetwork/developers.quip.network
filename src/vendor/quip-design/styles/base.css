@@ -1,0 +1,194 @@
+/*
+ * Shared design system: fonts, design tokens, global focus ring, keyframes.
+ *
+ * This file deliberately does NOT `@import "tailwindcss"` — each app's own
+ * entry stylesheet imports Tailwind (with its `@source` globs) and then imports
+ * this file, so the tokens below extend that app's Tailwind theme. Keeping the
+ * Tailwind import out of here lets every app scope its own content sources.
+ *
+ * The `@source` globs below register this package's own components/layouts for
+ * Tailwind class detection. They're relative to THIS file, so any app that
+ * imports it picks up the shared design-system classes with no path juggling.
+ */
+
+@source "../components/**/*.{astro,ts,tsx}";
+@source "../layouts/**/*.astro";
+
+html {
+  scroll-padding-top: 6rem;
+}
+
+body:has(dialog[open]) {
+  overflow: hidden;
+}
+
+/* ---------- Fonts ---------- */
+
+@font-face {
+  font-family: "ABC Favorit";
+  src:
+    url("/fonts/ABCFavoritVariable.woff2") format("woff2-variations"),
+    url("/fonts/ABCFavoritVariable.woff") format("woff");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "ABC Favorit Mono";
+  src:
+    url("/fonts/ABCFavoritMonoVariable.woff2") format("woff2-variations"),
+    url("/fonts/ABCFavoritMonoVariable.woff") format("woff");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "ABC Gaisyr";
+  src:
+    url("/fonts/ABCGaisyrVariable.woff2") format("woff2-variations"),
+    url("/fonts/ABCGaisyrVariable.woff") format("woff");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "ABC Gaisyr";
+  src: url("/fonts/ABCGaisyrVariableItalic.woff2") format("woff2-variations");
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* ---------- Design tokens (Tailwind @theme) ----------
+ *
+ * Each entry both defines a CSS custom property on :root and generates
+ * a matching utility. e.g. `--color-accent` yields `bg-accent`, `text-accent`,
+ * `border-accent`, etc., while still being reachable as `bg-(--color-accent)`.
+ */
+
+@theme {
+  --font-body: "ABC Favorit", system-ui, sans-serif;
+  --font-heading: "ABC Gaisyr", Georgia, serif;
+  --font-mono: "ABC Favorit Mono", ui-monospace, monospace;
+
+  --color-zinc-950: #09090b;
+  --color-zinc-900: #18181b;
+  --color-zinc-850: #212124;
+  --color-zinc-800: #27272a;
+  --color-zinc-750: #343436;
+  --color-zinc-700: #3f3f46;
+  --color-zinc-600: #52525c;
+  --color-zinc-550: #56565c;
+  --color-zinc-500: #71717b;
+  --color-zinc-400: #9f9fa9;
+  --color-zinc-300: #c9c9cb;
+  --color-zinc-250: #d4d4d8;
+  --color-zinc-200: #dbdbde;
+  --color-zinc-150: #e4e4e7;
+  --color-zinc-100: #f4f4f5;
+  --color-zinc-50: #fafafa;
+  --color-white: #fff;
+  --color-black: #000;
+
+  --color-coral: #ff6467;
+
+  --color-bg: var(--color-zinc-50);
+  --color-surface-1: var(--color-zinc-100);
+  --color-surface-2: var(--color-zinc-150);
+  --color-surface-3: var(--color-zinc-200);
+  --color-border: var(--color-zinc-250);
+  --color-border-strong: #a1a1aa;
+  --color-muted: var(--color-zinc-500);
+  --color-text-subtle: var(--color-zinc-600);
+  --color-text: var(--color-zinc-800);
+  --color-foreground: var(--color-zinc-950);
+  --color-accent: var(--color-coral);
+
+  --radius-small: 4px;
+  --radius-medium: 8px;
+}
+
+/* ---------- Global focus ring (no Tailwind equivalent for applying to all focusable elements) ---------- */
+
+*[tabindex]:focus-visible,
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+input[type="file"]:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* ---------- Keyframes ---------- */
+
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes deco-pulse {
+  0%,
+  100% {
+    opacity: 0.38;
+    filter: drop-shadow(0 0 rgba(250, 250, 250, 0));
+    transform: translateY(0) scale(1);
+  }
+  16.6667% {
+    opacity: 0.32;
+    filter: drop-shadow(0 0 rgba(250, 250, 250, 0));
+    transform: translateY(0) scale(1);
+  }
+  33.3333% {
+    opacity: 0.59;
+    filter: drop-shadow(0 0 2px rgba(250, 250, 250, 0.12));
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    opacity: 0.92;
+    filter: drop-shadow(0 0 4px rgba(250, 250, 250, 0.22));
+    transform: translateY(0) scale(1);
+  }
+  66.6667% {
+    opacity: 0.98;
+    filter: drop-shadow(0 0 6px rgba(250, 250, 250, 0.3));
+    transform: translateY(-1px) scale(1.14);
+  }
+  83.3333% {
+    opacity: 0.71;
+    filter: drop-shadow(0 0 3px rgba(250, 250, 250, 0.16));
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes persona-churn {
+  0%,
+  24.99% {
+    opacity: 0.55;
+  }
+  25%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Live "protected value" banner status dot (Digital Assets hero). */
+@keyframes qpv-dot-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.7);
+  }
+}

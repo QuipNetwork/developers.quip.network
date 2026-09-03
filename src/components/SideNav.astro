@@ -1,0 +1,101 @@
+---
+import { MonoLabel } from "@design/components/Headings";
+
+/*
+ * Sticky section rail. Modelled on the doc-shell in quip-design/preview, which
+ * is the most portal-like layout the design system ships: a narrow sticky
+ * sidebar with mono uppercase labels and an active-link highlight driven by
+ * IntersectionObserver.
+ *
+ * Collapses to a horizontal scrolling strip under the top bar on narrow
+ * viewports, so it stays useful on a phone instead of eating a third of it.
+ */
+
+interface Item {
+  id: string;
+  label: string;
+}
+
+interface Props {
+  items: Item[];
+}
+
+const { items }: Props = Astro.props;
+---
+
+<nav
+  aria-label="Sections"
+  class="sidenav sticky top-14 self-start max-lg:top-12 max-lg:z-30 max-lg:w-full max-lg:border-b max-lg:border-(--color-border) max-lg:bg-(--color-bg)"
+>
+  <MonoLabel size="xs" className="mb-2 block max-lg:hidden"
+    >On this page</MonoLabel
+  >
+  <ul
+    class="m-0 flex list-none flex-col gap-px p-0 max-lg:flex-row max-lg:gap-1 max-lg:overflow-x-auto max-lg:py-2"
+  >
+    {
+      items.map((item) => (
+        <li>
+          <a
+            href={`#${item.id}`}
+            data-nav={item.id}
+            class="sidenav-link block px-2 py-1.5 [font-family:var(--font-mono)] font-features-['case'] text-[11px] leading-[1.2] font-medium tracking-[0.4px] whitespace-nowrap text-(--color-muted) uppercase no-underline transition-colors duration-150 hover:bg-(--color-surface-1) hover:text-zinc-950"
+          >
+            {item.label}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<style>
+  .sidenav-link[data-active="true"] {
+    background-color: var(--color-zinc-900);
+    color: var(--color-zinc-50);
+  }
+</style>
+
+<script>
+  /*
+   * Highlight the section currently nearest the top of the viewport. Plain
+   * IntersectionObserver over the panels: no library, no scroll listener.
+   */
+  const links = [...document.querySelectorAll<HTMLAnchorElement>("[data-nav]")];
+  const byId = new Map(links.map((l) => [l.dataset.nav, l]));
+  const targets = links
+    .map((l) => document.getElementById(l.dataset.nav ?? ""))
+    .filter((el): el is HTMLElement => el !== null);
+
+  let active = "";
+  const setActive = (id: string) => {
+    if (id === active) return;
+    active = id;
+    for (const link of links) {
+      link.dataset.active = String(link.dataset.nav === id);
+    }
+  };
+
+  const visible = new Set<string>();
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) visible.add(entry.target.id);
+        else visible.delete(entry.target.id);
+      }
+      // Of everything on screen, mark the one highest up the document.
+      const first = targets.find((t) => visible.has(t.id));
+      if (first) setActive(first.id);
+    },
+    { rootMargin: "-64px 0px -55% 0px", threshold: 0 },
+  );
+
+  for (const target of targets) observer.observe(target);
+  if (targets[0]) setActive(targets[0].id);
+
+  // Keep the rail in sync when a link is clicked, ahead of the scroll settling.
+  for (const link of links) {
+    link.addEventListener("click", () => setActive(link.dataset.nav ?? ""));
+  }
+  void byId;
+</script>

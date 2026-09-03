@@ -1,0 +1,134 @@
+---
+// Resolved per app via the `@app-styles` Vite alias (see each app's
+// astro.config.mjs) to that app's entry stylesheet, which imports Tailwind and
+// the shared design tokens. Keeping it aliased lets one shared shell back both
+// sites while each controls its own Tailwind content sources.
+import "@app-styles";
+
+interface Props {
+  title: string;
+  description?: string;
+  canonical?: string;
+  ogType?: string;
+  /** Page-specific social card; falls back to the site-wide preview. */
+  ogImage?: string;
+}
+
+const {
+  title,
+  description = "Quip Network is the world's shared quantum computer, doing the jobs no one else can do. Access quantum processors & get paid to write quantum smart contracts",
+  canonical,
+  ogType = "website",
+  ogImage,
+} = Astro.props;
+
+const socialImage = new URL(
+  ogImage ?? "/images/social-preview.png?v=1",
+  Astro.site,
+).href;
+const canonicalHref = canonical
+  ? new URL(canonical, Astro.site).href
+  : Astro.url
+    ? new URL(Astro.url.pathname, Astro.site).href
+    : undefined;
+
+const ORG_ID = "https://quip.network/#organization";
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": ORG_ID,
+  name: "Quip Network",
+  url: "https://quip.network/",
+  logo: "https://quip.network/images/favicon-v2.png",
+  description:
+    "Quip Network is the world's shared quantum computer: an open marketplace to access quantum processors on demand, get paid to contribute compute, and earn by writing quantum smart contracts.",
+  sameAs: [
+    "https://twitter.com/quipnetwork",
+    "https://www.linkedin.com/company/postquant-labs",
+    "https://github.com/quipnetwork",
+    "https://discord.gg/quipnetwork",
+  ],
+};
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": new URL("/#website", Astro.site).href,
+  url: new URL("/", Astro.site).href,
+  name: "Quip Network",
+  publisher: { "@id": ORG_ID },
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {canonicalHref && <link rel="canonical" href={canonicalHref} />}
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content={ogType} />
+    {canonicalHref && <meta property="og:url" content={canonicalHref} />}
+    <meta property="og:image" content={socialImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={socialImage} />
+    <link
+      rel="shortcut icon"
+      href="/images/favicon-v2.png?v=2"
+      type="image/png"
+    />
+    <link rel="apple-touch-icon" href="/images/webclip.png" />
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(organizationSchema)}
+    ></script>
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(websiteSchema)}
+    ></script>
+    <link
+      rel="preload"
+      href="/fonts/ABCFavoritVariable.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/ABCGaisyrVariable.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <slot name="head" />
+  </head>
+  <body
+    class="bg-(--color-bg) font-(family-name:--font-body) text-[14px] leading-[1.35] text-zinc-950 antialiased selection:bg-(--color-accent) selection:text-zinc-950"
+  >
+    <!-- Hidden forms for Netlify build-time detection (React hydrated forms are
+         invisible to the crawler). Each site provides the forms it actually
+         uses via the `netlify-forms` slot; the fallback below is the main
+         site's contact form. -->
+    <slot name="netlify-forms">
+      <form name="contact" data-netlify="true" netlify-honeypot="bot-field" hidden>
+        <input type="hidden" name="form-name" value="contact" />
+        <input type="text" name="bot-field" />
+        <input type="text" name="Name" />
+        <input type="email" name="Email" />
+        <input type="text" name="Organization" />
+        <input type="text" name="Message" />
+        <input type="text" name="persona" />
+      </form>
+    </slot>
+
+    <div class="overflow-x-clip">
+      <slot />
+    </div>
+  </body>
+</html>

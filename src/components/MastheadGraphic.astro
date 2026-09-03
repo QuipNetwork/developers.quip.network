@@ -1,0 +1,27 @@
+---
+import { BuildLattice } from "./BuildLattice";
+
+/*
+ * The masthead graphic: a bespoke assembling-truss canvas, chosen so the dev
+ * portal does not animate the same generative field as every other Quip surface.
+ *
+ * The earlier alternative treatment used @quip/pattern-gen. That dependency was
+ * dropped when this repo split out of the monorepo, since the variant was never
+ * selected. The config is preserved in the monorepo history if it is ever wanted
+ * back.
+ */
+
+---
+
+<div
+  class="pointer-events-none absolute top-0 right-0 bottom-[3px] w-1/2 max-md:hidden"
+  aria-hidden="true"
+>
+    <BuildLattice client:load className="h-full w-full" />
+</div>
+
+<div
+  aria-hidden="true"
+  class="pointer-events-none absolute top-0 right-0 bottom-[3px] w-1/2 bg-(--color-zinc-50) [mask-image:var(--mask)] [--mask:linear-gradient(to_right,black_0%,black_6%,transparent_52%)] [-webkit-mask-image:var(--mask)] max-md:hidden"
+>
+</div>
