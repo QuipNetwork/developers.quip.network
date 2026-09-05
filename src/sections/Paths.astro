@@ -7,7 +7,8 @@ import {
   PersonaIcon,
   type PersonaShape,
 } from "@design/components/PersonaIcon";
-import { DOCS, NETWORK, CODE, SITE } from "../data/links";
+import { DOCS, CODE, SITE } from "../data/links";
+import { EXPLORER } from "../data/testnet";
 
 /*
  * Each path is a compact audience profile: the brand glyph in its own tint, the
@@ -76,11 +77,11 @@ const AUDIENCES: Audience[] = [
     ink: "var(--color-aud-eval-ink)",
     requirements: [],
     links: [
-      { label: "Explorer", description: "Live chain", href: NETWORK.explorer },
+      { label: "Explorer", description: "Live chain", href: EXPLORER.url },
       { label: "Whitepaper", description: "PDF", href: SITE.whitepaper },
       { label: "Token", description: "Economics", href: DOCS.token },
     ],
-    cta: { label: "Explore", href: NETWORK.explorer },
+    cta: { label: "Explore", href: EXPLORER.url },
   },
 ];
 ---

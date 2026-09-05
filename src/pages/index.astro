@@ -9,6 +9,7 @@ import Network from "../sections/Network.astro";
 import Code from "../sections/Code.astro";
 import Help from "../sections/Help.astro";
 import { DOCS, SITE, NETWORK, CODE } from "../data/links";
+import { EXPLORER } from "../data/testnet";
 
 const SECTIONS = [
   { id: "quickstart", label: "Quickstart" },
@@ -28,6 +29,12 @@ const topLinkClass =
   description="The starting point for building on Quip Network: quickstart commands for the SDKs and compute toolchain, testnet connection details, machine-readable docs for coding agents, and every repository in one place."
   ogImage="/images/og/developers.png?v=1"
 >
+  <Fragment slot="netlify-forms">
+    <!-- This surface has no forms. Overriding the slot suppresses the vendored
+         layout's fallback, which would otherwise register a phantom "contact"
+         form on the Netlify site and collect spam against the team's quota. -->
+  </Fragment>
+
   <div class="flex min-h-screen flex-col bg-(--color-bg) text-zinc-950">
     <!-- Slim application chrome. Deliberately not the marketing SiteHeader:
          this surface is operated, not read, so the top bar carries actions. -->
@@ -65,7 +72,7 @@ const topLinkClass =
           Docs
         </a>
         <a
-          href={NETWORK.explorer}
+          href={EXPLORER.url}
           target="_blank"
           rel="noopener noreferrer"
           class={topLinkClass}

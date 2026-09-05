@@ -5,17 +5,25 @@ import { MonoLabel } from "@design/components/Headings";
 import { GhostLink } from "@design/components/Buttons";
 import { CopyCommand } from "../components/CopyCommand";
 import { AI, DOCS } from "../data/links";
-import { EVM } from "../data/testnet";
+import { CHAIN, EVM, EXPLORER } from "../data/testnet";
 
 const MCP_INSTALL = `claude mcp add --transport http quip-docs ${AI.mcpEndpoint}`;
 
-// Everything an agent needs to start work, in one paste. Built from the same
-// constants the rest of the page renders, so it cannot drift from the facts
-// shown in the Network panel.
+// Everything an agent needs to start work, in one paste.
+//
+// Every value here is interpolated from ../data/testnet.ts. It used to claim it
+// "cannot drift" while hard-coding the explorer URL two lines below, and it did
+// drift — the literal outlived the chain it pointed at. scripts/check-endpoints.mjs
+// now fails the build if a bare endpoint reappears in this file.
+//
+// The genesis line matters more than it looks: an agent trained before the
+// network reset will otherwise accept the retired chain as correct, because the
+// EVM chain ID is identical on both.
 const AGENT_PROMPT = [
   "You are helping me build on Quip Network.",
   `Docs index: ${AI.llmsTxt}. Any docs page returns markdown if you append .md to its URL.`,
-  `Testnet EVM JSON-RPC: ${EVM.rpcUrl} (chain ID ${EVM.chainId}). Verify on-chain results against https://explorer.testnet.quip.network.`,
+  `Testnet EVM JSON-RPC: ${EVM.rpcUrl} (chain ID ${EVM.chainId}). Verify on-chain results against ${EXPLORER.url}.`,
+  `Confirm you are on the right chain by genesis hash ${CHAIN.genesis}, not by chain ID.`,
   "TypeScript SDK: @quip.network/ethereum-sdk@beta. Python compute toolchain: xquad, with xqsa[quip] for solvers.",
 ].join("\n\n");
 

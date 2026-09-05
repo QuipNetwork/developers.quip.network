@@ -4,3 +4,4 @@ dist/
 .netlify/
 .env
 .DS_Store
+link-health.json

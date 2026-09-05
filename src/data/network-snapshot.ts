@@ -21,9 +21,20 @@
  * is worse than no number.
  */
 
+/*
+ * ⚠ THIS MEASURES THE RETIRED CHAIN. The network was reset on 2026-09-02 and
+ * these figures were read a week before that, so they describe a chain that no
+ * longer exists — not the aglais network the live readout above them reports
+ * on. The `chain` field is rendered in the badge so the two blocks cannot be
+ * mistaken for readings of the same thing.
+ *
+ * Re-measure against aglais, or delete this block and the component that
+ * renders it. Do not simply re-date it.
+ */
 export const NETWORK_SNAPSHOT = {
+  chain: "Retired chain",
   takenOn: "2026-08-26",
-  source: "dashboard indexer, public testnet bootnode",
+  source: "dashboard indexer, retired pre-reset testnet bootnode",
   miners: 11896,
   minersWithWins: 229,
   validators: 3,

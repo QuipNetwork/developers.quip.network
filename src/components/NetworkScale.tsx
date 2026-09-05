@@ -46,7 +46,7 @@ export function NetworkScale() {
           Network scale
         </span>
         <span className="border border-(--color-border) bg-(--color-surface-1) px-1.5 py-0.5 [font-family:var(--font-mono)] font-features-['case'] text-[9.5px] leading-none font-medium tracking-[0.4px] text-(--color-text-subtle) uppercase">
-          Snapshot {S.takenOn}
+          {S.chain} · {S.takenOn}
         </span>
       </div>
 
