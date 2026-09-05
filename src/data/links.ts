@@ -1,11 +1,15 @@
 /*
  * Every outbound destination the portal links to, in one place.
  *
+ * Chain endpoints are NOT here. Explorer, RPC, faucet, chain spec and the rest
+ * live in ./testnet.ts, scoped to the chain they belong to, so that repointing
+ * to a new network is one file rather than a hunt.
+ *
  * Two rules keep this file trustworthy:
  *
  * 1. Nothing ships here until it returns 200. Properties that exist as repos
- *    but not yet as live hosts (dashboard.quip.network, explorer.quip.network,
- *    the faucet) are listed in PENDING below and rendered nowhere.
+ *    but not yet as live hosts (dashboard.quip.network, the mainnet explorer)
+ *    are listed in PENDING below and rendered nowhere.
  * 2. DOCS_BASE is the cutover switch. docs.quip.network currently serves the
  *    GitBook at its root but 404s /llms.txt into an unrelated mdBook, so the
  *    portal points at the gitbook.io host. When that domain serves one
@@ -63,20 +67,8 @@ export const REGISTRIES = {
   hashsigsRs: "https://crates.io/crates/hashsigs-rs",
 };
 
+/** Quip web properties that are not tied to a particular chain. */
 export const NETWORK = {
-  /*
-   * Public Substrate JSON-RPC on a testnet bootnode. Verified reachable over
-   * HTTPS and WSS with `access-control-allow-origin: *`, so the browser calls it
-   * directly with no proxy and no backend.
-   *
-   * DEMO-GRADE: the protocol team has not documented this endpoint — only
-   * evm-rpc appears in the docs. It is nginx-fronted with open CORS and serves
-   * the full state and archive method sets, which looks deliberate, but confirm
-   * it is a supported public endpoint before anything load-bearing depends on it.
-   */
-  rpcPublic: "https://bootnode-1.testnet.quip.network:20049/rpc",
-  explorer: "https://explorer.testnet.quip.network",
-  chainSpec: "https://nodes.quip.network/chain-specs/quip-testnet.json",
   account: "https://account.quip.network",
   feedback: "https://feedback.quip.network",
   research: "https://research.quip.network",
@@ -93,7 +85,10 @@ export const SOCIAL = {
   discord: "https://discord.gg/quipnetwork",
   telegram: "https://t.me/+Pbld47s3BO44YmUx",
   x: "https://twitter.com/quipnetwork",
-  farcaster: "https://forecaster.quip.network",
+  // The value here used to be an NXDOMAIN vanity host. This is the estate's
+  // canonical one (quip.network/apps/main/src/data/social.ts), and it 301s to
+  // farcaster.xyz.
+  farcaster: "https://warpcast.com/quipnetwork.eth",
   linkedin: "https://www.linkedin.com/company/postquant-labs",
 };
 
@@ -103,14 +98,17 @@ export const SOCIAL = {
  * missing one.
  *
  *   dashboard.quip.network   mining telemetry dashboard (repo exists, no DNS)
- *   explorer.quip.network    mainnet explorer (repo exists, no DNS)
+ *   explorer.quip.network    MAINNET explorer (repo exists, no DNS). This is a
+ *                            different host from explorer.aglais.quip.network,
+ *                            which is live and linked from the Network panel.
  *   isingmark leaderboard    benchmark leaderboard (planned)
- *   faucet                   repo exists on GitLab, live URL unverified
+ *
+ * The faucet came off this list on 2026-09-05: it is live, but API-only. See
+ * FAUCET in ./testnet.ts for why it is documented rather than linked.
  */
 export const PENDING = [
   "dashboard.quip.network",
   "explorer.quip.network",
-  "faucet",
 ] as const;
 
 export const LAST_UPDATED = import.meta.env.PUBLIC_BUILD_DATE;

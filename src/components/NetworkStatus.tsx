@@ -1,23 +1,37 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { PersonaIcon } from "@design/components/PersonaIcon";
-import { NETWORK } from "../data/links";
+import { CHAIN } from "../data/testnet";
 
 /*
  * Live testnet state, read straight from a public Substrate JSON-RPC in the
- * browser. The endpoint serves `access-control-allow-origin: *`, so this needs
- * no proxy, no server and no backend of any kind.
+ * browser. All three bootnodes serve `access-control-allow-origin: *`, so this
+ * needs no proxy, no server and no backend of any kind.
  *
- * Read-only calls only: system_chain, system_version, system_health and
- * chain_getHeader. QuantumPow::QBlockCount is deliberately not read yet — it
- * needs the exact twox128 storage key, and guessing one would silently render a
- * wrong number.
+ * Read-only calls only: system_chain, system_version, system_health,
+ * chain_getHeader and chain_getBlockHash. QuantumPow::QBlockCount is
+ * deliberately not read yet — it needs the exact twox128 storage key, and
+ * guessing one would silently render a wrong number.
  *
- * See the note on NETWORK.rpcPublic: the endpoint is not yet documented by the
- * protocol team, so this is demo-grade until they confirm it.
+ * Three things this file has to get right, all learned the hard way:
+ *
+ * 1. GENESIS IS CHECKED BEFORE ANY READING IS TRUSTED. Until 2026-09-05 this
+ *    component pointed at a host that still resolved and still answered — but
+ *    served the retired chain. Every number on screen was real, and all of them
+ *    were about the wrong network. Chain ID cannot catch that (20033 is shared)
+ *    and neither can the spec id (still "quip_testnet"). Only genesis can, so a
+ *    mismatch halts polling rather than rendering a plausible wrong height.
+ * 2. ONE POLLER, N SUBSCRIBERS. NetworkPulse and NetworkReadout are both
+ *    mounted on the page. With per-component state they ran two independent
+ *    intervals and disagreed with each other by up to six seconds.
+ * 3. FAILOVER, AND SPREAD THE LOAD. The start index is random per page load so
+ *    bootnode-1 does not absorb every visitor, and a failed cycle advances to
+ *    the next node before retrying.
  */
 
 const POLL_MS = 12_000;
 const TIMEOUT_MS = 6_000;
+
+const ENDPOINTS = CHAIN.rpcHttp;
 
 interface Health {
   peers: number;
@@ -36,14 +50,16 @@ interface Snapshot {
 type State =
   | { status: "loading" }
   | { status: "ok"; data: Snapshot; at: Date }
-  | { status: "error"; message: string };
+  | { status: "error"; message: string }
+  | { status: "wrong-chain"; endpoint: string; actual: string };
 
 async function rpc<T>(
+  url: string,
   method: string,
   signal: AbortSignal,
   params: unknown[] = [],
 ): Promise<T> {
-  const res = await fetch(NETWORK.rpcPublic, {
+  const res = await fetch(url, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }),
@@ -59,76 +75,139 @@ async function rpc<T>(
   return body.result;
 }
 
-async function readSnapshot(signal: AbortSignal): Promise<Snapshot> {
-  const [chain, version, health, header, finalizedHash] = await Promise.all([
-    rpc<string>("system_chain", signal),
-    rpc<string>("system_version", signal),
-    rpc<Health>("system_health", signal),
-    rpc<{ number: string }>("chain_getHeader", signal),
-    rpc<string>("chain_getFinalizedHead", signal),
-  ]);
-  // Finalized head comes back as a hash, so its height needs a second hop.
-  const finalizedHeader = await rpc<{ number: string }>(
-    "chain_getHeader",
-    signal,
-    [finalizedHash],
-  );
-  return {
-    chain,
-    version,
-    peers: health.peers,
-    isSyncing: health.isSyncing,
-    blockHeight: Number.parseInt(header.number, 16),
-    finalizedHeight: Number.parseInt(finalizedHeader.number, 16),
+/* ---- module-level store: one poller, however many components subscribe ---- */
+
+let state: State = { status: "loading" };
+const listeners = new Set<() => void>();
+
+let endpointIndex = Math.floor(Math.random() * ENDPOINTS.length);
+let intervalId: ReturnType<typeof setInterval> | undefined;
+let inflight: AbortController | undefined;
+/** Endpoints whose genesis matched. Re-checked per host, not once globally. */
+const verified = new Set<string>();
+/** system_chain and system_version only move on a runtime upgrade. */
+const staticInfo = new Map<string, { chain: string; version: string }>();
+
+function publish(next: State) {
+  state = next;
+  for (const listener of listeners) listener();
+}
+
+async function cycle() {
+  // A wrong-chain verdict is terminal: never poll past it, never overwrite it.
+  if (state.status === "wrong-chain") return;
+
+  const url = ENDPOINTS[endpointIndex]!;
+  inflight?.abort();
+  const controller = new AbortController();
+  inflight = controller;
+  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+
+  try {
+    if (!verified.has(url)) {
+      const genesis = await rpc<string>(
+        url,
+        "chain_getBlockHash",
+        controller.signal,
+        [0],
+      );
+      if (genesis !== CHAIN.genesis) {
+        publish({ status: "wrong-chain", endpoint: url, actual: genesis });
+        stopPolling();
+        return;
+      }
+      verified.add(url);
+    }
+
+    let info = staticInfo.get(url);
+    if (!info) {
+      const [chain, version] = await Promise.all([
+        rpc<string>(url, "system_chain", controller.signal),
+        rpc<string>(url, "system_version", controller.signal),
+      ]);
+      info = { chain, version };
+      staticInfo.set(url, info);
+    }
+
+    const [health, header, finalizedHash] = await Promise.all([
+      rpc<Health>(url, "system_health", controller.signal),
+      rpc<{ number: string }>(url, "chain_getHeader", controller.signal),
+      rpc<string>(url, "chain_getFinalizedHead", controller.signal),
+    ]);
+    // Finalized head comes back as a hash, so its height needs a second hop.
+    const finalizedHeader = await rpc<{ number: string }>(
+      url,
+      "chain_getHeader",
+      controller.signal,
+      [finalizedHash],
+    );
+
+    publish({
+      status: "ok",
+      at: new Date(),
+      data: {
+        chain: info.chain,
+        version: info.version,
+        peers: health.peers,
+        isSyncing: health.isSyncing,
+        blockHeight: Number.parseInt(header.number, 16),
+        finalizedHeight: Number.parseInt(finalizedHeader.number, 16),
+      },
+    });
+  } catch (err) {
+    // This node just failed us; try the next one on the following cycle.
+    endpointIndex = (endpointIndex + 1) % ENDPOINTS.length;
+    const message =
+      err instanceof Error && err.name === "AbortError"
+        ? "timed out"
+        : err instanceof Error
+          ? err.message
+          : "unreachable";
+    // Keep the last good reading on screen rather than blanking it.
+    if (state.status !== "ok") publish({ status: "error", message });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+const onVisible = () => {
+  if (!document.hidden) void cycle();
+};
+
+function startPolling() {
+  if (intervalId !== undefined) return;
+  void cycle();
+  intervalId = setInterval(() => {
+    if (!document.hidden) void cycle();
+  }, POLL_MS);
+  document.addEventListener("visibilitychange", onVisible);
+}
+
+function stopPolling() {
+  clearInterval(intervalId);
+  intervalId = undefined;
+  document.removeEventListener("visibilitychange", onVisible);
+  inflight?.abort();
+  inflight = undefined;
+}
+
+function subscribe(listener: () => void) {
+  listeners.add(listener);
+  if (listeners.size === 1) startPolling();
+  return () => {
+    listeners.delete(listener);
+    if (listeners.size === 0) stopPolling();
   };
 }
 
+const LOADING: State = { status: "loading" };
+
 function useNetwork() {
-  const [state, setState] = useState<State>({ status: "loading" });
-  const inflight = useRef<AbortController | null>(null);
-
-  const load = useCallback(async () => {
-    inflight.current?.abort();
-    const controller = new AbortController();
-    inflight.current = controller;
-    const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
-    try {
-      const data = await readSnapshot(controller.signal);
-      setState({ status: "ok", data, at: new Date() });
-    } catch (err) {
-      if (controller.signal.aborted && !(err instanceof DOMException)) return;
-      const message =
-        err instanceof Error && err.name === "AbortError"
-          ? "timed out"
-          : err instanceof Error
-            ? err.message
-            : "unreachable";
-      // Keep the last good reading on screen rather than blanking it.
-      setState((prev) =>
-        prev.status === "ok" ? prev : { status: "error", message },
-      );
-    } finally {
-      clearTimeout(timer);
-    }
-  }, []);
-
-  useEffect(() => {
-    void load();
-    const id = setInterval(() => {
-      if (!document.hidden) void load();
-    }, POLL_MS);
-    const onVisible = () => {
-      if (!document.hidden) void load();
-    };
-    document.addEventListener("visibilitychange", onVisible);
-    return () => {
-      clearInterval(id);
-      document.removeEventListener("visibilitychange", onVisible);
-      inflight.current?.abort();
-    };
-  }, [load]);
-
-  return state;
+  return useSyncExternalStore(
+    subscribe,
+    () => state,
+    () => LOADING,
+  );
 }
 
 /*
@@ -146,7 +225,8 @@ const TONE = {
 
 function toneFor(state: State) {
   if (state.status === "loading") return TONE.idle;
-  if (state.status === "error") return TONE.down;
+  if (state.status === "error" || state.status === "wrong-chain")
+    return TONE.down;
   return state.data.isSyncing ? TONE.syncing : TONE.live;
 }
 
@@ -161,6 +241,7 @@ function StateGlyph({ state }: { state: State }) {
 function labelFor(state: State) {
   if (state.status === "loading") return "Checking";
   if (state.status === "error") return "Unreachable";
+  if (state.status === "wrong-chain") return "Wrong chain";
   return state.data.isSyncing ? "Syncing" : "Live";
 }
 
@@ -239,10 +320,17 @@ export function NetworkReadout() {
         )}
       </div>
 
-      {state.status === "error" ? (
+      {state.status === "wrong-chain" ? (
+        <p className="m-0 text-[12px] leading-[1.45] text-(--color-accent-text)">
+          {state.endpoint} answered with genesis {state.actual.slice(0, 10)}…,
+          which is not this network. Readings are withheld rather than shown for
+          the wrong chain.
+        </p>
+      ) : state.status === "error" ? (
         <p className="m-0 text-[12px] leading-[1.45] text-(--color-muted)">
-          Could not reach the public RPC ({state.message}). The endpoint is a
-          testnet bootnode, so this can happen during upgrades.
+          Could not reach the public RPC ({state.message}). These are testnet
+          bootnodes, so this can happen during upgrades; the next poll tries a
+          different one.
         </p>
       ) : (
         <dl className="m-0 grid grid-cols-2 gap-x-6 max-md:grid-cols-1">
@@ -273,8 +361,8 @@ export function NetworkReadout() {
       )}
 
       <p className="m-0 text-[11px] leading-[1.45] text-(--color-muted)">
-        Read live in your browser from the public bootnode RPC. No account, no
-        node, nothing to install.
+        Read live in your browser from the public bootnode RPC, genesis-checked
+        against this network. No account, no node, nothing to install.
       </p>
     </div>
   );

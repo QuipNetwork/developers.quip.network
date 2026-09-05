@@ -1,0 +1,43 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# This repo does NOT deploy from CI.
+#
+# Production deploys come from Netlify's own GitLab integration — a webhook and
+# a deploy key on this project — which is how every sibling site in the estate
+# works (agls, hello, main, blog, vault, account). Build configuration lives in
+# netlify.toml.
+#
+# NEVER ADD A DEPLOY JOB HERE. Two deploy paths pointed at one Netlify site is a
+# race between a stale artifact and a fresh one, and the loser is whichever
+# finishes second.
+#
+# The only job here is a scheduled link probe. It runs on a schedule, on a
+# manual "Run pipeline", and on merge requests — deliberately NOT on branch
+# pushes, because a push must not go red because someone else's CDN is having a
+# bad afternoon.
+
+stages: [check]
+
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "web"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+link-health:
+  stage: check
+  # No install step: scripts/check-links.mjs has zero dependencies, on purpose.
+  image: node:22-alpine
+  interruptible: true
+  timeout: 10m
+  # Explicit. A red probe is a red pipeline; that is the entire point of it.
+  allow_failure: false
+  script:
+    - node --version
+    - node scripts/check-links.mjs
+  artifacts:
+    # `always`, so a FAILING run still uploads the report that explains why.
+    when: always
+    expire_in: 30 days
+    paths:
+      - link-health.json

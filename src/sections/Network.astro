@@ -8,7 +8,14 @@ import { NetworkReadout } from "../components/NetworkStatus";
 import { NetworkScale } from "../components/NetworkScale";
 import { NodeMap } from "../components/NodeMap";
 import { NETWORK } from "../data/links";
-import { EVM, CHAIN } from "../data/testnet";
+import {
+  EVM,
+  CHAIN,
+  EXPLORER,
+  SUBSCAN,
+  PORTAL,
+  FAUCET,
+} from "../data/testnet";
 
 /*
  * Three stacked blocks rather than two tall columns: connect, then see the
@@ -16,18 +23,39 @@ import { EVM, CHAIN } from "../data/testnet";
  * one dense two-column grid and read as a wall.
  */
 
+/*
+ * Genesis replaced the old "Substrate RPC: ws://127.0.0.1:9944" row. A loopback
+ * URL is not a fact about the network, and genesis is the one field that tells
+ * this chain apart from the retired one — chain ID 20033 is identical on both.
+ */
+const GENESIS_SHORT = `${CHAIN.genesis.slice(0, 10)}…${CHAIN.genesis.slice(-6)}`;
+
 const FIELDS = [
-  { label: "Chain ID", value: `${EVM.chainId} · ${EVM.chainIdHex}` },
-  { label: "Token", value: `${EVM.currencySymbol} · ${EVM.decimals} decimals` },
-  { label: "Network name", value: EVM.chainName },
-  { label: "Substrate RPC", value: CHAIN.localRpc },
+  { label: "Chain ID", value: `${EVM.chainId} · ${EVM.chainIdHex}`, title: undefined },
+  { label: "Token", value: `${EVM.currencySymbol} · ${EVM.decimals} decimals`, title: undefined },
+  { label: "Network name", value: EVM.chainName, title: undefined },
+  { label: "Genesis", value: GENESIS_SHORT, title: CHAIN.genesis },
 ];
+
+const FAUCET_CURL = `curl -X POST ${FAUCET.origin}/request \\
+  -H 'content-type: application/json' \\
+  -d '{"dest":"YOUR_ADDRESS"}'`;
 
 const SURFACES = [
   {
     label: "Explorer",
     description: "Blocks and accounts",
-    href: NETWORK.explorer,
+    href: EXPLORER.url,
+  },
+  {
+    label: "Subscan",
+    description: "Substrate-side explorer",
+    href: SUBSCAN.url,
+  },
+  {
+    label: "Polkadot.js portal",
+    description: "Extrinsics and chain state",
+    href: PORTAL.url,
   },
   {
     label: "Quip Account",
@@ -66,7 +94,10 @@ const SURFACES = [
                 <MonoLabel as="dt" size="xs">
                   {field.label}
                 </MonoLabel>
-                <dd class="m-0 [font-family:var(--font-mono)] text-[12px] leading-[1.4] text-zinc-950">
+                <dd
+                  class="m-0 [font-family:var(--font-mono)] text-[12px] leading-[1.4] text-zinc-950"
+                  title={field.title}
+                >
                   {field.value}
                 </dd>
               </div>
@@ -77,19 +108,26 @@ const SURFACES = [
           >
             <MonoLabel as="dt" size="xs">Chain spec</MonoLabel>
             <dd class="m-0 text-[12px] leading-[1.4]">
-              <TextLink href={NETWORK.chainSpec} external>
-                quip-testnet.json
+              <TextLink href={CHAIN.chainSpecUrl} external>
+                {CHAIN.chainSpecName}
               </TextLink>
             </dd>
           </div>
         </dl>
-        <div class="flex gap-2.5 bg-(--color-surface-1) px-3 py-2">
-          <span
-            class="shrink-0 [font-family:var(--font-mono)] font-features-['case'] text-[9.5px] leading-[18px] font-medium tracking-[0.4px] text-(--color-accent-text) uppercase"
-            >Note</span
-          >
+        <div class="flex flex-col gap-2">
+          <MonoLabel size="xs">Faucet</MonoLabel>
+          <CopyCommand
+            client:load
+            command={FAUCET_CURL}
+            prompt={null}
+            multiline
+            label="the faucet request"
+          />
           <p class="m-0 text-[12px] leading-[1.5] text-(--color-text-subtle)">
-            No public faucet yet: ask in Discord for balance, or mine your own.
+            Dispenses {FAUCET.amount}, rate-limited per destination. Accepts an
+            SS58 address, a 0x-prefixed AccountId, or an EVM address. The API
+            sends no CORS preflight, so call it from a terminal or a server, not
+            from a browser.
           </p>
         </div>
       </div>

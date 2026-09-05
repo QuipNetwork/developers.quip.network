@@ -8,7 +8,7 @@ import {
   SITE,
   SOCIAL,
 } from "../data/links";
-import { EVM, CHAIN } from "../data/testnet";
+import { EVM, CHAIN, FAUCET, EXPLORER, SUBSCAN, PORTAL } from "../data/testnet";
 
 /*
  * The portal's own llms.txt, in the llmstxt.org shape: an H1, a blockquote
@@ -59,11 +59,15 @@ const body = `# Quip Network for developers
 
 ## Testnet
 
-- [Explorer](${NETWORK.explorer}): Blocks, transactions, and accounts on the Aglais testnet.
-- [Chain spec](${NETWORK.chainSpec}): ${CHAIN.network} chain specification, includes bootnodes.
-- EVM JSON-RPC: ${EVM.rpcUrl} over HTTP, chain ID ${EVM.chainId} (${EVM.chainIdHex}), token ${EVM.currencySymbol} with ${EVM.decimals} decimals.
-- Substrate RPC: ${CHAIN.localRpc} once a local node is running. Native token precision is ${CHAIN.tokenDecimals} decimals.
-- Testnet tokens hold no value and balances can be reset. There is no public faucet; ask in Discord.
+- Genesis hash: ${CHAIN.genesis}. Identify the chain by THIS. Not by the EVM chain ID, which is ${EVM.chainId} on both this network and the retired one that preceded it, and not by the chain spec id, which is still "${CHAIN.specId}" because that string is the on-disk database path.
+- [Explorer](${EXPLORER.url}): Blocks, transactions, and accounts on the Aglais testnet.
+- [Subscan](${SUBSCAN.url}): Substrate-side explorer for the same chain.
+- [Polkadot.js portal](${PORTAL.url}): Extrinsics, storage, and chain state.
+- [Chain spec](${CHAIN.chainSpecUrl}): ${CHAIN.chainSpecName}, includes bootnodes. About 2.4 MB, with a .sha256 beside it.
+- EVM JSON-RPC: ${EVM.rpcUrl} over HTTPS on port 443, chain ID ${EVM.chainId} (${EVM.chainIdHex}), token ${EVM.currencySymbol} with ${EVM.decimals} decimals, gas price ${EVM.gasPrice}, backend ${EVM.backend}. EVM history starts at block 0.
+- Substrate JSON-RPC: ${CHAIN.rpcHttp[0]} over HTTPS POST, or ${CHAIN.rpcWss} over websocket. Open CORS, so a browser can call it directly. SS58 prefix ${CHAIN.ss58Prefix}, native token precision ${CHAIN.tokenDecimals} decimals. Locally, ${CHAIN.localRpc} once your own node is running.
+- Faucet: ${FAUCET.request} to ${FAUCET.origin}, JSON body {"dest": "${FAUCET.destField}"}. Dispenses ${FAUCET.amount}, rate-limited per destination. API only: the root path 404s and there is no CORS preflight, so call it from a server or curl rather than a browser.
+- Testnet tokens hold no value and balances can be reset.
 
 ## Source code
 
@@ -77,7 +81,7 @@ const body = `# Quip Network for developers
 ## Community and feedback
 
 - [Feedback board](${NETWORK.feedback}): Report documentation gaps, broken commands, and feature requests. This is the single feedback channel across every Quip Network product, so name the surface you were using. There is no developer-only channel yet.
-- [Discord](${SOCIAL.discord}): Support and questions, including testnet balance requests.
+- [Discord](${SOCIAL.discord}): Support and questions. Use the faucet above for testnet balance rather than asking here.
 - [Research forum](${NETWORK.research}): Protocol proposals.
 
 ## Optional
