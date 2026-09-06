@@ -1,45 +1,45 @@
 /*
- * A dated snapshot of network-scale figures that the portal cannot read on its
- * own.
+ * A dated snapshot of network-scale figures, read straight from chain storage.
  *
- * Everything here is a REAL measurement, not invented sample data. It was read
- * on 2026-08-26 from a local run of the dashboard indexer (dashboard.quip.network)
- * pointed at the public testnet bootnode, with Postgres behind it.
+ * Everything here is a REAL measurement, not invented sample data.
  *
- * Why a snapshot: these figures come from the indexer's Postgres, not from the
- * chain RPC. The portal is a static site and can reach the public RPC directly,
- * but it cannot reach an indexer that nobody is hosting yet. When a public
- * telemetry API exists, delete this file and read `GET /api/telemetry` instead —
- * every field below maps one-to-one onto that response.
+ * REFRESHING THESE IS ONE COMMAND: `node scripts/recount-network.mjs`, which
+ * prints this exact block. It takes about ten seconds.
  *
- *   chainMiners.length          -> miners
- *   chainMiners w/ proofsWon>0  -> minersWithWins
- *   validators.length           -> validators
- *   mineableTopologies[0]       -> topologyNodes / topologyEdges
+ * That matters, because the previous version of this file sat unrefreshed
+ * across a whole network reset on the belief that the numbers required standing
+ * up the dashboard indexer and its Postgres. They never did — all of them are
+ * in chain storage, reachable through the public bootnode RPC under the `safe`
+ * method set:
  *
- * Label it as a snapshot wherever it renders. A stale number presented as live
- * is worse than no number.
- */
-
-/*
- * ⚠ THIS MEASURES THE RETIRED CHAIN. The network was reset on 2026-09-02 and
- * these figures were read a week before that, so they describe a chain that no
- * longer exists — not the aglais network the live readout above them reports
- * on. The `chain` field is rendered in the badge so the two blocks cannot be
- * mistaken for readings of the same thing.
+ *   QuantumPow::Miners                  key count            -> miners
+ *   QuantumPow::Miners                  proofs_won > 0       -> minersWithWins
+ *   Session::Validators                 vec length           -> validators
+ *   QuantumPow::RegisteredTopologies[DefaultTopology]        -> topologyNodes
+ *                                       nodes/edges lengths     topologyEdges
  *
- * Re-measure against aglais, or delete this block and the component that
- * renders it. Do not simply re-date it.
+ * ⚠ Take the topology from `DefaultTopology`, NOT from `MineableTopologies[0]`.
+ * The old figures used index 0, which is storage-hash order and therefore
+ * arbitrary. There are currently two mineable topologies differing by a single
+ * edge, and index 0 is not the default one — that is where the previous
+ * 41,515 came from.
+ *
+ * Still a snapshot rather than a live read: counting every miner key costs far
+ * more requests than the 12-second status poll, and it would grow with the
+ * network. Label it as a snapshot wherever it renders, and keep `chain` and
+ * `atBlock` next to the numbers — a stale figure presented as live is worse
+ * than no figure.
  */
 export const NETWORK_SNAPSHOT = {
-  chain: "Retired chain",
-  takenOn: "2026-08-26",
-  source: "dashboard indexer, retired pre-reset testnet bootnode",
-  miners: 11896,
-  minersWithWins: 229,
+  chain: "Aglais",
+  takenOn: "2026-09-06",
+  atBlock: 56410,
+  source: "chain storage, read directly from a public bootnode RPC",
+  miners: 42,
+  minersWithWins: 18,
   validators: 3,
   topologyNodes: 4577,
-  topologyEdges: 41515,
+  topologyEdges: 41514,
 } as const;
 
 /*
