@@ -8,8 +8,13 @@
  * them lives in chain storage and is readable through the public bootnode RPC
  * under the `safe` method set. This script reads them in about ten seconds.
  *
- * Usage:  node scripts/recount-network.mjs            print the figures
+ * Usage:  node scripts/recount-network.mjs              print the figures
+ *         node scripts/recount-network.mjs --check      fail if the published
+ *                                                      snapshot has drifted
  *         node scripts/recount-network.mjs --self-test  verify key derivation
+ *
+ * --check runs daily in CI. It never rewrites anything: it tells you the page
+ * has gone stale and leaves the fix to a reviewed commit.
  *
  * It only prints. Paste the result into src/data/network-snapshot.ts, so that
  * changing a published number stays a reviewed commit rather than a silent
@@ -18,6 +23,7 @@
  * Zero dependencies, like the other scripts here.
  */
 
+import { readFileSync } from "node:fs";
 import { setDefaultResultOrder } from "node:dns";
 import {
   setDefaultAutoSelectFamily,
@@ -129,18 +135,12 @@ function selfTest() {
   console.log("recount-network: self-test passed");
 }
 
-async function main() {
-  if (process.argv.includes("--self-test")) return selfTest();
-  selfTest();
-
+async function readFigures() {
   // Pin every read to ONE block, or the figures can disagree with each other.
   const at = await call("chain_getBlockHash");
   const height = Number.parseInt((await call("chain_getHeader"))?.number, 16);
   const chain = await call("system_chain");
   const genesis = await call("chain_getBlockHash", [0]);
-  console.log(`\nchain    ${chain}`);
-  console.log(`genesis  ${genesis}`);
-  console.log(`at block ${height.toLocaleString("en-US")}  ${at}\n`);
 
   // --- miners
   const minerKeys = await allKeys(prefix("QuantumPow", "Miners"), at);
@@ -179,18 +179,137 @@ async function main() {
   const vraw = Buffer.from((await call("state_getStorage", [prefix("Session", "Validators"), at])).slice(2), "hex");
   const [validators] = compact(vraw, 0);
 
-  const today = new Date().toISOString().slice(0, 10);
+  return {
+    chain, genesis, at, height, dflt,
+    miners: minerKeys.length,
+    minersWithWins: withWins,
+    validators,
+    topologyNodes: nodes,
+    topologyEdges: edges,
+  };
+}
+
+/* ---- --check: has the published snapshot drifted from reality? ------------- */
+
+/*
+ * Tolerances, per field, because the fields behave differently.
+ *
+ * Miner counts grow on their own, so they get a band. Validators and topology
+ * are governance settings that change only when someone deliberately changes
+ * them — any movement there is news, so they are exact.
+ *
+ * The band is a percentage with an absolute floor, because a percentage alone
+ * is useless on small numbers: at 42 miners a strict 10% would red on four new
+ * miners, and an alert that fires on ordinary growth is one people mute. The
+ * floor is what keeps this quiet enough to stay believed.
+ */
+const TOLERANCE = {
+  miners: { pct: 0.25, floor: 5 },
+  minersWithWins: { pct: 0.25, floor: 5 },
+  validators: "exact",
+  topologyNodes: "exact",
+  topologyEdges: "exact",
+};
+
+function readPublished() {
+  const src = readFileSync(new URL("../src/data/network-snapshot.ts", import.meta.url), "utf8");
+  const num = (field) => {
+    const m = src.match(new RegExp(`${field}\\s*:\\s*(\\d+)`));
+    if (!m) throw new Error(`network-snapshot.ts: no numeric field "${field}"`);
+    return Number(m[1]);
+  };
+  const chain = src.match(/chain:\s*"([^"]+)"/)?.[1];
+  if (!chain) throw new Error(`network-snapshot.ts: no "chain" field`);
+  return {
+    chain,
+    atBlock: num("atBlock"),
+    miners: num("miners"),
+    minersWithWins: num("minersWithWins"),
+    validators: num("validators"),
+    topologyNodes: num("topologyNodes"),
+    topologyEdges: num("topologyEdges"),
+  };
+}
+
+function expectedGenesis() {
+  const src = readFileSync(new URL("../src/data/testnet.ts", import.meta.url), "utf8");
+  const m = src.match(/genesis:\s*"(0x[0-9a-fA-F]{64})"/);
+  if (!m) throw new Error(`testnet.ts: no genesis hash`);
+  return m[1];
+}
+
+async function check() {
+  const published = readPublished();
+  const live = await readFigures();
+  const failures = [];
+
+  console.log(`published : ${published.chain} @ block ${published.atBlock.toLocaleString("en-US")}`);
+  console.log(`live      : ${live.chain} @ block ${live.height.toLocaleString("en-US")}\n`);
+
+  // A reset makes every figure meaningless regardless of drift, so check it
+  // first and say so plainly — this is the exact failure that went unnoticed
+  // for a month last time.
+  const want = expectedGenesis();
+  if (live.genesis.toLowerCase() !== want.toLowerCase()) {
+    failures.push(
+      `CHAIN CHANGED: genesis is ${live.genesis}, expected ${want}. ` +
+        `Every figure below describes a chain that is no longer here.`,
+    );
+  }
+
+  for (const [field, tol] of Object.entries(TOLERANCE)) {
+    const was = published[field];
+    const now = live[field];
+    const delta = now - was;
+    let bad, limit;
+    if (tol === "exact") {
+      bad = delta !== 0;
+      limit = "exact";
+    } else {
+      const allowed = Math.max(tol.floor, Math.abs(was) * tol.pct);
+      bad = Math.abs(delta) > allowed;
+      limit = `±${allowed.toFixed(0)}`;
+    }
+    const sign = delta > 0 ? `+${delta}` : `${delta}`;
+    console.log(
+      `  ${bad ? "DRIFT" : "ok   "} ${field.padEnd(15)} published ${String(was).padStart(6)}` +
+        `   live ${String(now).padStart(6)}   ${sign.padStart(7)}  (allowed ${limit})`,
+    );
+    if (bad) failures.push(`${field}: published ${was}, live ${now} (${sign}, allowed ${limit})`);
+  }
+
+  if (failures.length) {
+    console.error(`\nsnapshot drift — src/data/network-snapshot.ts is out of date:\n`);
+    for (const f of failures) console.error(`  - ${f}`);
+    console.error(
+      `\nRefresh with:  node scripts/recount-network.mjs\n` +
+        `then paste the printed block into src/data/network-snapshot.ts and commit.\n`,
+    );
+    process.exit(1);
+  }
+  console.log(`\nrecount-network: published figures still within tolerance`);
+}
+
+async function main() {
+  if (process.argv.includes("--self-test")) return selfTest();
+  selfTest();
+  if (process.argv.includes("--check")) return check();
+
+  const f = await readFigures();
+  console.log(`\nchain    ${f.chain}`);
+  console.log(`genesis  ${f.genesis}`);
+  console.log(`at block ${f.height.toLocaleString("en-US")}  ${f.at}\n`);
   console.log("Paste into src/data/network-snapshot.ts:\n");
   console.log(`  chain: "Aglais",`);
-  console.log(`  takenOn: "${today}",`);
-  console.log(`  atBlock: ${height},`);
+  console.log(`  takenOn: "${new Date().toISOString().slice(0, 10)}",`);
+  console.log(`  atBlock: ${f.height},`);
   console.log(`  source: "chain storage, read directly from a public bootnode RPC",`);
-  console.log(`  miners: ${minerKeys.length},`);
-  console.log(`  minersWithWins: ${withWins},`);
-  console.log(`  validators: ${validators},`);
-  console.log(`  topologyNodes: ${nodes},`);
-  console.log(`  topologyEdges: ${edges},`);
-  console.log(`\n  (default topology ${dflt.slice(0, 12)}…)`);
+  console.log(`  miners: ${f.miners},`);
+  console.log(`  minersWithWins: ${f.minersWithWins},`);
+  console.log(`  validators: ${f.validators},`);
+  console.log(`  topologyNodes: ${f.topologyNodes},`);
+  console.log(`  topologyEdges: ${f.topologyEdges},`);
+  console.log(`\n  (default topology ${f.dflt.slice(0, 12)}…)`);
 }
 
 process.on("unhandledRejection", (err) => {

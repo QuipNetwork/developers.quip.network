@@ -41,3 +41,17 @@ link-health:
     expire_in: 30 days
     paths:
       - link-health.json
+
+# Deliberately a SEPARATE job rather than another line in link-health, so the
+# job name in the failure notification says which kind of rot was found. "A URL
+# died" and "the published figures no longer match the chain" want different
+# people and different fixes, and reading a log to tell them apart is exactly
+# the friction that gets alerts muted.
+snapshot-drift:
+  stage: check
+  image: node:22-alpine
+  interruptible: true
+  timeout: 10m
+  allow_failure: false
+  script:
+    - node scripts/recount-network.mjs --check
