@@ -179,8 +179,12 @@ async function readFigures() {
   const vraw = Buffer.from((await call("state_getStorage", [prefix("Session", "Validators"), at])).slice(2), "hex");
   const [validators] = compact(vraw, 0);
 
+  // --- node descriptors. Not a figure the page prints, but the input the node
+  //     map is generated from — so it goes stale the same way, and silently.
+  const descriptors = (await allKeys(prefix("MinerRegistry", "NodeDescriptors"), at)).length;
+
   return {
-    chain, genesis, at, height, dflt,
+    chain, genesis, at, height, dflt, descriptors,
     miners: minerKeys.length,
     minersWithWins: withWins,
     validators,
@@ -205,6 +209,9 @@ async function readFigures() {
  */
 const TOLERANCE = {
   miners: { pct: 0.25, floor: 5 },
+  // Drives the node map rather than a printed figure: if this moves, the dots
+  // are wrong even though every number on the page still reads correctly.
+  descriptors: { pct: 0.25, floor: 5 },
   minersWithWins: { pct: 0.25, floor: 5 },
   validators: "exact",
   topologyNodes: "exact",
@@ -213,9 +220,15 @@ const TOLERANCE = {
 
 function readPublished() {
   const src = readFileSync(new URL("../src/data/network-snapshot.ts", import.meta.url), "utf8");
+  const nodesSrc = readFileSync(new URL("../src/data/network-nodes.ts", import.meta.url), "utf8");
   const num = (field) => {
     const m = src.match(new RegExp(`${field}\\s*:\\s*(\\d+)`));
     if (!m) throw new Error(`network-snapshot.ts: no numeric field "${field}"`);
+    return Number(m[1]);
+  };
+  const nodeNum = (field) => {
+    const m = nodesSrc.match(new RegExp(`${field}\\s*:\\s*(\\d+)`));
+    if (!m) throw new Error(`network-nodes.ts: no numeric field "${field}"`);
     return Number(m[1]);
   };
   const chain = src.match(/chain:\s*"([^"]+)"/)?.[1];
@@ -228,6 +241,7 @@ function readPublished() {
     validators: num("validators"),
     topologyNodes: num("topologyNodes"),
     topologyEdges: num("topologyEdges"),
+    descriptors: nodeNum("descriptors"),
   };
 }
 
@@ -281,10 +295,14 @@ async function check() {
   if (failures.length) {
     console.error(`\nsnapshot drift — src/data/network-snapshot.ts is out of date:\n`);
     for (const f of failures) console.error(`  - ${f}`);
-    console.error(
-      `\nRefresh with:  node scripts/recount-network.mjs\n` +
-        `then paste the printed block into src/data/network-snapshot.ts and commit.\n`,
-    );
+    const nodesStale = failures.some((f) => f.startsWith("descriptors"));
+    const figuresStale = failures.some((f) => !f.startsWith("descriptors") && !f.startsWith("CHAIN"));
+    console.error("\nRefresh with:");
+    if (figuresStale || failures.some((f) => f.startsWith("CHAIN")))
+      console.error(`  node scripts/recount-network.mjs   # then paste into src/data/network-snapshot.ts`);
+    if (nodesStale || failures.some((f) => f.startsWith("CHAIN")))
+      console.error(`  node scripts/recount-nodes.mjs     # rewrites src/data/network-nodes.ts`);
+    console.error("");
     process.exit(1);
   }
   console.log(`\nrecount-network: published figures still within tolerance`);
