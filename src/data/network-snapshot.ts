@@ -41,33 +41,3 @@ export const NETWORK_SNAPSHOT = {
   topologyNodes: 4577,
   topologyEdges: 41514,
 } as const;
-
-/*
- * SAMPLE placements for the compact node map. These are NOT measurements.
- *
- * No miner on the testnet publishes a `telemetryNodeAddress`, so no real
- * coordinates exist to plot — not for us and not for the protocol team. These
- * five cities are the upstream dashboard's own fixture set
- * (apps/frontend/src/testing/sample-telemetry.ts), reused so the placeholder is
- * at least a known reference rather than something invented here.
- *
- * Anything rendering these MUST label them as sample. When operators start
- * publishing a host, replace this with the geo-enriched `nodes` array from
- * `GET /api/telemetry`, which already carries { country, city, lat, lng }.
- */
-export const SAMPLE_NODE_PLACEMENTS = [
-  { city: "San Francisco", country: "US", lat: 37.77, lng: -122.42 },
-  { city: "London", country: "GB", lat: 51.51, lng: -0.13 },
-  { city: "Frankfurt", country: "DE", lat: 50.11, lng: 8.68 },
-  { city: "Singapore", country: "SG", lat: 1.35, lng: 103.82 },
-  { city: "Tokyo", country: "JP", lat: 35.68, lng: 139.69 },
-] as const;
-
-/*
- * Why the real map is empty. The dashboard's world map resolves
- * markers by geo-IP on each miner's published `telemetryNodeAddress`, and zero
- * of the 11,896 miners publish one — so the real map is empty for everyone
- * today, including the protocol team. Inventing coordinates for a developer
- * portal is not worth the credibility cost. Revisit when operators publish a
- * public host.
- */

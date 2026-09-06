@@ -6,11 +6,12 @@ import {
   projectMiller,
 } from "../data/world-land";
 import {
-  SAMPLE_METRO_COUNT,
-  SAMPLE_NODES,
+  NETWORK_NODES,
+  NODE_CITY_COUNT,
+  NODES_MEASURED,
+  type NetworkNode,
   type NodeKind,
-  type SampleNode,
-} from "../data/sample-nodes";
+} from "../data/network-nodes";
 
 /*
  * Node map with regional clustering and hover detail.
@@ -29,7 +30,7 @@ import {
  *     above, rather than relying on a percentage guess.
  *
  * Corners stay sharp, markers are the brand diamond, and there is no glow.
- * Placements are SAMPLE data: see sample-nodes.ts.
+ * Placements are REAL, at city granularity: see network-nodes.ts.
  */
 
 const CLUSTER_RADIUS = 13;
@@ -39,10 +40,10 @@ const EDGE_PAD = 6;
 interface Cluster {
   x: number;
   y: number;
-  nodes: SampleNode[];
+  nodes: NetworkNode[];
 }
 
-function clusterNodes(nodes: SampleNode[]): Cluster[] {
+function clusterNodes(nodes: NetworkNode[]): Cluster[] {
   const out: Cluster[] = [];
   for (const n of nodes) {
     const p = projectMiller(n.lat, n.lng);
@@ -69,21 +70,19 @@ const KIND_LABEL: Record<NodeKind, string> = {
   QPU: "Quantum",
   GPU: "GPU",
   CPU: "CPU",
+  ASIC: "ASIC",
 };
 
-function summarise(nodes: SampleNode[]) {
-  const byKind: Record<NodeKind, number> = { QPU: 0, GPU: 0, CPU: 0 };
+function summarise(nodes: NetworkNode[]) {
+  const byKind: Record<NodeKind, number> = { QPU: 0, GPU: 0, CPU: 0, ASIC: 0 };
   const byCity = new Map<string, number>();
-  let tflops = 0;
   for (const n of nodes) {
     byKind[n.kind] += 1;
-    tflops += n.tflops;
     const key = `${n.city}, ${n.country}`;
     byCity.set(key, (byCity.get(key) ?? 0) + 1);
   }
   return {
     byKind,
-    tflops: Math.round(tflops),
     cities: [...byCity.entries()].sort((a, b) => b[1] - a[1]),
   };
 }
@@ -119,7 +118,7 @@ function Row({ k, v }: { k: string; v: string | number }) {
 }
 
 export function NodeMap() {
-  const clusters = useMemo(() => clusterNodes(SAMPLE_NODES), []);
+  const clusters = useMemo(() => clusterNodes(NETWORK_NODES), []);
   const [active, setActive] = useState<number | null>(null);
 
   const frameRef = useRef<HTMLDivElement | null>(null);
@@ -178,7 +177,7 @@ export function NodeMap() {
           <span
             className={`${LABEL} border border-(--color-border) bg-(--color-bg) px-1.5 py-0.5 text-(--color-text-subtle)`}
           >
-            Dummy locations
+            City level
           </span>
         </div>
 
@@ -186,7 +185,7 @@ export function NodeMap() {
           viewBox={WORLD_VIEWBOX}
           className="block h-auto w-full"
           role="img"
-          aria-label={`World map: ${SAMPLE_NODES.length} sample nodes across ${SAMPLE_METRO_COUNT} locations, grouped into ${clusters.length} clusters`}
+          aria-label={`World map: ${NETWORK_NODES.length} nodes across ${NODE_CITY_COUNT} cities, grouped into ${clusters.length} clusters`}
         >
           <path
             d={WORLD_LAND_PATH}
@@ -278,15 +277,10 @@ export function NodeMap() {
             {cluster.nodes.length === 1 ? (
               <>
                 <div className="[font-family:var(--font-mono)] text-[11.5px] leading-tight font-medium">
-                  {cluster.nodes[0].name}
-                </div>
-                <div className="mt-0.5 text-[11px] leading-tight text-zinc-400">
                   {detail.cities[0][0]}
                 </div>
                 <dl className="mt-2 flex flex-col gap-1 border-t border-zinc-700 pt-2">
                   <Row k="Type" v={KIND_LABEL[cluster.nodes[0].kind]} />
-                  <Row k="Throughput" v={`${cluster.nodes[0].tflops} TFLOPS`} />
-                  <Row k="Version" v={cluster.nodes[0].version} />
                 </dl>
               </>
             ) : (
@@ -317,12 +311,11 @@ export function NodeMap() {
                 </dl>
 
                 <dl className="mt-2 flex flex-col gap-1 border-t border-zinc-700 pt-2">
-                  {(["QPU", "GPU", "CPU"] as NodeKind[])
+                  {(["QPU", "GPU", "ASIC", "CPU"] as NodeKind[])
                     .filter((k) => detail.byKind[k] > 0)
                     .map((k) => (
                       <Row key={k} k={KIND_LABEL[k]} v={detail.byKind[k]} />
                     ))}
-                  <Row k="Combined" v={`${detail.tflops} TFLOPS`} />
                 </dl>
               </>
             )}
@@ -330,16 +323,25 @@ export function NodeMap() {
         )}
       </div>
 
-      {/* Scope the claim. Two of this panel's three blocks are real, so the
-          caption has to say which one is not rather than casting doubt on all. */}
+      {/* Say where the dots come from and how precise they are. The previous
+          caption claimed no operator published a host, which stopped being true
+          and sat on the page for a while after it did. */}
       <p className="m-0 text-[11px] leading-[1.45] text-(--color-muted)">
         <strong className="font-medium text-(--color-text-subtle)">
-          Map positions are dummy data.
-        </strong>{" "}
-        {SAMPLE_NODES.length} placeholder nodes across {SAMPLE_METRO_COUNT}{" "}
-        locations, in {clusters.length} clusters at this zoom. The live chain
-        status above and the measured figures below are real. Positions fill in
-        for real once operators publish a host, which none do yet.
+          {NETWORK_NODES.length} nodes across {NODE_CITY_COUNT} cities
+        </strong>
+        , in {clusters.length} clusters at this zoom. Read from the hosts
+        operators publish on chain at block{" "}
+        {NODES_MEASURED.atBlock.toLocaleString("en-US")}, then placed at city
+        level — every node in a city shares one point, and no finer position is
+        published.{" "}
+        {NODES_MEASURED.descriptors - NODES_MEASURED.placed > 0 && (
+          <>
+            {NODES_MEASURED.descriptors - NODES_MEASURED.placed} of{" "}
+            {NODES_MEASURED.descriptors} are omitted: their host is private or
+            does not resolve.
+          </>
+        )}
       </p>
     </div>
   );
