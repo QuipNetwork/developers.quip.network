@@ -10,7 +10,9 @@
  *
  * Usage:  node scripts/recount-network.mjs              print the figures
  *         node scripts/recount-network.mjs --check      fail if the published
- *                                                      snapshot has drifted
+ *                                                      snapshot has gone stale,
+ *                                                      shrunk, or is describing
+ *                                                      a different chain
  *         node scripts/recount-network.mjs --self-test  verify key derivation
  *
  * --check runs daily in CI. It never rewrites anything: it tells you the page
@@ -198,24 +200,71 @@ async function readFigures() {
 /*
  * Tolerances, per field, because the fields behave differently.
  *
- * Miner counts grow on their own, so they get a band. Validators and topology
- * are governance settings that change only when someone deliberately changes
- * them — any movement there is news, so they are exact.
+ * The first version banded the growing counts at ±25% with a floor of 5, and it
+ * fired on the first scheduled run that ever genuinely exercised it: 42
+ * published against 54 live, over a ±11 band by one. That was not a
+ * miscalibration to nudge. It was the wrong shape.
  *
- * The band is a percentage with an absolute floor, because a percentage alone
- * is useless on small numbers: at 42 miners a strict 10% would red on four new
- * miners, and an alert that fires on ordinary growth is one people mute. The
- * floor is what keeps this quiet enough to stay believed.
+ * Registrations arrive linearly. Reading registered_at off every MinerInfo
+ * gives 5-8 new miners per 5,000 blocks, steadily, since block ~25,000 — about
+ * 16 a day at ~5.9s blocks. A percentage band is proportional to a base that
+ * only moves when someone commits, so time-to-red is (pct x base) / 16 days:
+ * 0.9 days at 25% of 58, 1.8 at 50%, 3.6 at 100%. Buying one quiet week needs a
+ * band of ±112 against a published 58 — twice the figure it is meant to be
+ * checking. No percentage here is both quiet and meaningful; widening only
+ * moves the constant, and an alert that fires on ordinary growth is one people
+ * learn to mute.
+ *
+ * So the predicate changed instead of the number. The page never claims to be
+ * live: the badge renders the chain, the date and the block height before it
+ * renders a single figure. "42 miners on 2026-09-06" is not a lie when there
+ * are 58 today — it is a correctly dated fact, and ordinary growth is exactly
+ * what that date is there to caveat. What a date cannot excuse is a figure that
+ * went BACKWARDS, or a date that is itself old. Those are what this checks now.
+ *
+ * Governance settings are untouched and still exact: validators and topology
+ * move only when someone deliberately moves them, so any movement is news.
  */
 const TOLERANCE = {
-  miners: { pct: 0.25, floor: 5 },
+  // Growth is excused by the date; a drop is not. Mass deregistration inside
+  // the age window is real news that an age bound alone would sail past.
+  miners: "growth",
   // Drives the node map rather than a printed figure: if this moves, the dots
   // are wrong even though every number on the page still reads correctly.
-  descriptors: { pct: 0.25, floor: 5 },
-  minersWithWins: { pct: 0.25, floor: 5 },
+  descriptors: "growth",
+  minersWithWins: "growth",
   validators: "exact",
   topologyNodes: "exact",
   topologyEdges: "exact",
+};
+
+// The shrink band, kept at the original constants: a percentage with an
+// absolute floor, because a percentage alone is useless on small numbers.
+const SHRINK = { pct: 0.25, floor: 5 };
+
+/*
+ * How old a published figure may be before it stops being a dated fact and
+ * starts being an unmaintained page. A fortnight is one missed refresh rather
+ * than one missed day — the chore is "run two scripts, read a diff" — and at 16
+ * miners a day, two weeks of growth is worth publishing by the time it arrives.
+ * This is the only knob; shorten it if the page starts feeling behind.
+ */
+const MAX_AGE_DAYS = 14;
+
+// Which file each field is published in, so the failure can name the file that
+// actually has to change and the script that rewrites it. Deriving this from
+// the field rather than from the wording of the failure message is deliberate:
+// the previous version matched on message prefixes, so rewording a string
+// silently repointed the advice at the wrong script.
+const SNAPSHOT_FILE = "src/data/network-snapshot.ts";
+const NODES_FILE = "src/data/network-nodes.ts";
+const FILE_OF = {
+  miners: SNAPSHOT_FILE,
+  minersWithWins: SNAPSHOT_FILE,
+  validators: SNAPSHOT_FILE,
+  topologyNodes: SNAPSHOT_FILE,
+  topologyEdges: SNAPSHOT_FILE,
+  descriptors: NODES_FILE,
 };
 
 function readPublished() {
@@ -231,10 +280,21 @@ function readPublished() {
     if (!m) throw new Error(`network-nodes.ts: no numeric field "${field}"`);
     return Number(m[1]);
   };
+  // Both files carry a takenOn as a plain YYYY-MM-DD, and both are rendered:
+  // one in the scale badge, one in the map caption. A missing one is a hard
+  // failure rather than an unchecked file — the same call a92c45b made for a
+  // missing network-nodes.ts.
+  const taken = (text, file) => {
+    const m = text.match(/takenOn:\s*"(\d{4}-\d{2}-\d{2})"/);
+    if (!m) throw new Error(`${file}: no "takenOn" field`);
+    return m[1];
+  };
   const chain = src.match(/chain:\s*"([^"]+)"/)?.[1];
   if (!chain) throw new Error(`network-snapshot.ts: no "chain" field`);
   return {
     chain,
+    takenOn: taken(src, SNAPSHOT_FILE),
+    nodesTakenOn: taken(nodesSrc, NODES_FILE),
     atBlock: num("atBlock"),
     miners: num("miners"),
     minersWithWins: num("minersWithWins"),
@@ -265,10 +325,14 @@ async function check() {
   // for a month last time.
   const want = expectedGenesis();
   if (live.genesis.toLowerCase() !== want.toLowerCase()) {
-    failures.push(
-      `CHAIN CHANGED: genesis is ${live.genesis}, expected ${want}. ` +
+    failures.push({
+      field: "CHAIN",
+      // A reset invalidates both files, so it names neither and claims both.
+      file: null,
+      message:
+        `CHAIN CHANGED: genesis is ${live.genesis}, expected ${want}. ` +
         `Every figure below describes a chain that is no longer here.`,
-    );
+    });
   }
 
   for (const [field, tol] of Object.entries(TOLERANCE)) {
@@ -280,32 +344,68 @@ async function check() {
       bad = delta !== 0;
       limit = "exact";
     } else {
-      const allowed = Math.max(tol.floor, Math.abs(was) * tol.pct);
-      bad = Math.abs(delta) > allowed;
-      limit = `±${allowed.toFixed(0)}`;
+      const allowed = Math.max(SHRINK.floor, Math.abs(was) * SHRINK.pct);
+      bad = delta < 0 && Math.abs(delta) > allowed;
+      limit = `growth ok, drop >${allowed.toFixed(0)}`;
     }
     const sign = delta > 0 ? `+${delta}` : `${delta}`;
     console.log(
-      `  ${bad ? "DRIFT" : "ok   "} ${field.padEnd(15)} published ${String(was).padStart(6)}` +
-        `   live ${String(now).padStart(6)}   ${sign.padStart(7)}  (allowed ${limit})`,
+      `  ${bad ? "DROP " : "ok   "} ${field.padEnd(15)} published ${String(was).padStart(6)}` +
+        `   live ${String(now).padStart(6)}   ${sign.padStart(7)}  (${limit})`,
     );
-    if (bad) failures.push(`${field}: published ${was}, live ${now} (${sign}, allowed ${limit})`);
+    if (bad) {
+      failures.push({
+        field,
+        file: FILE_OF[field],
+        message: `${field}: published ${was}, live ${now} (${sign}, ${limit})`,
+      });
+    }
+  }
+
+  // Age is what carries the caveat now that growth does not fail, so it is the
+  // check that has to be right. Both dates are UTC midnight, which is what the
+  // generators write and what the badges render.
+  console.log("");
+  for (const [file, when] of [
+    [SNAPSHOT_FILE, published.takenOn],
+    [NODES_FILE, published.nodesTakenOn],
+  ]) {
+    const age = Math.floor((Date.now() - Date.parse(`${when}T00:00:00Z`)) / 86_400_000);
+    const bad = age > MAX_AGE_DAYS;
+    console.log(
+      `  ${bad ? "STALE" : "ok   "} ${"age".padEnd(15)} ${file.padEnd(28)}` +
+        ` taken ${when}  ${String(age).padStart(3)}d  (max ${MAX_AGE_DAYS}d)`,
+    );
+    if (bad) {
+      failures.push({
+        field: "age",
+        file,
+        message: `${file}: taken ${when}, ${age} days old (max ${MAX_AGE_DAYS})`,
+      });
+    }
   }
 
   if (failures.length) {
-    console.error(`\nsnapshot drift — src/data/network-snapshot.ts is out of date:\n`);
-    for (const f of failures) console.error(`  - ${f}`);
-    const nodesStale = failures.some((f) => f.startsWith("descriptors"));
-    const figuresStale = failures.some((f) => !f.startsWith("descriptors") && !f.startsWith("CHAIN"));
+    // A reset claims both files; otherwise name only the ones that have to
+    // change, so "which of two scripts fixes this" is never a question the
+    // reader has to work out for themselves.
+    const reset = failures.some((f) => f.field === "CHAIN");
+    const files = reset
+      ? [SNAPSHOT_FILE, NODES_FILE]
+      : [...new Set(failures.map((f) => f.file))];
+    console.error(
+      `\nsnapshot drift — ${files.join(" and ")} ${files.length > 1 ? "are" : "is"} out of date:\n`,
+    );
+    for (const f of failures) console.error(`  - ${f.message}`);
     console.error("\nRefresh with:");
-    if (figuresStale || failures.some((f) => f.startsWith("CHAIN")))
-      console.error(`  node scripts/recount-network.mjs   # then paste into src/data/network-snapshot.ts`);
-    if (nodesStale || failures.some((f) => f.startsWith("CHAIN")))
-      console.error(`  node scripts/recount-nodes.mjs     # rewrites src/data/network-nodes.ts`);
+    if (files.includes(SNAPSHOT_FILE))
+      console.error(`  node scripts/recount-network.mjs   # then paste into ${SNAPSHOT_FILE}`);
+    if (files.includes(NODES_FILE))
+      console.error(`  node scripts/recount-nodes.mjs     # rewrites ${NODES_FILE}`);
     console.error("");
     process.exit(1);
   }
-  console.log(`\nrecount-network: published figures still within tolerance`);
+  console.log(`\nrecount-network: published figures still current`);
 }
 
 async function main() {
