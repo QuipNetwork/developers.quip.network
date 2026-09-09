@@ -10,13 +10,12 @@
  * 1. Nothing ships here until it returns 200. Properties that exist as repos
  *    but not yet as live hosts (dashboard.quip.network, the mainnet explorer)
  *    are listed in PENDING below and rendered nowhere.
- * 2. DOCS_BASE is the cutover switch. docs.quip.network currently serves the
- *    GitBook at its root but 404s /llms.txt into an unrelated mdBook, so the
- *    portal points at the gitbook.io host. When that domain serves one
- *    coherent site, change this constant and every docs link follows.
+ * 2. DOCS_BASE is the cutover switch. Documentation is generated from the
+ *    GitBook source and served by this portal, so every public link stays on
+ *    the canonical developers.quip.network host.
  */
 
-export const DOCS_BASE = "https://quip.gitbook.io/docs";
+export const DOCS_BASE = "https://developers.quip.network/docs";
 
 const docs = (path: string) => `${DOCS_BASE}/${path}`;
 
@@ -26,9 +25,9 @@ export const DOCS = {
   whatIsQuip: docs("getting-started/what-is-quip"),
   sdk: docs("getting-started/quip-sdk"),
   useWithAi: docs("getting-started/use-with-ai"),
-  howItFitsTogether: docs("interlock/how-quip-fits-together"),
-  accounts: docs("interlock/quip-accounts"),
-  quipswap: docs("interlock/quipswap"),
+  howItFitsTogether: docs("quip-interlock-protocol/how-quip-fits-together"),
+  accounts: docs("quip-interlock-protocol/quip-accounts"),
+  quipswap: docs("quip-interlock-protocol/quipswap"),
   submitAJob: docs("compute/submit-a-job"),
   qvrf: docs("compute/qvrf"),
   keyProperties: docs("basics/key-properties"),
@@ -39,7 +38,7 @@ export const DOCS = {
 };
 
 export const AI = {
-  mcpEndpoint: `${DOCS_BASE}/~gitbook/mcp`,
+  mcpEndpoint: "https://quip.gitbook.io/docs/~gitbook/mcp",
   llmsTxt: `${DOCS_BASE}/llms.txt`,
   llmsFullTxt: `${DOCS_BASE}/llms-full.txt`,
 };

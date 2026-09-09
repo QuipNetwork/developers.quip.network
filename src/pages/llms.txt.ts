@@ -32,8 +32,8 @@ const body = `# Quip Network for developers
 
 - [Docs llms.txt](${AI.llmsTxt}): Annotated index of every documentation page.
 - [Docs llms-full.txt](${AI.llmsFullTxt}): The entire documentation set as one markdown file.
-- [MCP server](${AI.mcpEndpoint}): Hosted HTTP MCP server exposing searchDocumentation and getPage. Install with: claude mcp add --transport http quip-docs ${AI.mcpEndpoint}
-- [Use These Docs with AI](${DOCS.useWithAi}): Setup for Claude Code, Cursor, and generic MCP clients. Any docs page also returns markdown if you append .md to its URL.
+- [MCP server](${AI.mcpEndpoint}): Hosted HTTP MCP server exposing the documentation while that service remains on GitBook.
+- [Use These Docs with AI](${DOCS.useWithAi}): Machine-readable indexes and markdown mirrors. Any docs page also returns markdown if you append .md to its URL.
 
 ## Build applications
 

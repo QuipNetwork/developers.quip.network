@@ -31,3 +31,63 @@
   for = "/llms.txt"
   [headers.values]
     Content-Type = "text/plain; charset=utf-8"
+
+[[headers]]
+  for = "/docs/*.md"
+  [headers.values]
+    Content-Type = "text/markdown; charset=utf-8"
+
+[[headers]]
+  for = "/docs.md"
+  [headers.values]
+    Content-Type = "text/markdown; charset=utf-8"
+
+[[headers]]
+  for = "/docs/llms*.txt"
+  [headers.values]
+    Content-Type = "text/plain; charset=utf-8"
+
+[[redirects]]
+  from = "/docs/getting-started/firewall"
+  to = "/docs/getting-started/quip-sdk"
+  status = 301
+[[redirects]]
+  from = "/docs/basics/quip-the-quantum-unit-interlock-pathway"
+  to = "/docs/quip-interlock-protocol/quip-the-quantum-unit-interlock-pathway"
+  status = 301
+[[redirects]]
+  from = "/docs/basics/quip-lifecycle"
+  to = "/docs/quip-interlock-protocol/quip-lifecycle"
+  status = 301
+[[redirects]]
+  from = "/docs/interlock/how-quip-fits-together"
+  to = "/docs/quip-interlock-protocol/how-quip-fits-together"
+  status = 301
+[[redirects]]
+  from = "/docs/interlock/quip-accounts"
+  to = "/docs/quip-interlock-protocol/quip-accounts"
+  status = 301
+[[redirects]]
+  from = "/docs/interlock/quipswap"
+  to = "/docs/quip-interlock-protocol/quipswap"
+  status = 301
+[[redirects]]
+  from = "/docs/protocols/encrypt"
+  to = "/docs/quip-interlock-protocol/quip-accounts"
+  status = 301
+[[redirects]]
+  from = "/docs/protocols/accelerate"
+  to = "/docs/compute/submit-a-job"
+  status = 301
+[[redirects]]
+  from = "/docs/basics/virtues"
+  to = "/docs/quip-interlock-protocol/quip-the-quantum-unit-interlock-pathway"
+  status = 301
+[[redirects]]
+  from = "/docs/nodes/classical"
+  to = "/docs/nodes/miners"
+  status = 301
+[[redirects]]
+  from = "/docs/nodes/quantum"
+  to = "/docs/nodes/miners"
+  status = 301

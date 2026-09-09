@@ -1,6 +1,7 @@
 import { defineConfig } from 'astro/config';
 import { fileURLToPath } from 'node:url';
 import react from '@astrojs/react';
+import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 
 // Stamped when the config loads, so "last updated" reports the deploy date.
@@ -19,7 +20,7 @@ export default defineConfig({
       ? 'https://developers.quip.network'
       : process.env.DEPLOY_PRIME_URL) ??
     'https://developers.quip.network',
-  integrations: [react()],
+  integrations: [react(), sitemap()],
   // Static: every page prerenders and the only dynamic data (chain state) is
   // fetched client side, so the build is a plain folder of files.
   output: 'static',
