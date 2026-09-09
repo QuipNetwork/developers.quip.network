@@ -30,9 +30,15 @@ The page mixes three kinds of data, and each is labelled where it renders:
 - **Two data files, one boundary.** Chain facts — RPC, explorer, faucet, chain
   spec, genesis — live in `src/data/testnet.ts`. Everything else outbound (docs,
   repos, socials) lives in `src/data/links.ts`. Repointing to a new network is
-  the first file only. `DOCS_BASE` is the docs cutover switch: it points at
-  `quip.gitbook.io/docs` because `docs.quip.network` currently 404s `/llms.txt`
-  into an unrelated mdBook.
+  the first file only. The docs are generated into this repo and `DOCS_BASE`
+  points at their canonical `/docs` home.
+- **Docs sync manually from the private GitBook source.** Keep that repo as a
+  sibling checkout (or any local checkout) and run
+  `npm run docs:sync -- /path/to/gitbook`. Commit the regenerated
+  `src/content/docs/` and `public/docs/` trees. The script reads navigation and
+  public routes from `SUMMARY.md`, normalizes GitBook-only markup, rewrites
+  internal links, copies assets, and builds `llms.txt`, `llms-full.txt`, and
+  per-page Markdown mirrors. Production does not clone the source repo.
 - **`npm run build` runs a guard first.** `scripts/check-endpoints.mjs` fails the
   build if a retired endpoint reappears anywhere in `src/`, or if the aglais
   endpoints and genesis hash go missing. It is offline by design and never

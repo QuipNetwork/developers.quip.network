@@ -6,6 +6,7 @@
   "description": "Developer portal for Quip Network",
   "scripts": {
     "dev": "astro dev",
+    "docs:sync": "node scripts/sync-docs.mjs",
     "prebuild": "node scripts/check-endpoints.mjs",
     "build": "astro build",
     "preview": "astro preview",
