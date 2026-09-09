@@ -1,0 +1,58 @@
+#!/bin/sh
+set -eu
+
+tag=developers-quip-network-dev
+runtime=podman
+interactive=-i
+[ -t 0 ] && interactive=-it
+
+if ! command -v "$runtime" >/dev/null 2>&1; then
+  echo "podman is required" >&2
+  exit 1
+fi
+
+image() {
+  "$runtime" build -t "$tag" -f Containerfile .
+}
+
+ensure_image() {
+  "$runtime" image exists "$tag" || image
+}
+
+container() {
+  ensure_image
+  "$runtime" run --rm $interactive -v "$PWD:/app:Z" "$tag" "$@"
+}
+
+ensure_deps() {
+  [ -x node_modules/.bin/astro ] || container npm install
+}
+
+dev() {
+  ensure_deps
+  ensure_image
+  "$runtime" run --rm $interactive -p 4321:4321 -v "$PWD:/app:Z" "$tag" npm run dev -- --host 0.0.0.0
+}
+
+sync_docs() {
+  [ "$#" -eq 1 ] || { echo "usage: ./run docs:sync /path/to/gitbook" >&2; exit 1; }
+  source_path=$(realpath "$1")
+  ensure_deps
+  ensure_image
+  "$runtime" run --rm $interactive -v "$PWD:/app:Z" -v "$source_path:/docs-source:ro,Z" "$tag" npm run docs:sync -- /docs-source
+}
+
+case "${1:-dev}" in
+  dev) dev ;;
+  image) image ;;
+  shell) ensure_deps; container bash ;;
+  npm) shift; container npm "$@" ;;
+  npx) shift; ensure_deps; container npx "$@" ;;
+  node) shift; ensure_deps; container node "$@" ;;
+  docs:sync) shift; sync_docs "$@" ;;
+  build|check|preview|check:links) command_name=$1; ensure_deps; container npm run "$command_name" ;;
+  *)
+    echo "usage: ./run [dev|image|shell|build|check|preview|check:links|npm ...|npx ...|node ...|docs:sync PATH]" >&2
+    exit 1
+    ;;
+esac
