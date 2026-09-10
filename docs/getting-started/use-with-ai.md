@@ -1,52 +1,20 @@
 ---
 description: >-
   Connect these docs to Claude, ChatGPT, Cursor, or Claude Code: every page
-  has a markdown mirror, and the site runs a hosted MCP server.
+  has a markdown mirror, and the whole site is indexed for language models.
 icon: robot
 ---
 
 # Use These Docs with AI
 
-These docs are built to be read by AI tools as well as people. Every page has a plain-markdown mirror, the whole site is indexed for language models, and a Model Context Protocol (MCP) server lets coding agents search the docs from inside your editor. All of it is live today.
+These docs are built to be read by AI tools as well as people. Every page has a plain-markdown mirror, and the whole site is indexed for language models. Both are live today.
 
 **Which option should you use?**
 
 | You are | Use |
 | --- | --- |
-| Building an integration in an editor (Claude Code, Cursor, VS Code) | [Connect via MCP](use-with-ai.md#connect-via-mcp), your agent searches the docs on demand |
 | Asking questions about one page | [Open the page in your assistant](use-with-ai.md#ask-an-assistant-about-one-page) |
 | Feeding the docs to your own tool, agent, or evaluation | [The site indexes](use-with-ai.md#give-a-model-the-whole-site), never scrape the HTML |
-
-## Connect via MCP
-
-The docs run a hosted MCP server. Connect once and your agent can search and read the current documentation while you work, no copy-pasting required.
-
-**What it does.** Exposes two tools to your agent: `searchDocumentation` (search across the site, returns content with links) and `getPage` (fetch any page as markdown).
-
-**When to use it.** You are building in an IDE, or working through a multi-step integration where the agent needs to check details as it goes. This is the recommended approach for development.
-
-**How to set it up.**
-
-Claude Code, one command:
-
-```sh
-claude mcp add --transport http quip-docs https://quip.gitbook.io/docs/~gitbook/mcp
-```
-
-Cursor, one click: [Install the Quip docs MCP server in Cursor](cursor://anysphere.cursor-deeplink/mcp/install?name=quip-docs&config=eyJuYW1lIjoicXVpcC1kb2NzIiwidXJsIjoiaHR0cHM6Ly9xdWlwLmdpdGJvb2suaW8vZG9jcy9+Z2l0Ym9vay9tY3AifQ==)
-
-Any other MCP-capable tool, add an HTTP server manually:
-
-```json
-{
-  "mcpServers": {
-    "quip-docs": {
-      "type": "url",
-      "url": "https://quip.gitbook.io/docs/~gitbook/mcp"
-    }
-  }
-}
-```
 
 ## Ask an assistant about one page
 
@@ -77,5 +45,5 @@ For example, to work with the [QuipSwap](../interlock/quipswap.md) page, copy th
 **How to use it.** Fetch the index URL directly. Use these rather than scraping the HTML: they are generated from the same source as the site, so they are always current.
 
 {% hint style="info" %}
-These endpoints reflect the published documentation. If a page is not on the live site yet, it is not in the indexes or the MCP search either.
+These endpoints reflect the published documentation. If a page is not on the live site yet, it is not in the indexes.
 {% endhint %}
