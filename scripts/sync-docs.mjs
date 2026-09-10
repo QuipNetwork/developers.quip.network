@@ -3,7 +3,7 @@ import path from "node:path";
 import process from "node:process";
 
 const projectRoot = path.resolve(import.meta.dirname, "..");
-const sourceRoot = path.resolve(process.argv[2] ?? path.join(projectRoot, "vendor/gitbook"));
+const sourceRoot = path.resolve(process.argv[2] ?? path.join(projectRoot, ".docs-source/gitbook"));
 const contentRoot = path.join(projectRoot, "src/content/docs");
 const publicRoot = path.join(projectRoot, "public/docs");
 const rootMirror = path.join(projectRoot, "public/docs.md");

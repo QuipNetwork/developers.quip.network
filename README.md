@@ -32,9 +32,10 @@ The page mixes three kinds of data, and each is labelled where it renders:
   repos, socials) lives in `src/data/links.ts`. Repointing to a new network is
   the first file only. The docs are generated into this repo and `DOCS_BASE`
   points at their canonical `/docs` home.
-- **Docs sync manually from the private GitBook source.** Keep that repo as a
-  sibling checkout (or any local checkout) and run
-  `npm run docs:sync -- /path/to/gitbook`. Commit the regenerated
+- **Docs sync manually from the private GitBook source.** Run
+  `./run docs:sync`; it updates a gitignored checkout at
+  `.docs-source/gitbook` on the host, then runs the transformer in the
+  container. Commit the regenerated
   `src/content/docs/` and `public/docs/` trees. The script reads navigation and
   public routes from `SUMMARY.md`, normalizes GitBook-only markup, rewrites
   internal links, copies assets, and builds `llms.txt`, `llms-full.txt`, and
