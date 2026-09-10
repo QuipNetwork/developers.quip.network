@@ -1,6 +1,7 @@
 import { defineConfig } from 'astro/config';
 import { fileURLToPath } from 'node:url';
 import react from '@astrojs/react';
+import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 
 // Stamped when the config loads, so "last updated" reports the deploy date.
@@ -19,10 +20,20 @@ export default defineConfig({
       ? 'https://developers.quip.network'
       : process.env.DEPLOY_PRIME_URL) ??
     'https://developers.quip.network',
-  integrations: [react()],
+  integrations: [react(), sitemap()],
   // Static: every page prerenders and the only dynamic data (chain state) is
   // fetched client side, so the build is a plain folder of files.
   output: 'static',
+  // The 19 docs URLs we inherit from GitBook carry no trailing slash, and the
+  // canonical tag, the sitemap entry and the served URL have to be the same
+  // string or we are publishing a canonical that points at a redirect. Astro's
+  // default directory format emits docs/x/index.html, which Netlify's
+  // pretty_urls then 301s /docs/x -> /docs/x/ — that turns every legacy
+  // redirect into two hops and 404s the "append .md to the URL" workflow the
+  // docs themselves document. File format emits docs/x.html, served at
+  // /docs/x with no redirect.
+  trailingSlash: 'never',
+  build: { format: 'file' },
   vite: {
     plugins: [tailwindcss()],
     define: {

@@ -31,3 +31,72 @@
   for = "/llms.txt"
   [headers.values]
     Content-Type = "text/plain; charset=utf-8"
+
+# The .md twins and the llms dumps are the same content as the HTML pages, and
+# a text/markdown response cannot carry a <link rel="canonical">. Left
+# indexable they would be a second crawlable copy of all 19 pages on the very
+# host this migration exists to make canonical. noindex keeps them fully
+# fetchable for agents — which is the whole point of them — while keeping them
+# out of the index. quip.gitbook.io already sends noindex on its equivalents.
+[[headers]]
+  for = "/docs/*.md"
+  [headers.values]
+    Content-Type = "text/markdown; charset=utf-8"
+    X-Robots-Tag = "noindex"
+
+[[headers]]
+  for = "/docs.md"
+  [headers.values]
+    Content-Type = "text/markdown; charset=utf-8"
+    X-Robots-Tag = "noindex"
+
+[[headers]]
+  for = "/docs/llms*.txt"
+  [headers.values]
+    Content-Type = "text/plain; charset=utf-8"
+    X-Robots-Tag = "noindex"
+
+[[redirects]]
+  from = "/docs/getting-started/firewall"
+  to = "/docs/getting-started/quip-sdk"
+  status = 301
+[[redirects]]
+  from = "/docs/basics/quip-the-quantum-unit-interlock-pathway"
+  to = "/docs/quip-interlock-protocol/quip-the-quantum-unit-interlock-pathway"
+  status = 301
+[[redirects]]
+  from = "/docs/basics/quip-lifecycle"
+  to = "/docs/quip-interlock-protocol/quip-lifecycle"
+  status = 301
+[[redirects]]
+  from = "/docs/interlock/how-quip-fits-together"
+  to = "/docs/quip-interlock-protocol/how-quip-fits-together"
+  status = 301
+[[redirects]]
+  from = "/docs/interlock/quip-accounts"
+  to = "/docs/quip-interlock-protocol/quip-accounts"
+  status = 301
+[[redirects]]
+  from = "/docs/interlock/quipswap"
+  to = "/docs/quip-interlock-protocol/quipswap"
+  status = 301
+[[redirects]]
+  from = "/docs/protocols/encrypt"
+  to = "/docs/quip-interlock-protocol/quip-accounts"
+  status = 301
+[[redirects]]
+  from = "/docs/protocols/accelerate"
+  to = "/docs/compute/submit-a-job"
+  status = 301
+[[redirects]]
+  from = "/docs/basics/virtues"
+  to = "/docs/quip-interlock-protocol/quip-the-quantum-unit-interlock-pathway"
+  status = 301
+[[redirects]]
+  from = "/docs/nodes/classical"
+  to = "/docs/nodes/miners"
+  status = 301
+[[redirects]]
+  from = "/docs/nodes/quantum"
+  to = "/docs/nodes/miners"
+  status = 301

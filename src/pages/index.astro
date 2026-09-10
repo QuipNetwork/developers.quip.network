@@ -24,9 +24,14 @@ const topLinkClass =
   "[font-family:var(--font-mono)] font-features-['case'] text-[11px] leading-[1.2] font-medium tracking-[0.4px] text-(--color-text-subtle) uppercase no-underline transition-colors duration-150 hover:text-zinc-950";
 ---
 
+<!-- canonical is pinned because build.format is "file": the layout otherwise
+     derives it from Astro.url.pathname, which for this page is "/index.html",
+     and Netlify's pretty_urls then 301s that to "/" — a canonical pointing at
+     a redirect, and one that disagrees with the sitemap's "/". -->
 <BaseLayout
   title="Quip Network for developers"
   description="The starting point for building on Quip Network: quickstart commands for the SDKs and compute toolchain, testnet connection details, machine-readable docs for coding agents, and every repository in one place."
+  canonical="/"
   ogImage="/images/og/developers.png?v=1"
 >
   <Fragment slot="netlify-forms">

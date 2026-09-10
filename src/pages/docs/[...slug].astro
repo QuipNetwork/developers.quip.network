@@ -1,0 +1,76 @@
+---
+import { getCollection, render, type CollectionEntry } from "astro:content";
+import BaseLayout from "@design/layouts/BaseLayout.astro";
+
+export async function getStaticPaths() {
+  const docs = (await getCollection("docs")).sort((a, b) => a.data.order - b.data.order);
+  return docs.map((doc) => ({
+    params: { slug: doc.data.route || undefined },
+    props: { doc, docs },
+  }));
+}
+
+type Doc = CollectionEntry<"docs">;
+interface Props {
+  doc: Doc;
+  docs: Doc[];
+}
+
+const { doc, docs } = Astro.props;
+const { Content, headings } = await render(doc);
+const groups = docs.reduce<Record<string, Doc[]>>((all, item) => {
+  (all[item.data.group] ??= []).push(item);
+  return all;
+}, {});
+const canonical = `/docs${doc.data.route ? `/${doc.data.route}` : ""}`;
+const description = doc.data.description ?? `${doc.data.title} — Quip Network documentation.`;
+---
+
+<BaseLayout title={`${doc.data.title} | Quip Network Docs`} {description} {canonical}>
+  <Fragment slot="netlify-forms"></Fragment>
+  <div class="docs-shell">
+    <header class="docs-header">
+      <a href="/" aria-label="Quip Network developers">
+        <img src="/images/quip-logo-with-icon.svg" alt="Quip Network" width="84" height="26" />
+      </a>
+      <span>Documentation</span>
+      <a href="/">Developer portal</a>
+    </header>
+
+    <div class="docs-grid">
+      <aside class="docs-sidebar" aria-label="Documentation navigation">
+        <a class="docs-home" href="/docs">Quip Network docs</a>
+        {Object.entries(groups).map(([name, items]) => (
+          <section>
+            <h2>{name}</h2>
+            <nav>
+              {items.map((item) => (
+                <a
+                  href={`/docs${item.data.route ? `/${item.data.route}` : ""}`}
+                  aria-current={item.id === doc.id ? "page" : undefined}
+                >
+                  {item.data.title}
+                </a>
+              ))}
+            </nav>
+          </section>
+        ))}
+      </aside>
+
+      <main class="docs-article">
+        <article><Content /></article>
+        <footer>
+          <a href={`${canonical}.md`}>View as Markdown</a>
+          <a href="/docs/llms.txt">llms.txt</a>
+        </footer>
+      </main>
+
+      <aside class="docs-outline" aria-label="On this page">
+        <p>On this page</p>
+        {headings.filter((heading) => heading.depth === 2 || heading.depth === 3).map((heading) => (
+          <a class:list={[heading.depth === 3 && "nested"]} href={`#${heading.slug}`}>{heading.text}</a>
+        ))}
+      </aside>
+    </div>
+  </div>
+</BaseLayout>

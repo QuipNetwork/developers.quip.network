@@ -10,13 +10,20 @@
  * 1. Nothing ships here until it returns 200. Properties that exist as repos
  *    but not yet as live hosts (dashboard.quip.network, the mainnet explorer)
  *    are listed in PENDING below and rendered nowhere.
- * 2. DOCS_BASE is the cutover switch. docs.quip.network currently serves the
- *    GitBook at its root but 404s /llms.txt into an unrelated mdBook, so the
- *    portal points at the gitbook.io host. When that domain serves one
- *    coherent site, change this constant and every docs link follows.
+ * 2. DOCS_BASE is the cutover switch. Documentation is generated from the
+ *    GitBook source and served by this portal, so every public link stays on
+ *    the canonical developers.quip.network host.
+ *
+ *    It resolves against Astro's own `site`, not a hard-coded origin, so a
+ *    deploy preview links to the docs in THAT preview rather than to
+ *    production — which does not serve /docs until this lands. Hard-coding it
+ *    also made the link probe check a production URL that cannot exist before
+ *    merge, so the pipeline could never go green on the MR that introduces it.
  */
 
-export const DOCS_BASE = "https://quip.gitbook.io/docs";
+const SITE_ORIGIN = import.meta.env.SITE ?? "https://developers.quip.network";
+
+export const DOCS_BASE = new URL("/docs", SITE_ORIGIN).href;
 
 const docs = (path: string) => `${DOCS_BASE}/${path}`;
 
@@ -26,9 +33,9 @@ export const DOCS = {
   whatIsQuip: docs("getting-started/what-is-quip"),
   sdk: docs("getting-started/quip-sdk"),
   useWithAi: docs("getting-started/use-with-ai"),
-  howItFitsTogether: docs("interlock/how-quip-fits-together"),
-  accounts: docs("interlock/quip-accounts"),
-  quipswap: docs("interlock/quipswap"),
+  howItFitsTogether: docs("quip-interlock-protocol/how-quip-fits-together"),
+  accounts: docs("quip-interlock-protocol/quip-accounts"),
+  quipswap: docs("quip-interlock-protocol/quipswap"),
   submitAJob: docs("compute/submit-a-job"),
   qvrf: docs("compute/qvrf"),
   keyProperties: docs("basics/key-properties"),
@@ -38,8 +45,14 @@ export const DOCS = {
   miners: docs("nodes/miners"),
 };
 
+/*
+ * No mcpEndpoint. The only MCP server for these docs was hosted by GitBook, on
+ * the domain this migration retires, so pointing agents at it would keep the
+ * dependency we are removing. The generated llms.txt / llms-full.txt and the
+ * per-page .md twins cover the machine-readable need from the canonical host.
+ * A self-hosted MCP server is tracked separately.
+ */
 export const AI = {
-  mcpEndpoint: `${DOCS_BASE}/~gitbook/mcp`,
   llmsTxt: `${DOCS_BASE}/llms.txt`,
   llmsFullTxt: `${DOCS_BASE}/llms-full.txt`,
 };
