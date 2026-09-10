@@ -13,9 +13,17 @@
  * 2. DOCS_BASE is the cutover switch. Documentation is generated from the
  *    GitBook source and served by this portal, so every public link stays on
  *    the canonical developers.quip.network host.
+ *
+ *    It resolves against Astro's own `site`, not a hard-coded origin, so a
+ *    deploy preview links to the docs in THAT preview rather than to
+ *    production — which does not serve /docs until this lands. Hard-coding it
+ *    also made the link probe check a production URL that cannot exist before
+ *    merge, so the pipeline could never go green on the MR that introduces it.
  */
 
-export const DOCS_BASE = "https://developers.quip.network/docs";
+const SITE_ORIGIN = import.meta.env.SITE ?? "https://developers.quip.network";
+
+export const DOCS_BASE = new URL("/docs", SITE_ORIGIN).href;
 
 const docs = (path: string) => `${DOCS_BASE}/${path}`;
 
@@ -37,8 +45,14 @@ export const DOCS = {
   miners: docs("nodes/miners"),
 };
 
+/*
+ * No mcpEndpoint. The only MCP server for these docs was hosted by GitBook, on
+ * the domain this migration retires, so pointing agents at it would keep the
+ * dependency we are removing. The generated llms.txt / llms-full.txt and the
+ * per-page .md twins cover the machine-readable need from the canonical host.
+ * A self-hosted MCP server is tracked separately.
+ */
 export const AI = {
-  mcpEndpoint: "https://quip.gitbook.io/docs/~gitbook/mcp",
   llmsTxt: `${DOCS_BASE}/llms.txt`,
   llmsFullTxt: `${DOCS_BASE}/llms-full.txt`,
 };
