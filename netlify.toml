@@ -56,6 +56,21 @@
     Content-Type = "text/plain; charset=utf-8"
     X-Robots-Tag = "noindex"
 
+# The XQuad book is served at /docs/xquad/*, so the toolchain page moved out of its
+# prefix to /docs/xquad-toolchain (QUI-1331). Both URLs were published, so both get a
+# redirect -- the .md twin because the docs document appending .md to any page URL.
+# These sit ahead of the legacy block because they are the only rules that share a
+# prefix with real files; Netlify serves a matching file before any redirect, and the
+# book has no toolchain page, so nothing here shadows the book.
+[[redirects]]
+  from = "/docs/xquad/toolchain"
+  to = "/docs/xquad-toolchain"
+  status = 301
+[[redirects]]
+  from = "/docs/xquad/toolchain.md"
+  to = "/docs/xquad-toolchain.md"
+  status = 301
+
 [[redirects]]
   from = "/docs/getting-started/firewall"
   to = "/docs/getting-started/quip-sdk"

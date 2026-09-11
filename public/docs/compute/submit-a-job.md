@@ -8,7 +8,7 @@ This page walks you through installing the tools, describing a problem, and foll
 
 Install the `xquad` package from the Python Package Index (PyPI). It requires Python 3.13 or newer and installs the compatible versions of the lower-level packages it uses.
 
-* **`xquad`** is the umbrella package for the [XQuad toolchain](/docs/xquad/toolchain): it provides the modeling and program interface and installs compatible versions of the lower-level packages, including `xqsa`.
+* **`xquad`** is the umbrella package for the [XQuad toolchain](/docs/xquad-toolchain): it provides the modeling and program interface and installs compatible versions of the lower-level packages, including `xqsa`.
 * **`xqsa`** contains the solver adapters. Its `quip` extra is included by the `xquad[quip]` install below. Every solver exposes the same `solve()` call, whether it runs on your own machine or on the Quip Network, so you can develop locally and switch to the network by changing one line.
 
 ```sh
