@@ -20,4 +20,4 @@
 - [Token](https://developers.quip.network/docs/network/token.md): Network.
 - [Run A Node (TestNet)](https://developers.quip.network/docs/nodes/run-a-node-testnet.md): Nodes.
 - [Miners](https://developers.quip.network/docs/nodes/miners.md): Nodes.
-- [Toolchain](https://developers.quip.network/docs/xquad/toolchain.md): XQuad.
+- [Toolchain](https://developers.quip.network/docs/xquad-toolchain.md): XQuad.

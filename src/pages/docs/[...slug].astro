@@ -4,10 +4,15 @@ import BaseLayout from "@design/layouts/BaseLayout.astro";
 
 export async function getStaticPaths() {
   const docs = (await getCollection("docs")).sort((a, b) => a.data.order - b.data.order);
-  return docs.map((doc) => ({
-    params: { slug: doc.data.route || undefined },
-    props: { doc, docs },
-  }));
+  // Nav-only entries have an href instead of a route, so they build no page and
+  // never reach the sitemap, which is generated from these routes. They still ride
+  // along in `docs` because the sidebar renders them.
+  return docs
+    .filter((doc) => doc.data.href === undefined)
+    .map((doc) => ({
+      params: { slug: doc.data.route || undefined },
+      props: { doc, docs },
+    }));
 }
 
 type Doc = CollectionEntry<"docs">;
@@ -46,7 +51,7 @@ const description = doc.data.description ?? `${doc.data.title} — Quip Network 
             <nav>
               {items.map((item) => (
                 <a
-                  href={`/docs${item.data.route ? `/${item.data.route}` : ""}`}
+                  href={item.data.href ?? `/docs${item.data.route ? `/${item.data.route}` : ""}`}
                   aria-current={item.id === doc.id ? "page" : undefined}
                 >
                   {item.data.title}

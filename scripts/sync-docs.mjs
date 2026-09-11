@@ -14,23 +14,58 @@ const summary = await readFile(summaryPath, "utf8").catch(() => {
   throw new Error(`Cannot read ${summaryPath}. Pass the GitBook checkout as the first argument.`);
 });
 
+// A route is normally <group-slug>/<basename>, which cannot express a one-segment
+// path. The XQuad book is served from /docs/xquad/*, so the toolchain page has to
+// leave that prefix, and renaming its SUMMARY group would only move it to
+// xquad-toolchain/toolchain. QUI-1331.
+const routeOverrides = new Map([["xquad/toolchain.md", "xquad-toolchain"]]);
+
 let group = "Overview";
 let order = 0;
 const pages = [];
+const links = [];
+// Counted so the assertion below can see an entry this loop failed to classify.
+// A SUMMARY entry that matched nothing used to be skipped in silence, which is
+// how the XQuad "Documentation" link went missing for a day. QUI-1331.
+let listItems = 0;
 for (const line of summary.split("\n")) {
   const heading = line.match(/^##\s+(.+)$/);
   if (heading) {
     group = heading[1].trim();
     continue;
   }
-  const item = line.match(/^\* \[([^\]]+)\]\(([^)]+\.md)\)$/);
+  if (/^\* \[/.test(line)) listItems += 1;
+  const item = line.match(/^\* \[([^\]]+)\]\(([^)]+)\)$/);
   if (!item) continue;
-  const [, title, sourcePath] = item;
-  const basename = path.basename(sourcePath, ".md");
-  const route = sourcePath === "README.md" ? "" : `${slugify(group)}/${basename}`;
-  pages.push({ title, sourcePath, route, group, order: order++ });
+  const [, title, target] = item;
+  // A target that is not a Markdown path is a link to somewhere we do not render:
+  // it becomes a nav entry with an href and no page of its own.
+  if (!target.endsWith(".md")) {
+    links.push({ title, href: target, group, order: order++ });
+    continue;
+  }
+  const basename = path.basename(target, ".md");
+  const route =
+    target === "README.md" ? "" : (routeOverrides.get(target) ?? `${slugify(group)}/${basename}`);
+  pages.push({ title, sourcePath: target, route, group, order: order++ });
+}
+// Fail on a dropped entry rather than on a page count, which cannot see one.
+if (pages.length + links.length !== listItems) {
+  throw new Error(
+    `SUMMARY.md has ${listItems} entries but only ${pages.length + links.length} were parsed. ` +
+      `An entry was dropped; every "* [title](target)" line must be matched.`,
+  );
 }
 if (pages.length < 19) throw new Error(`Expected at least 19 pages in SUMMARY.md, found ${pages.length}.`);
+// The assertion above catches an entry the parser drops. It cannot catch one deleted
+// from SUMMARY.md, which is how the nav would lose the XQuad book link a second time,
+// so nav links get a floor of their own exactly as pages do.
+if (links.length < 1) throw new Error(`Expected at least 1 nav link in SUMMARY.md, found ${links.length}.`);
+for (const [source] of routeOverrides) {
+  if (!pages.some((page) => page.sourcePath === source)) {
+    throw new Error(`Route override for ${source} matches no SUMMARY entry; remove it or fix the path.`);
+  }
+}
 
 const routeBySource = new Map(pages.map((page) => [page.sourcePath, page.route]));
 const splitFrontmatter = (markdown) => {
@@ -112,8 +147,27 @@ for (const page of pages) {
   full.push(normalized);
 }
 
+// Nav-only entries are collection entries with an href and no body, so the sidebar
+// keeps one source of truth for grouping and ordering. They render no page, so they
+// stay out of getStaticPaths, out of the sitemap, and out of llms.txt, which lists
+// Markdown twins that a link like this does not have.
+for (const link of links) {
+  const metadata = [
+    `title: ${JSON.stringify(link.title)}`,
+    `group: ${JSON.stringify(link.group)}`,
+    `order: ${link.order}`,
+    `href: ${JSON.stringify(link.href)}`,
+  ].join("\n");
+  const contentPath = path.join(contentRoot, "links", `${slugify(`${link.group} ${link.title}`)}.md`);
+  await mkdir(path.dirname(contentPath), { recursive: true });
+  await writeFile(contentPath, `---\n${metadata}\n---\n`);
+}
+
 await cp(path.join(sourceRoot, ".gitbook/assets"), path.join(publicRoot, "assets"), { recursive: true });
 await writeFile(path.join(publicRoot, "llms.txt"), `${index.join("\n")}\n`);
 await writeFile(path.join(publicRoot, "llms-full.txt"), full.join("\n---\n\n"));
 const files = await readdir(contentRoot, { recursive: true });
-console.log(`Synced ${pages.length} pages and ${files.filter((file) => file.endsWith(".md")).length} entries from ${sourceRoot}.`);
+console.log(
+  `Synced ${pages.length} pages and ${links.length} nav links, ` +
+    `${files.filter((file) => file.endsWith(".md")).length} entries from ${sourceRoot}.`,
+);

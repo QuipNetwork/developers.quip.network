@@ -6,7 +6,7 @@ icon: toolbox
 title: "Toolchain"
 group: "XQuad"
 order: 18
-route: "xquad/toolchain"
+route: "xquad-toolchain"
 source_path: "xquad/toolchain.md"
 ---
 

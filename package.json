@@ -9,6 +9,7 @@
     "docs:sync": "node scripts/sync-docs.mjs",
     "prebuild": "node scripts/check-endpoints.mjs",
     "build": "astro build",
+    "postbuild": "node scripts/fetch-book.mjs",
     "preview": "astro preview",
     "check": "astro check",
     "format": "prettier --write \"src/**/*.{astro,ts,tsx,css}\"",
