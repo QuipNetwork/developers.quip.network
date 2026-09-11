@@ -40,4 +40,4 @@
 ## XQuad
 
 * [Toolchain](xquad/toolchain.md)
-* [Documentation](https://docs.quip.network/xquad/)
+* [Documentation](/docs/xquad/)
