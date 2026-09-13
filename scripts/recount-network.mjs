@@ -9,23 +9,26 @@
  * under the `safe` method set. This script reads them in about ten seconds.
  *
  * Usage:  node scripts/recount-network.mjs              print the figures
+ *         node scripts/recount-network.mjs --write      rewrite the snapshot
  *         node scripts/recount-network.mjs --check      fail if the published
  *                                                      snapshot has gone stale,
  *                                                      shrunk, or is describing
  *                                                      a different chain
  *         node scripts/recount-network.mjs --self-test  verify key derivation
  *
- * --check runs daily in CI. It never rewrites anything: it tells you the page
- * has gone stale and leaves the fix to a reviewed commit.
+ * --write and --check both run daily in CI (QUI-1340): --check first, against
+ * what is currently published, then --write to move it on. They are deliberately
+ * separate verbs. Finding out the page is stale and deciding what to publish are
+ * still different jobs, and --check has to be able to run against a tree nobody
+ * is about to rewrite.
  *
- * It only prints. Paste the result into src/data/network-snapshot.ts, so that
- * changing a published number stays a reviewed commit rather than a silent
- * build-time fetch.
+ * Bare invocation still only prints, because that is what you want when you are
+ * looking rather than publishing.
  *
  * Zero dependencies, like the other scripts here.
  */
 
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { setDefaultResultOrder } from "node:dns";
 import {
   setDefaultAutoSelectFamily,
@@ -35,7 +38,25 @@ setDefaultResultOrder("ipv4first");
 setDefaultAutoSelectFamily(true);
 setDefaultAutoSelectFamilyAttemptTimeout(500);
 
-const RPC = process.env.QUIP_RPC ?? "https://bootnode-1.aglais.quip.network:20049/rpc";
+const TESTNET = new URL("../src/data/testnet.ts", import.meta.url);
+
+/*
+ * All three bootnodes, from src/data/testnet.ts — the same list the site dials,
+ * read rather than duplicated. See the matching helper in recount-nodes.mjs.
+ */
+function endpoints() {
+  // An explicit override is a single endpoint and does not fail over: if you
+  // named a node, you want that node.
+  if (process.env.QUIP_RPC) return [process.env.QUIP_RPC];
+  const src = readFileSync(TESTNET, "utf8");
+  const block = src.match(/rpcHttp:\s*\[([\s\S]*?)\]/);
+  if (!block) throw new Error("testnet.ts: no rpcHttp array");
+  const urls = [...block[1].matchAll(/"(https?:\/\/[^"]+)"/g)].map((m) => m[1]);
+  if (!urls.length) throw new Error("testnet.ts: rpcHttp is empty");
+  return urls;
+}
+
+let RPC = null;
 
 /* ---- xxh64 / twox128, the hash Substrate names storage with ---------------- */
 
@@ -123,6 +144,31 @@ async function allKeys(pfx, at) {
     if (page.length < 1000) return keys;
     start = page[page.length - 1];
   }
+}
+
+/*
+ * Run `read` against one bootnode, moving to the next if it fails. Start index
+ * is random so the daily job does not always lean on bootnode-1.
+ *
+ * A failover re-enters `read` from the top, which re-pins its block hash. That
+ * is required, not incidental: every figure here is read at one block so they
+ * cannot disagree, and a node a block behind does not have that hash yet.
+ */
+async function withFailover(read) {
+  const urls = endpoints();
+  const start = Math.floor(Math.random() * urls.length);
+  let last;
+  for (let i = 0; i < urls.length; i++) {
+    RPC = urls[(start + i) % urls.length];
+    try {
+      return await read();
+    } catch (err) {
+      last = err;
+      console.error(`  ${RPC} failed: ${err.message}`);
+      if (i < urls.length - 1) console.error("  trying the next bootnode");
+    }
+  }
+  throw new Error(`all ${urls.length} bootnodes failed, last: ${last?.message}`);
 }
 
 function selfTest() {
@@ -244,12 +290,21 @@ const SHRINK = { pct: 0.25, floor: 5 };
 
 /*
  * How old a published figure may be before it stops being a dated fact and
- * starts being an unmaintained page. A fortnight is one missed refresh rather
- * than one missed day — the chore is "run two scripts, read a diff" — and at 16
- * miners a day, two weeks of growth is worth publishing by the time it arrives.
- * This is the only knob; shorten it if the page starts feeling behind.
+ * starts being an unmaintained page.
+ *
+ * This was a fortnight when refreshing was a human chore and the bound had to
+ * leave room for one missed week. The refresh runs daily now, so what this
+ * measures has changed: the data should never be more than a day old, and two
+ * days of it means THE REFRESH JOB ITSELF HAS STOPPED. That is the only failure
+ * left worth waking someone for, and it is what this number now watches. Two
+ * rather than one so a single skipped run — a runner outage, a bad afternoon at
+ * a bootnode — is not an alert.
+ *
+ * If you find yourself widening this, fix the refresh job instead. Widening it
+ * only makes the page quietly stale again, which is the thing that started all
+ * of this.
  */
-const MAX_AGE_DAYS = 14;
+const MAX_AGE_DAYS = 2;
 
 // Which file each field is published in, so the failure can name the file that
 // actually has to change and the script that rewrites it. Deriving this from
@@ -306,15 +361,76 @@ function readPublished() {
 }
 
 function expectedGenesis() {
-  const src = readFileSync(new URL("../src/data/testnet.ts", import.meta.url), "utf8");
+  const src = readFileSync(TESTNET, "utf8");
   const m = src.match(/genesis:\s*"(0x[0-9a-fA-F]{64})"/);
   if (!m) throw new Error(`testnet.ts: no genesis hash`);
   return m[1];
 }
 
+/* ---- --write: rewrite the snapshot the way recount-nodes.mjs writes its own -- */
+
+/*
+ * The file is regenerated whole rather than patched in place. Rewriting five
+ * numbers with a regex means five chances to match the wrong line, and the
+ * header below is worth keeping in one place — here, next to the code that
+ * makes the claims it documents.
+ */
+function write(f) {
+  const genesis = expectedGenesis();
+  if (f.genesis.toLowerCase() !== genesis.toLowerCase()) {
+    throw new Error(
+      `CHAIN CHANGED: genesis is ${f.genesis}, expected ${genesis}. ` +
+        `Refusing to publish figures about a chain that is not ours.`,
+    );
+  }
+  const body = `/*
+ * A dated snapshot of network-scale figures, read straight from chain storage.
+ *
+ * Generated by scripts/recount-network.mjs --write. Do not edit by hand — the
+ * daily refresh job overwrites this file.
+ *
+ * Everything here is a REAL measurement, not invented sample data. All of it is
+ * in chain storage, reachable through the public bootnode RPC under the \`safe\`
+ * method set:
+ *
+ *   QuantumPow::Miners                  key count            -> miners
+ *   QuantumPow::Miners                  proofs_won > 0       -> minersWithWins
+ *   Session::Validators                 vec length           -> validators
+ *   QuantumPow::RegisteredTopologies[DefaultTopology]        -> topologyNodes
+ *                                       nodes/edges lengths     topologyEdges
+ *
+ * ⚠ Take the topology from \`DefaultTopology\`, NOT from \`MineableTopologies[0]\`.
+ * The old figures used index 0, which is storage-hash order and therefore
+ * arbitrary. There are currently two mineable topologies differing by a single
+ * edge, and index 0 is not the default one — that is where the previous
+ * 41,515 came from.
+ *
+ * Still a snapshot rather than a live read. Counting every miner key is a
+ * key-paging scan that grows with the network, and the bootnodes cap connections
+ * with no per-IP limit, so doing it once a day in CI is cheap where doing it per
+ * visitor is not. Label it as a snapshot wherever it renders, and keep \`chain\`
+ * and \`atBlock\` next to the numbers — a stale figure presented as live is worse
+ * than no figure.
+ */
+export const NETWORK_SNAPSHOT = {
+  chain: "Aglais",
+  takenOn: "${new Date().toISOString().slice(0, 10)}",
+  atBlock: ${f.height},
+  source: "chain storage, read directly from a public bootnode RPC",
+  miners: ${f.miners},
+  minersWithWins: ${f.minersWithWins},
+  validators: ${f.validators},
+  topologyNodes: ${f.topologyNodes},
+  topologyEdges: ${f.topologyEdges},
+} as const;
+`;
+  writeFileSync(new URL(`../${SNAPSHOT_FILE}`, import.meta.url), body);
+  console.log(`\nwrote ${SNAPSHOT_FILE}`);
+}
+
 async function check() {
   const published = readPublished();
-  const live = await readFigures();
+  const live = await withFailover(readFigures);
   const failures = [];
 
   console.log(`published : ${published.chain} @ block ${published.atBlock.toLocaleString("en-US")}`);
@@ -399,7 +515,7 @@ async function check() {
     for (const f of failures) console.error(`  - ${f.message}`);
     console.error("\nRefresh with:");
     if (files.includes(SNAPSHOT_FILE))
-      console.error(`  node scripts/recount-network.mjs   # then paste into ${SNAPSHOT_FILE}`);
+      console.error(`  node scripts/recount-network.mjs --write   # rewrites ${SNAPSHOT_FILE}`);
     if (files.includes(NODES_FILE))
       console.error(`  node scripts/recount-nodes.mjs     # rewrites ${NODES_FILE}`);
     console.error("");
@@ -413,7 +529,8 @@ async function main() {
   selfTest();
   if (process.argv.includes("--check")) return check();
 
-  const f = await readFigures();
+  const f = await withFailover(readFigures);
+  if (process.argv.includes("--write")) return write(f);
   console.log(`\nchain    ${f.chain}`);
   console.log(`genesis  ${f.genesis}`);
   console.log(`at block ${f.height.toLocaleString("en-US")}  ${f.at}\n`);
