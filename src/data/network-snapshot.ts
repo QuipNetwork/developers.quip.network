@@ -29,8 +29,8 @@
  */
 export const NETWORK_SNAPSHOT = {
   chain: "Aglais",
-  takenOn: "2026-09-13",
-  atBlock: 168617,
+  takenOn: "2026-09-14",
+  atBlock: 169010,
   source: "chain storage, read directly from a public bootnode RPC",
   miners: 273,
   minersWithWins: 98,
