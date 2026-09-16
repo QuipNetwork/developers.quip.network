@@ -37,8 +37,8 @@ For example, to work with the [QuipSwap](../interlock/quipswap.md) page, copy th
 
 | URL | Contents |
 | --- | --- |
-| [`/llms.txt`](https://quip.gitbook.io/docs/llms.txt) | An annotated index of every page with its markdown mirror, for models that fetch pages on demand |
-| [`/llms-full.txt`](https://quip.gitbook.io/docs/llms-full.txt) | The entire documentation in one markdown file, for pasting into a model's context window |
+| [`/llms.txt`](https://developers.quip.network/docs/llms.txt) | An annotated index of every page with its markdown mirror, for models that fetch pages on demand |
+| [`/llms-full.txt`](https://developers.quip.network/docs/llms-full.txt) | The entire documentation in one markdown file, for pasting into a model's context window |
 
 **When to use it.** You are building a tool, agent, or evaluation that consumes the docs as data.
 
