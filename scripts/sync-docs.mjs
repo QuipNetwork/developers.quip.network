@@ -1,9 +1,8 @@
 import { cp, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
-import process from "node:process";
 
 const projectRoot = path.resolve(import.meta.dirname, "..");
-const sourceRoot = path.resolve(process.argv[2] ?? path.join(projectRoot, ".docs-source/gitbook"));
+const sourceRoot = path.join(projectRoot, "docs");
 const contentRoot = path.join(projectRoot, "src/content/docs");
 const publicRoot = path.join(projectRoot, "public/docs");
 const rootMirror = path.join(projectRoot, "public/docs.md");
@@ -11,7 +10,7 @@ const slugify = (value) => value.toLowerCase().replace(/&/g, "and").replace(/[^a
 
 const summaryPath = path.join(sourceRoot, "SUMMARY.md");
 const summary = await readFile(summaryPath, "utf8").catch(() => {
-  throw new Error(`Cannot read ${summaryPath}. Pass the GitBook checkout as the first argument.`);
+  throw new Error(`Cannot read ${summaryPath}. The merged documentation source is missing.`);
 });
 
 // A route is normally <group-slug>/<basename>, which cannot express a one-segment

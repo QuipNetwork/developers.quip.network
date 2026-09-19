@@ -5,8 +5,6 @@ dist/
 .env
 .DS_Store
 link-health.json
-.docs-source/
-
 # The geo cache: operator IP -> city. NEVER commit this. Publishing operator
 # addresses is exactly what the city-granularity rule in scripts/recount-nodes.mjs
 # exists to prevent. CI carries it between runs as a job cache instead.

@@ -1,0 +1,165 @@
+# Documentation Review Tracker
+
+Generated 7 August 2026. This file is deliberately **not** listed in `SUMMARY.md`, so it never publishes to the docs site. It is the single ledger for everything in the `docs/content-updates` branch that needs a human decision before the DRAFT and UNDER REVIEW notices come off.
+
+How to use it: work through section 3 first (each row ends in a yes/no question), then review the draft pages in section 2, then confirm the moves in section 1 read sensibly on the published site.
+
+**Where to review.** A GitBook staging space synced to THIS branch (`docs/content-updates`) is the intended review surface: exact final rendering, published unlisted, production untouched. Reviewers with GitBook seats can edit in the visual editor and Git Sync commits their changes back to this branch; technical reviewers can equally edit the markdown here via GitLab. Note that edits made in the GitBook web editor may strip the invisible `<!-- REVIEW -->` / `<!-- SOURCES -->` comments on sync, which is why this tracker duplicates every reviewer question. Merging to `main` is what publishes to the production site, and is held until the product launch window.
+
+---
+
+## 1. What moved where
+
+Nav positions only. **No file was moved on disk and no page content was changed by the restructure.** One correction discovered on the staging site (2026-08-07): GitBook builds published URLs from SUMMARY *group* slugs, so the four moved pages DO get new URLs after merge (e.g. `/basics/quip-lifecycle` becomes `/quip-interlock-protocol/quip-lifecycle`). `.gitbook.yaml` now carries a `redirects:` map covering all four old URLs; verify the redirects resolve on staging before merge. The new grouping follows the architecture described by Colton on 6 August 2026: the Interlock is the umbrella primitive, and compute is what the payment rail exists to sell.
+
+**Staging site:** synced from this branch at `https://rdyplayerb.gitbook.io/quip-docs-staging` (user's personal GitBook org, Ultimate trial active — the "Ask" assistant chat visible there is trial-only and will not exist on the free-tier production site). Known platform annoyance: GitBook's mermaid widget captures touchpad scroll as zoom; diagrams are kept compact and horizontal to minimize it, and there is no repo-side setting to disable it. If it stays irritating, the fallback is exporting the diagrams as static images (losing theme-awareness).
+
+| Page | Was | Now | Why |
+| --- | --- | --- | --- |
+| QUIP: The Quantum Unit Interlock Pathway | Basics (3rd) | Quip Interlock Protocol (2nd) | It is the protocol's core primitive, not background reading |
+| QUIP Lifecycle | Basics (4th) | Quip Interlock Protocol, directly after QuipSwap | The Proposed/Approved/Claimable state machine it describes is the swap lifecycle, so it sits beside QuipSwap (placement per the coverage check, 2026-08-07) |
+| Encrypt | Protocols | Quip Interlock Protocol (last) | It describes the asset-protection layer the interlock provides |
+| Requesting Jobs (accelerate.md) | Protocols | Compute (1st) | It is the consumer side of the compute marketplace |
+| Protocols group | existed | dissolved | Both members moved to groups matching the architecture |
+| Basics group | 5 pages | 3 pages (Motivation, Key Properties, Virtues) | Keeps the philosophy/background material, loses the two protocol pages |
+
+**Streamline pass (Brent, 2026-08-07): six pages folded or deleted.** Every fold has a redirect in `.gitbook.yaml`; all content judged on unique contribution.
+
+| Page | Fate | Content went |
+| --- | --- | --- |
+| Quip Client (`getting-started/firewall.md`) | deleted | WalletConnect/wallet-adapter sentence to Quip SDK |
+| Encrypt (`protocols/encrypt.md`) | deleted (brochure page) | Licensing + contacts to README; checkpoint concept already on Participants |
+| Requesting Jobs (`protocols/accelerate.md`) | deleted (brochure page, near-duplicate of Encrypt) | Topic covered by Submit Your First Compute Job |
+| Virtues (`basics/virtues.md`) | deleted | 7-item properties list to the QUIP pathway page; marketing closers dropped |
+| Classical + Quantum (`nodes/*.md`) | merged | One `nodes/miners.md` page, duplicate paragraphs deduplicated, R7 flag carried over |
+| `getting-started/pq-wallet.md` | deleted (orphan, R9) | Nothing unique; removed the last copy of the disputed "256" claim |
+
+New groups: **Quip Interlock Protocol** (after Getting Started) and **Compute** (after it).
+
+**Merge requests folded in (2026-08-27).** Both open MRs on the GitLab repo are now in this branch. !2 `docs/tokenomics-sync` (Colton) syncs tokenomics and consensus roles to whitepaper canon — 40/20/15/15/10 allocation, 40M/yr flat emission, no burn, Canary Node role folded into the validator, QCA/veQUIP governance, Hoover → Hudson Institute — and already contained !1 `feature/qui-1005` (Manish) as a merge, so one merge landed both. The only conflict was in `network/token.md` (Governance area); resolution is recorded in the merge commit. !1 also targets `main` directly: leave it open and let it ride in with this branch at launch, or merging it separately publishes the XQuad group to the live site ahead of everything else here.
+
+## 2. New draft pages
+
+Every new page **used to** open with a warning banner ("Draft — pending technical review") and end with an HTML comment listing its sources, with inline `<!-- REVIEW: ... -->` comments marking specific facts a reviewer should confirm. All of it was stripped on 2026-09-02 for launch (see R24) — none of it had been answered. The questions survive only in this tracker and in the launch-follow-ups section at the top of the Notion hub page.
+
+| # | Page | File | Written by | Status |
+| --- | --- | --- | --- | --- |
+| D1 | How Quip Fits Together | `interlock/how-quip-fits-together.md` | assembled from the 2026-08-06 founder walkthrough + specs | needs review |
+| D2 | Quip SDK: Install section | merged into `getting-started/quip-sdk.md` (Brent, 2026-08-07: install belongs with the SDK page, not before it) | package facts verified against npm/PyPI on 2026-08-07 | needs review |
+| D3 | Quip Accounts | `interlock/quip-accounts.md` | research agents from Notion specs | needs review |
+| D4 | QuipSwap | `interlock/quipswap.md` | research agents from Notion specs | needs review |
+| D5 | Quantum Randomness (QVRF) | `compute/qvrf.md` | research agents from Notion specs, concepts only | needs review |
+| D6 | Submit Your First Compute Job | `compute/submit-a-job.md` | research agents from Notion specs + PyPI | needs review |
+| D7 | Use These Docs with AI | `getting-started/use-with-ai.md` | every URL verified live against quip.gitbook.io on 2026-08-07; pattern from 0x's Fern-based docs | needs review |
+
+Deliberate omissions from every draft (embargoed or unsettled, do not add during review): testnet endpoints and chain identifiers, audit material, mainnet deployment dates, partner names, contract addresses, any signature-slot budget number, QVRF interface signatures and circuit parameters, which wallet implementation is live on mainnet, and whether the ordinary key co-signs.
+
+### Reviewer questions embedded in the drafts
+
+Each appears as an inline `<!-- REVIEW: ... -->` comment at the exact sentence it concerns. Summarised here so a reviewer can work from one list. **Caveat:** GitBook does not document whether HTML comments survive a round-trip through its web editor, so treat this tracker as the durable copy and the inline comments as a convenience that may be stripped if pages are edited in the GitBook UI. The same applies to the `<!-- SOURCES -->` blocks at the foot of each draft. **Feedback collection lives in Notion, not on the site:** the review hub "Quip Docs Review — Staging" (https://app.notion.com/p/3b5db8c6a08881788c00e65ad15ad6c4) carries every question with answer space plus a General-feedback database (page / type / suggested change / status). Team reads on staging, answers in Notion; Brent and Claude apply answers here. General-feedback rows use a CURRENT/PROPOSED convention (verbatim quote of the existing sentence, then the replacement), which makes each row an exact-match edit; ingestion = query the database for Status=new, apply, flip to applied with the commit hash in a row comment, or declined with a reason. Notion addresses for whoever runs it: hub page 3b5db8c6-a088-8178-8c00-e65ad15ad6c4, feedback data source collection://e67c89ea-0b7e-45de-b199-dfe7a72cb48a. Page answers (no status field) get a "✅ Applied in <hash>" annotation appended under them when processed. No reviewer-facing page ships in the site nav, so nothing needs removing at merge. Because banners and flags now link the internal Notion review page directly (Brent, 2026-08-07: whole team has access), a pre-merge sweep must confirm none survive: `grep -rn "app.notion.com" --include="*.md" .` must return nothing outside this tracker. Three prerequisites to check in the GitBook UI before merge: the free Mermaid integration must be enabled for the space (the three diagrams will not render without it), the dark-mode cover variant is set once via the page editor, and the "Page actions" toggle (Site customization, Configure) must stay ON: it powers the site's auto-generated MCP server at `/~gitbook/mcp` plus the Copy-as-Markdown and Open-in-ChatGPT/Claude actions, all verified live on 2026-08-07.
+
+**D3 Quip Accounts:** Is the Chrome-to-extension routing guidance right, and is the extension publicly installable? Is SHRINCS what integrators actually encounter everywhere accounts are available, and does it have an official expansion? Is the ERC-1271 stays-valid-until-key-replaced description accurate? Can the remaining slot budget be read from the account/SDK at runtime? Do both clients surface the upgrade prompt?
+
+**D4 QuipSwap:** Is "only Quip wallet contracts can initiate" still the exact gating rule after the 2026-07-27 rework? Does the settlement contract verify no post-quantum signatures itself? Are same-chain swaps supported in the shipped contract? Is the reverse-RFQ framing of maker orders the wanted public description? Exactly two terminal outcomes per committed side? Is "initiator" the right public word for the longer-deadline party?
+
+**D5 QVRF:** Is the swap-rail positioning approved as public framing? Is "encrypted API plus on-chain request-and-callback" the right one-line description of V0 delivery? Is single-operator V0 (Quip as both oracle and trustee) the confirmed plan? Does V0 as built publish the commitment before delivery? Should the QVRF acronym be expanded at all, given the page corrects that it is not a VRF? Is the subnet-2 concept-level positioning cleared for public docs?
+
+**D6 Submit a Job:** May the docs publish a public node endpoint for SolverQuip yet? Is "optimization subnet" the approved public name? Is the registered-topology subgraph constraint still current? The public install path is resolved in R21; does engineering approve it for external developers today?
+
+## 3. Existing content under review (inline flags)
+
+Each flag is a red hint block in the page itself, labeled with the ID below. Answering the question resolves the flag: either the passage stands (delete the hint) or it gets corrected (edit the passage, then delete the hint).
+
+| ID | Where | What the docs say | What newer sources indicate | Confidence | Question for engineering |
+| --- | --- | --- | --- | --- | --- |
+| R1 | resolved by deletion: the claim no longer exists anywhere in the repo | Seed safe while "nonce remains lower than 256" | 256 matches no internal source; figures in play are 64 (a chain count, per the 2026-06-10 review) and a proposed warning at 32. The claim left the published docs when the Quip Client page was folded away (2026-08-07); Quip Accounts documents the slot discipline without a number | High that 256 is wrong; the replacement is unsettled | Once the real budget is settled, should a rotation threshold be documented on Quip Accounts? |
+| R2 | `getting-started/what-is-quip.md` §1 + §2.3 | "Nakamoto-style chain whose proof-of-work" produces blocks | PoW spec (2026-07-18): mining sits alongside BABE+GRANDPA; block production is decoupled from mining | High | Does mining produce blocks, or do validators produce blocks while miners are rewarded on a separate track? |
+| R3 | `getting-started/what-is-quip.md` §2.1–2.2 | Rotating WOTS+ key chain; swaps via per-swap wallets exchanging quantum keys | SHRINCS replaced keysets (Linear QUI-744, closed 2026-07-24); one shared settlement contract per chain with hash locks (spec 2026-07-18, decided 2026-03-03) | High | Has the per-swap design been fully retired, and is SHRINCS the shipped scheme? |
+| R4 | resolved 2026-08-27 | Emissions taper over Years 2–5 | Answered by Colton's whitepaper-canon sync (`8d4f1ae`, merged here): emission is 40M QUIP/year, fixed and flat, with implicit decay as subnets multiply. Both pages now say that, the 10-year duration and the taper are gone, and the inline hint on §4.3 was deleted with them | — | Closed |
+| R5 | `getting-started/quickstart.md` | Keys on Ethereum, Solana, L2s, Arch, Midl | Solana feature-flagged off (QUI-176, closed 2026-06-03); EVM confirmed working on one network; Arch/Midl unverified | Medium-high | Which chains genuinely work today? |
+| R6 | `getting-started/quickstart.md` | Points to WOTS+-era libraries | Current packages are `ethereum-sdk@beta` and `hashsigs-wasm@rc` (registry-verified 2026-08-07) | High (registry-verified) | Should this paragraph now point at the Install page, or should the npm dist-tags move instead? |
+| R7 | `nodes/miners.md` | "Publishes Qiskit and Ocean SDK solutions" | 2026-07-13 toolchain: CPU, GPU, D-Wave, no Qiskit; gate-model tickets unopened as of 2026-08-03 | Medium | Is there a runnable Qiskit solver today? |
+
+### Tracker-only items (no clean inline anchor)
+
+| ID | Where | Issue |
+| --- | --- | --- |
+| R8 | resolved 2026-09-02 | Published docs now consistently use "Quantum Unit Interlock Pathway", matching the protocol page title, filename, and navigation. The conflicting "QUantum Interlock Pathway" homepage card was corrected. "Quantum User Interlock Protocol" remains an internal-source discrepancy for the product team, but it no longer creates an inconsistency within the published docs. |
+| R9 | resolved | `pq-wallet.md` deleted 2026-08-07 per Brent's streamline decision |
+| R10 | Image assets with old branding or defects | Brand rule from Brent (2026-08-07): the old Quip logo must not appear anywhere; only the new butterfly branding. Status: `quip_whitepaper_value_flow_dark.png` (old logo + Solana logo + white-on-transparent labels, illegible on light theme) replaced with a mermaid diagram on participants.md, file now unreferenced. Still to clean up: `quip_x_header.png` and `quip_x_header (1).png` (old branding, unreferenced, delete candidates), `Quip_DWave_Consensus.png` (unreferenced), and `quip_whitepaper_consensus.png` on quickstart.md ("Quip **Sinnet**" typo, shows three subnets where the current story is two; needs regeneration in new branding or replacement with a mermaid equivalent). what-is-quip.md §4.2 table cell also says "Compute (Sinnet)" |
+| R11 | `network/token.md` vs new architecture | Token page describes QUIP as a compute credit; confirm the QuipSwap payment-rail framing on the new overview page is consistent with tokenomics before removing its draft banner |
+| R12 | Compute group vs XQuad docs | **Landed and verified 2026-08-27.** MR !1 (`dfbead2`, Manish) added an **XQuad** nav group with a Toolchain page and an external **Documentation** entry, merged here. Both unknowns in that MR are now closed by live checks on staging: GitBook *does* render a bare external URL in `SUMMARY.md` as a real sidebar link (`href="https://docs.quip.network/xquad/"`), and that target is **no longer dead** — `docs.quip.network/xquad/` returns the XQuad mdBook ("Introduction — XQuad Documentation"), while `docs.quip.network/` root 301s to `quip.gitbook.io/docs`. The originally planned CI sync of a whole XQuad category (QUI-980 / QUI-853) is superseded by this hand-written page unless the toolchain team still intends it |
+| R13 | resolved: `encrypt.md` deleted in the streamline pass | Sitting under the Interlock group is defensible only if the page is reframed as an account-layer capability; no current source ties encryption to the interlock construction itself. Alternative: move it beside Quip Accounts or back out of the group |
+| R14 | Compute group, future page | Newest architecture (2026-08-06) names three job-request paths: direct off-chain (primary today), via an EVM contract, via a PVM/Rust contract. Worth one page once the XQuad category lands |
+| R16 | Quip Client page | **Resolved by Brent 2026-08-07: page folded away.** No standalone client artifact exists (npm 404s, no public repo). The WalletConnect / wallet-adapter compatibility sentence moved to the Quip SDK page; nav entry removed; `getting-started/firewall` redirects to the SDK page in `.gitbook.yaml`. If a standalone client ever ships, it gets a new page with a real download |
+| R15 | Whole branch, urgency | `docs.quip.network` CNAME setup started 2026-08-07 (QUI-981). Once the domain goes live this GitBook becomes the canonical public docs, so the R1 to R7 answers and this branch's merge decision should land before that switch |
+| R17 | `basics/key-properties.md` caption vs `network/participants.md` caption | `stakeholder-categories-2.png` was published on three pages under three different captions. Inspected 2026-08-23: the diagram shows five **participant** layers (Compute Consumers, Application / Algorithm / Protocol Developers, Compute Providers) with $QUIP flowing down and Liquidity Providers exchanging USD and $QUIP. So the Participants caption is correct; Key Properties calls it "The layers of the Quip Network Protocol", which describes participant layers as protocol layers. **Question: fix the Key Properties caption, or is it intended as a general overview diagram?** Removed from Quickstart already (wrong page for a task guide). Alt text added to both surviving uses. Related: R10. |
+| R18 | `basics/quip-lifecycle.md` vs `interlock/quipswap.md` | The Lifecycle page is 185 words and its propose / approve / claim state machine duplicates QuipSwap's "The swap lifecycle: commit, execute, reclaim" section in different words, so the two pages compete for the same reader and the same query. **Question: fold Lifecycle into QuipSwap (with a redirect), or keep it standalone?** Not actioned — it changes the nav, so it needs a decision. Cross-links added between the two in the meantime. Note both lifecycle images are dark-background only and will read as a dark block in light theme. |
+| R19 | Staging site, pre-launch | The review staging site is published with `<meta name="robots" content="index, follow">`, a live sitemap, and `Content-Signal: ai-train=yes, search=yes, ai-input=yes` (verified 2026-08-23). It is a crawlable, AI-ingestible duplicate of the docs carrying unreviewed draft claims. Needs a password or an indexing block in GitBook space settings before launch, independent of the merge. |
+| R20 | Docs hosting, extends R15 | Verified 2026-08-23: `docs.quip.network` CNAMEs to `quip.network.gitlab.io` (GitLab Pages) which 301s to `quip.gitbook.io/docs`, and production's canonical is `quip.gitbook.io/docs` — so ranking signals and AI citations accrue to a domain Quip does not own, and `quip.network/docs` 404s. Proposal written for the infrastructure team: serve the same GitBook site at `quip.network/docs` via a Netlify proxy rewrite plus GitBook's custom-subdirectory setting. Best done in the same window as this branch's merge so each old URL takes exactly one 301 to its final home. |
+
+| R21 | resolved 2026-09-02 | PyPI metadata for `xquad` 0.3.2 confirms that it provides a `quip` extra which installs the matching `xqsa[quip]` version. Both pages now use `pip install "xquad[quip]"`, and the hard-coded 0.3.1 claim was removed. Related: R6 |
+| R22 | `xquad/toolchain.md`, provenance | Page came from MR !1 (QUI-1005, Manish), written from the xquad repo README and mdBook rather than assembled here, so it carries no "Draft — pending technical review" banner — only the project's own pre-v1.0 caveat, reformatted here as a hint block. Its headings, US spellings and cross-links were brought in line with this branch on merge. It still needs the same technical read as the D-pages before launch |
+
+| R23 | Staging, post-merge verification | Full sweep run 2026-08-27 after the MR merge, all green: 19 pages in the sitemap matching `SUMMARY.md` exactly; 25 distinct internal links all 200; every `.gitbook.yaml` redirect resolving (`nodes/classical` and `nodes/quantum` to `nodes/miners`, `protocols/encrypt` to `quip-interlock-protocol/quip-accounts`, `protocols/accelerate` to `compute/submit-a-job`, `basics/virtues` to the pathway page, `getting-started/firewall` to the SDK page, `basics/quip-lifecycle` to its new group); no conflict markers on any page; Mermaid rendering (the runtime and `MermaidCodeBlockLazy` are both present, so the integration is on); every external link live, including `crates.io/crates/hashsigs-rs`, which 404s to a plain `curl` only because crates.io blocks unknown user agents. Two URL facts worth carrying forward: published URLs use the **SUMMARY group slug**, so canonical is `/quip-interlock-protocol/quip-accounts`, and GitBook additionally serves the **folder path** `/interlock/quip-accounts` as a 200 alias whose canonical tag points back at the group form. `REVIEW-TRACKER.md` does not publish — `/review-tracker` returns a soft-200 empty shell marked `noindex` and is absent from the sitemap, so no tracker content is reachable, but it is a shell rather than a hard 404 |
+| R24 | Whole branch, launch strip | **Stripped 2026-09-02 on Brent's call to push live.** Removed from the shipping pages: 5 red "Needs review" flags (R2 what-is-quip consensus, R3 what-is-quip swap/signatures, R5 quickstart chains, R6 quickstart npm tags, R7 miners Qiskit), 7 "Draft — pending technical review" banners (`quip-accounts`, `quipswap`, `how-quip-fits-together`, `qvrf`, `submit-a-job`, `use-with-ai`, `quip-sdk`), 21 inline `<!-- REVIEW: -->` comments and all 7 `<!-- SOURCES -->` blocks. Two `hint style="danger"` blocks are genuine content and were kept: the ERC-1271 view-only warning in `quip-accounts.md` and the install-tag warning in `quip-sdk.md`. **Nothing was answered first** — the flagged claims are now public unwarned, and the seven draft pages read as approved without engineering having approved them. Every removed question was copied verbatim into a "🚀 Launch follow-ups" section at the top of the Notion hub (3b5db8c6-a088-8178-8c00-e65ad15ad6c4) before removal; that section plus this tracker are now the only record. The pre-merge sweep in §4 passes as a side effect: `grep -rn "app.notion.com" --include="*.md" .` returns nothing outside this file. R19 (staging is crawlable and AI-ingestible) is now more urgent, not less, since the pages carry no draft marker to signal that the claims are unverified |
+
+## 4. Blocked on release decisions (not documentation decisions)
+
+| What | Blocked by |
+| --- | --- |
+| Connect-to-testnet page (the single most useful dev page; source table live-verified 2026-08-06) | Standing "do not share outside the team yet" on the endpoints page; chain identifier unregistered. When cleared, write ONLY from the live endpoints page: a 2026-08-06 ticket records stale chain-ID values in older repo references and smoke tests |
+| Contract-level QuipSwap reference | Spec is behind code in three places; needs someone to read `Omnibus.sol` / `IOmnibus.sol` |
+| QVRF integration reference | Interface still settling (three conflicting signatures; circuit parameters broken 2026-08-03, replacement not computed). Note: contracts ARE deployed and working end-to-end on testnet as V0/alpha per the 2026-08-07 go/no-go, so the blocker is interface stability, not implementation existence |
+| Publishing the audit report | Colton (2026-08-06): make it available on the docs site once it exists |
+| Docs ownership | Colton to ask Jason (and Maddie) as the people most familiar with the source documents |
+| Quantum Echoes / QFT mention in the QVRF page | **In the page now** (`compute/qvrf.md`, "Where QVRF fits") at Brent's direction 2026-08-07: the branch merges at launch, so the paragraph publishes with it. Architecturally true (the QFT mint calls `QVRF.requestSeedFor(tokenId)`, NFT Tech Spec 2026-06-19; Subnet 2 spec 2026-08-01). Two things to confirm before merge, flagged inline: the collection URL, and engineering sign-off on the phrasing (worded without a certification claim per Security Model 1). The NFT worked-example section stays out of How Quip Fits Together |
+| Quip Agent Skill (future product idea, from the 0x teardown) | 0x ships an installable agent skill (`npx skills add 0xProject/0x-ai`) that teaches coding agents their whole API surface, complementing their MCP server (skill = embedded knowledge for writing code; MCP = live doc lookup). Quip could ship the same once the SDK surface stabilises; it is an engineering artifact, not a docs page, so it is parked here |
+
+## 5. Polish recommendations for existing pages (from the writing-quality pass, 2026-08-07)
+
+**House rule 3 (set by Brent, 2026-08-07): brand naming per the brand book's "How to refer to us".** DO: "Quip Network" full name on first reference (including page titles: "What is Quip Network?"), "Quip" acceptable on second reference within the same piece, "quip.network" as URL. DON'T: QuipNetwork, Quipnetwork, QuipNet, Quip.Network with a capital N, or "QUIP Network" (all caps QUIP is reserved for the token). Product names (QuipSwap, Quip Account, Quip SDK) are their own names, not brand references. Sweep before merge:
+
+```sh
+grep -rnE "QuipNetwork|Quipnetwork|QuipNet\b|Quip\.Network|QUIP Network" --include="*.md" .
+```
+
+Token differentiation (Brent, 2026-08-07): token mentions may use **$QUIP** to distinguish the token from QUIP the primitive. Applied across token.md, participants.md, what-is-quip.md, and the who-pays-whom diagram (26 instances). Convention: $QUIP = the token; QUIP = the primitive; Quip Network = the brand. This largely resolves the R8 all-caps collision, though R8's three-way acronym expansion still needs a decision.
+
+**House rule 2 (set by Brent, 2026-08-07): no narrating what the reader can see, no manufactured intrigue.** Banned: prose that restates a diagram, table, or layout ("Reading the picture...", "Notice that...", "As you can see", "here's some diagrams below"), meta-commentary about the docs themselves ("this replaces the older diagram"), and rhetorical suspense or reveals ("Notice what is missing...", "The outcome?", "What a quandary."). State facts directly, ideally as comparisons ("Unlike most Web3 platforms, Quip's atomic swaps require no bridge"). The test: does the sentence add anything the figure does not show, stated plainly? Sweep before merge:
+
+```sh
+grep -rniE "reading the picture|as you can see|notice what|notice that|diagram above|diagrams below|here's some|as shown in|the following diagram|below is a" --include="*.md" .
+```
+
+**House rule 1 (set by Brent, 2026-08-07): no marketing language anywhere in the docs.** Banned: hype adjectives with no measurable claim (amazing, blazingly fast, seamless, supercharged, incredible, revolutionary, unprecedented), investor-deck framing ("immediate value to your bottom line", "turn-key", "solve the world's toughest problems"), excitement performatives ("We're excited…"), and grandiosity markers ("paradigm shift", "heretofore unseen"). The test: a developer must be able to falsify the sentence. All nine existing occurrences were rewritten on 2026-08-07 (README, virtues.md, motivation.md, quip-sdk.md), facts preserved. Re-run before any merge:
+
+```sh
+grep -rniE "amazing|blazing|seamless|supercharg|turn-?key|revolutionar|cutting[- ]edge|world[- ]class|incredibl|unprecedented|paradigm shift|heretofore|game[- ]chang|we'?re excited|excited to|immediate value|bottom line|toughest problems|best-in-class" --include="*.md" .
+```
+
+Findings only; **no existing page was edited**. Rubric: Google developer style guide, Diataxis, Write the Docs, Stripe exemplar. Full per-finding detail with exact quotes lives in the polish-pass output; the highlights below are the ones worth acting on when each page is next touched. Ratings: 4 pages need rework, 11 need light polish, 1 is fine as-is (quip-lifecycle.md), and quip-sdk.md needs task links.
+
+| Page | Rating | Top recommendation |
+| --- | --- | --- |
+| `README.md` | needs rework | Intro is marketing copy: drop "amazing"/"blazingly fast"/"We're excited", replace the value-prop paragraph with what a developer does here, keep both offerings (compute AND asset security) stated plainly |
+| `getting-started/quickstart.md` | light polish | Turn the run-on "not much to do other than..." sentence into a bulleted list; delete the orphan "More coming soon" line |
+| `getting-started/what-is-quip.md` | light polish | Expand the telegraphic arrow/ampersand bullets in 2.1 and 2.3 into sentences; drop "The outcome?" rhetorical question |
+| `getting-started/quip-sdk.md` | light polish | Link each SDK to an install/reference page (currently nothing to click); cut "supercharged"; fix "usecase" to "use case" (twice) |
+| `getting-started/firewall.md` | light polish | Lead with the fact (the client SDK and what it is compatible with) instead of the "If you are interested..." conditional; gloss or link "QUIP firewall contract" at first use |
+| `protocols/encrypt.md` | light polish | "are in a state of completeness" becomes "are complete"; tighten the SDK sentence |
+| `protocols/accelerate.md` | light polish | Remove the sales-brochure clause; otherwise same template as Encrypt |
+| `network/token.md` | needs rework | Value-accrual section reads as an investor pitch and repeats its price-pressure claim three times; state each mechanism once, neutrally |
+| `basics/motivation.md` | needs rework | Long-form essay; fine as explanation content but flag it as such and tighten the most speculative passages |
+| `basics/key-properties.md` | light polish | Minor tightening |
+| `basics/virtues.md` | needs rework | Reads as pure marketing ("paradigm shift", "heretofore unseen applications"); either rewrite neutrally or fold into Motivation |
+| `basics/quip-the-quantum-unit-interlock-pathway.md` | light polish | Minor tightening |
+| `basics/quip-lifecycle.md` | fine as-is | No findings |
+| `network/participants.md` | light polish | Minor tightening across tabs |
+| `nodes/run-a-node-testnet.md` | needs rework | Task page that buries its steps; restructure as a numbered procedure |
+| `nodes/classical.md` | light polish | Minor tightening |
+| `nodes/quantum.md` | light polish | Minor tightening |
+
+The single highest-value fix is the README intro, which is also the rubric's worked example. A rewrite that keeps BOTH halves of the product (the earlier polish research produced a version that silently dropped the compute network, which is exactly the trap):
+
+> These docs cover building on the Quip Network: submitting real optimization jobs to a decentralized quantum and classical compute marketplace, and protecting assets on existing chains with quantum-resistant accounts and swaps. New to Quip? Start with the [Quickstart](getting-started/quickstart.md). Integrating? Go to the [Quip SDK](getting-started/quip-sdk.md). *(This suggested rewrite was applied to the README on 2026-08-07, with the link updated after the install page merged into the SDK page.)*
