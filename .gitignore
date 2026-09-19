@@ -11,3 +11,5 @@ link-health.json
 # addresses is exactly what the city-granularity rule in scripts/recount-nodes.mjs
 # exists to prevent. CI carries it between runs as a job cache instead.
 .geo-cache.json
+
+/reference-material
