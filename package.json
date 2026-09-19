@@ -5,9 +5,11 @@
   "private": true,
   "description": "Developer portal for Quip Network",
   "scripts": {
+    "predev": "npm run docs:sync",
     "dev": "astro dev",
+    "precheck": "npm run docs:sync",
     "docs:sync": "node scripts/sync-docs.mjs",
-    "prebuild": "node scripts/check-endpoints.mjs",
+    "prebuild": "node scripts/check-endpoints.mjs && npm run docs:sync",
     "build": "astro build",
     "postbuild": "node scripts/fetch-book.mjs",
     "preview": "astro preview",

@@ -40,21 +40,11 @@ dev() {
 sync_docs() {
   ensure_deps
   ensure_image
-  if [ "$#" -eq 1 ]; then
-    source_path=$(realpath "$1")
-  elif [ "$#" -eq 0 ]; then
-    source_path="$PWD/.docs-source/gitbook"
-    if [ -d "$source_path/.git" ]; then
-      git -C "$source_path" pull --ff-only origin main
-    else
-      mkdir -p "$PWD/.docs-source"
-      git clone --depth 1 git@gitlab.com:quip.network/gitbook.git "$source_path"
-    fi
-  else
-    echo "usage: ./run docs:sync [path/to/gitbook]" >&2
+  if [ "$#" -ne 0 ]; then
+    echo "usage: ./run docs:sync" >&2
     exit 1
   fi
-  "$runtime" run --rm $interactive -v "$PWD:/app:Z" -v "$source_path:/docs-source:ro,Z" "$tag" npm run docs:sync -- /docs-source
+  "$runtime" run --rm $interactive -v "$PWD:/app:Z" "$tag" npm run docs:sync
 }
 
 case "${1:-dev}" in
@@ -67,7 +57,7 @@ case "${1:-dev}" in
   docs:sync) shift; sync_docs "$@" ;;
   build|check|preview|check:links) command_name=$1; ensure_deps; container npm run "$command_name" ;;
   *)
-    echo "usage: ./run [dev|image|shell|build|check|preview|check:links|npm ...|npx ...|node ...|docs:sync [PATH]]" >&2
+    echo "usage: ./run [dev|image|shell|build|check|preview|check:links|npm ...|npx ...|node ...|docs:sync]" >&2
     exit 1
     ;;
 esac

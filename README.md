@@ -105,14 +105,13 @@ role and `write_repository`, because `main` restricts pushes to Maintainers.
   repos, socials) lives in `src/data/links.ts`. Repointing to a new network is
   the first file only. The docs are generated into this repo and `DOCS_BASE`
   points at their canonical `/docs` home.
-- **Docs sync manually from the private GitBook source.** Run
-  `./run docs:sync`; it updates a gitignored checkout at
-  `.docs-source/gitbook` on the host, then runs the transformer in the
-  container. Commit the regenerated
-  `src/content/docs/` and `public/docs/` trees. The script reads navigation and
-  public routes from `SUMMARY.md`, normalizes GitBook-only markup, rewrites
-  internal links, copies assets, and builds `llms.txt`, `llms-full.txt`, and
-  per-page Markdown mirrors. Production does not clone the source repo.
+- **Docs live in `docs/`.** It is the merged GitBook source of truth, including
+  `SUMMARY.md`, `.gitbook.yaml`, the 19 pages, and their assets. `docs:sync` is
+  run automatically before development, checks, and builds; run
+  `npm run docs:sync` directly when inspecting the generated trees. The script
+  reads navigation and public routes from `SUMMARY.md`, normalizes GitBook-only
+  markup, rewrites internal links, copies assets, and builds `llms.txt`,
+  `llms-full.txt`, and per-page Markdown mirrors.
 - **`npm run build` runs a guard first.** `scripts/check-endpoints.mjs` fails the
   build if a retired endpoint reappears anywhere in `src/`, or if the aglais
   endpoints and genesis hash go missing. It is offline by design and never
