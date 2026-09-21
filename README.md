@@ -108,10 +108,12 @@ role and `write_repository`, because `main` restricts pushes to Maintainers.
 - **Docs live in `docs/`.** It is the merged GitBook source of truth, including
   `SUMMARY.md`, `.gitbook.yaml`, the 19 pages, and their assets. `docs:sync` is
   run automatically before development, checks, and builds; run
-  `npm run docs:sync` directly when inspecting the generated trees. The script
-  reads navigation and public routes from `SUMMARY.md`, normalizes GitBook-only
-  markup, rewrites internal links, copies assets, and builds `llms.txt`,
-  `llms-full.txt`, and per-page Markdown mirrors.
+  `npm run docs:sync` directly when inspecting the generated trees. Only edit
+  `docs/`: `src/content/docs/`, `public/docs/`, and `public/docs.md` are ignored
+  build output and are overwritten by the sync. The script reads navigation and
+  public routes from `SUMMARY.md`, normalizes GitBook-only markup, rewrites
+  internal links, copies assets, and builds `llms.txt`, `llms-full.txt`, and
+  per-page Markdown mirrors.
 - **`npm run build` runs a guard first.** `scripts/check-endpoints.mjs` fails the
   build if a retired endpoint reappears anywhere in `src/`, or if the aglais
   endpoints and genesis hash go missing. It is offline by design and never
