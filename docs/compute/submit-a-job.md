@@ -85,9 +85,9 @@ Diversity is measured pairwise across the submitted set, using a distance that a
 
 ## Your problem must fit a registered topology
 
-At present, a submitted problem must fit inside a hardware topology that is registered on the chain and marked as mineable. Concretely, the solver places your model's variables onto the nodes of a registered topology, so your problem's graph must be a subgraph of one of those registered shapes. Arbitrary problem shapes are not yet supported.
+At present, a submitted problem must fit inside a hardware topology that is registered on the chain. Concretely, the solver places your model's variables onto the nodes of a registered topology, so your problem's graph must be a subgraph of one of those registered shapes. Arbitrary problem shapes are not yet supported.
 
-`SolverQuip` checks that the target topology is both registered and mineable before your reward is committed, and the placement step fails with a clear error if your graph does not fit. You lose nothing by trying a shape that does not work.
+The placement step fails with a clear error before your reward is committed if your graph does not fit, so you lose nothing by trying a shape that does not work. [Ising Topologies](ising-topologies.md) explains what a topology is, why the shapes are what they are, and why the chain does not filter jobs by topology.
 
 ## What happens to your job
 
