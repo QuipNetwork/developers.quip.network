@@ -21,6 +21,7 @@
 
 * [Submit Your First Compute Job](compute/submit-a-job.md)
 * [Quantum Randomness (QVRF)](compute/qvrf.md)
+* [Ising Topologies](compute/ising-topologies.md)
 
 ## Basics
 
