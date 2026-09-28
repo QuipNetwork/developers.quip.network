@@ -41,7 +41,7 @@ Publishing a listing escrows nothing. The maker's assets stay in their account u
 
 The secret stays only in the maker's browser local storage, under the key `quip.orderbook.secret.<lock>`. If the maker clears site data or switches device before Settle, the order book reports the secret as unavailable, and the swap can then only end in reclaim.
 
-Each on-chain step runs when the user selects its action. With the default 1,800-second gap, the maker commits within 30 minutes of accepting, the taker commits in the following 30 minutes, and the maker settles in the 30 minutes after that, so both sides need to be online for their steps. The taker should confirm the maker's commit before committing its own leg; the contract does not check it. The maker's steps are Commit, Share and Settle; the taker's are Approve, Commit and Settle. If a swap stalls, each side reclaims its own leg once its `reclaimRelease` passes.
+Each on-chain step runs when the user selects its action. With the default 1,800-second gap, the maker commits within 30 minutes of accepting, the taker commits in the following 30 minutes, and the maker settles in the 30 minutes after that. On a cross-chain swap the taker then settles on the maker's chain in the 60 minutes that follow the maker's settle window. Both sides need to be online for their steps. The taker should confirm the maker's commit before committing its own leg; the contract does not check it. The maker's steps are Commit, Share and Settle; the taker's are Approve, Commit and Settle. If a swap stalls, each side reclaims its own leg once its `reclaimRelease` passes.
 
 Every commit is executed by the user's Quip account and authorized with its post-quantum signature. See [Who can commit](contracts-and-fees.md#who-can-commit).
 

@@ -27,7 +27,7 @@ The SDK never holds keys, never signs and never stores the secret. For a Quip ac
 
 ## Minimal example: read the fee and recent settlements
 
-This script reads the current commitment fee on Base and lists the swaps settled in the last 2,000 blocks. It sends no transactions and needs no key.
+This script reads the current commitment fee on Base and lists the swaps settled in the last 2,000 blocks. It sends no transactions and needs no key. It uses top-level `await`, so it must run as an ES module: save it as `example.mts`, or set `"type": "module"` in `package.json` (with `"module": "nodenext"` in `tsconfig.json` if you typecheck it). The SDK being ESM-only does not make your file a module.
 
 ```ts
 import { createPublicClient, http, formatEther } from 'viem'
