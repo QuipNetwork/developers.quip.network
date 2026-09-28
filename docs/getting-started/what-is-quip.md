@@ -87,13 +87,13 @@ One billion QUIP will have been emitted when all pre-mine allocations finish ves
 |                      | Transfer        | Sender          | Flat fee → validators |
 |                      | Contract exec   | Caller          | % routed to treasury  |
 |                      | Swap commit     | Both parties    | Escrow (reclaimable)  |
-|                      | Swap claim      | Claimer         | Nominal fee           |
+|                      | Swap claim      | Claimer         | None (gas only)       |
 | **Compute (Sinnet)** | Job bid         | Consumer        | Variable fee          |
 |                      | Block reward    | Protocol        | Newly-minted          |
 |                      | Staking bond    | Validators/Noms | Locked collateral     |
 |                      | Bounty payout   | Treasury        | Stream release        |
 
-**TODO(vas):** on the deployed swap contract, each commit pays a flat commitment fee in ETH, escrow is returned by reclaim with no slashing, and claim carries no protocol fee. Confirm how the two swap rows above map to that.
+On the deployed swap contract, each commit pays a flat commitment fee in ETH, escrow is returned by reclaim with no slashing, and claim carries no protocol fee. See [Contracts and Fees](../quipswap/contracts-and-fees.md#the-commitment-fee).
 
 Key points: universal denomination, predictable costs, treasury buyback into permanent liquidity (no burn), security-fee coupling.
 

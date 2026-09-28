@@ -96,7 +96,7 @@ The order book spaces all six deadlines one gap apart, starting from the moment 
 | Proposer `reclaimRelease` | `s + 5g` |
 | Taker `reclaimRelease` | `s + 6g` |
 
-The default gap is 1,800 seconds, so a swap that nobody settles is fully reclaimable three hours after acceptance. A maker can set a gap as short as 60 seconds; anything under 1,800 seconds asks for confirmation. The longest gap keeps the last `reclaimRelease` within 14 days of acceptance.
+The default gap is 1,800 seconds, so a swap that nobody settles is fully reclaimable three hours after acceptance. A maker can set a gap as short as 60 seconds; a gap under 1,800 seconds, or under the minimum the order book sets for that chain pair if higher, asks for confirmation. The longest gap keeps the last `reclaimRelease` within 14 days of acceptance.
 
 ## Lock states
 

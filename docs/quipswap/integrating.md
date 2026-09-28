@@ -11,9 +11,7 @@ This page covers reading QuipSwap from outside the order book: the contract inte
 
 ## Reading offers
 
-Order book listings are stored off chain by the order book service. Its listing endpoints only answer requests from the order book's own origins, so there is no public API for open listings at launch. A listing becomes visible on chain only after the maker accepts a request and commits: from then on, the swap is readable from the contract and its `Commitment` events.
-
-**TODO(vas):** is a public read API for open listings planned, and if so, what is its URL and response format?
+Open listings are stored off chain by the order book and are read through the order book app at [swap.quip.network](https://swap.quip.network). A listing reaches the chain once the maker accepts a request and commits. From then on, the swap is readable from the contract and its `Commitment` events, as shown below.
 
 ## The TypeScript SDK
 

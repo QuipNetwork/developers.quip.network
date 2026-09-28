@@ -37,7 +37,7 @@ Publishing a listing escrows nothing. The maker's assets stay in their account u
 2. **Accept.** The maker is notified and picks a request to accept. The service checks the listing, the signature, the maker's account and its balance again.
 3. **Maker commits.** The maker's browser generates the secret and builds the swap terms with the maker as proposer. The secret stays in the maker's browser and is never sent to the order book service. The maker approves any ERC-20 spend and commits, then the swap is shared with the taker.
 4. **Taker commits.** Once the maker's commit window has closed, the taker approves and commits their leg.
-5. **Settle.** The maker claims, which reveals the secret and settles the swap.
+5. **Settle.** The maker claims, which reveals the secret. On a same-chain swap that one claim settles both legs. On a cross-chain swap the taker then claims the maker's leg with the revealed secret.
 
 Each on-chain step runs when the user selects its action. The maker's steps are Commit, Share and Settle; the taker's are Approve, Commit and Settle. If a swap stalls, each side reclaims its own leg once its `reclaimRelease` passes.
 
@@ -71,7 +71,7 @@ A listing expires at the time the maker set. An expired listing drops out of the
 
 Both legs of a swap must be on mainnets, or both on testnets. On mainnet that means same-chain swaps on Base. Cross-chain swaps are available between Base Sepolia and OP Sepolia.
 
-**TODO(vas):** confirm the Base asset list is final for launch, and give the hostname of the test instance of the order book.
+This is the asset list in the order book's configuration today. It can change as assets are added or removed.
 
 ## Paper mode
 

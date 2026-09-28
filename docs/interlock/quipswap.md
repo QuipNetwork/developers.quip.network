@@ -46,17 +46,13 @@ The settlement protocol assumes you and your counterparty have already found eac
 
 A **maker** posts an order: a statement of intent to swap that says what they are offering and what they want in return. A **taker** browses the open orders and takes one. Both parties then commit on-chain, and settlement proceeds through the same commit, execute, and reclaim flow described above. The order book is a convenience layer that runs off-chain; it helps people find each other, and the protocol does not care how the negotiation happened as long as both parties agree on the terms.
 
-A maker order works like a request for quote (RFQ) run in reverse: instead of asking counterparties to quote a price, the maker publishes the full terms and waits for someone to accept them. [The Order Book](../quipswap/order-book.md) describes how the live order book at swap.quip.network runs this flow.
-
-**TODO(vas):** the live order book has no open-amount request-for-quote flow. Confirm whether one is planned, or drop the request-for-quote comparison above.
+The maker publishes the full terms and waits for someone to accept them. [The Order Book](../quipswap/order-book.md) describes how the live order book at swap.quip.network runs this flow.
 
 ## Who can start a swap today
 
-The order book commits every swap through a Quip wallet contract, and the settlement contract accepts those commits only from wallets deployed by the Quip wallet factory. See [Who can commit](../quipswap/contracts-and-fees.md#who-can-commit).
+The settlement contract accepts a commit on one of two routes. On the wallet route, the commit must come from a Quip account deployed by the Quip wallet factory. On the keyed route, the commit can come from any sender but must carry a valid signature over the exact swap, checked by a signature verifier the contract owner has activated. The QuipSwap order book app uses Quip accounts. See [Who can commit](../quipswap/contracts-and-fees.md#who-can-commit).
 
-**TODO(vas):** the deployed contract also accepts commits from any sender that carries a valid signature for an owner-activated verifier. Confirm whether that route is open to integrators at launch before this section states that only Quip wallets can start a swap.
-
-The gate is deliberate. The guided wallet flow is part of the protocol's safety boundary, not a convenience: the wallet can observe both chains, bind you to the intended swap instance, and reject unsafe timing that the contract alone cannot check. Opening the contract to arbitrary callers would expose users to workflow-bypass, phishing, and timing-misuse risks that the wallet flow exists to reduce, so the team treats removing the gate as a future protocol-hardening decision, not a configuration switch.
+The wallet flow also does work the contract cannot: it can observe both chains, bind you to the intended swap instance, and reject unsafe timing before a commit is sent.
 
 ## What QuipSwap does not do
 

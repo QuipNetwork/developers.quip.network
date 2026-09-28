@@ -16,7 +16,7 @@ For the concepts behind the protocol, read [QuipSwap](../interlock/quipswap.md) 
 * **Assets.** Native coin, ERC-20, ERC-721 and ERC-1155, in any combination on either side, up to 20 assets per side.
 * **Settlement.** Commit, claim and reclaim, with a hashlock and six interleaved deadlines. A trade either settles on both sides or each side reclaims its own leg.
 * **Authorization.** Swaps are committed by Quip accounts, the smart accounts that authorize every call with hash-based post-quantum signatures. See [Quip Accounts](../interlock/quip-accounts.md).
-* **Fee.** A flat commitment fee in native ETH on each commit, currently 0.0000079257 ETH on Base.
+* **Fee.** A flat commitment fee in native ETH on each commit, set by the contract owner. See [Contracts and Fees](contracts-and-fees.md#the-commitment-fee) for the current value.
 
 ## Live order book and paper mode
 
@@ -29,8 +29,6 @@ For the concepts behind the protocol, read [QuipSwap](../interlock/quipswap.md) 
 | Networks | Base, plus Base Sepolia and OP Sepolia testnets | None |
 
 Paper mode uses the same board and sign-in as the live order book, and is the place to learn the flow before trading real assets.
-
-**TODO(vas):** confirm the hostname of the test instance of the order book, so it can be listed here.
 
 ## In this section
 

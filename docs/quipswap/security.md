@@ -23,7 +23,7 @@ The report states that the audit covered three repositories:
 
 The report lists each finding with its severity. Read the findings in the report itself; this page does not summarize them.
 
-**TODO(vas):** confirm which commit of `quip-swap-solidity` is deployed on Base and that it includes the fixes for the audit findings, so this page can state the remediation status.
+The source of the Base deployment is [verified on Basescan](https://basescan.org/address/0xA7955981D5759a799267063110Be0F7AeCc26F8A#code), so the deployed code can be compared with the audited code directly.
 
 ## Protections in the contract
 
@@ -49,4 +49,4 @@ These are properties of the design, stated in the contract and repository docume
 
 ## Reporting a vulnerability
 
-**TODO(vas):** confirm the disclosure contact for QuipSwap vulnerabilities, and whether a bug bounty is live at launch.
+Bug bounty details will be published later. Until then, report a suspected vulnerability privately to the Quip team through its official channels, such as [Discord](https://discord.gg/quipnetwork), rather than in a public post, and read the [audit report](https://github.com/oak-security/audit-reports/blob/main/Quip/2026-09-24%20Audit%20Report%20-%20Quip%20v1.0.pdf) for issues already known.

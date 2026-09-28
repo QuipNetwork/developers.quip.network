@@ -21,8 +21,6 @@ QuipSwap has one deployable contract, `Omnibus`. It holds escrowed assets, track
 
 These rows come from the deployment registry, `sdk/src/deployments.json`, which is generated from `script/DeployConstants.sol` in the `quip-swap-solidity` repository. Base is the only mainnet in the registry. The order book only pairs mainnet with mainnet and testnet with testnet, so on mainnet today every swap is a same-chain swap on Base. Cross-chain swaps run between Base Sepolia and OP Sepolia.
 
-**TODO(vas):** confirm that the launch is Base same-chain only, and name the first mainnet chain pair planned for cross-chain swaps.
-
 Each deployment states what it is on chain. `VERSION()` returns the salt label as right-padded ASCII, and `WALLET_FACTORY()` returns the factory the wallet route trusts. Check both before you trust an address, because a CREATE3 address says nothing about the code deployed at it.
 
 The contract has no proxy and no upgrade path. A new version is a new deployment at a new address, and existing swaps stay on the version they were committed to.
@@ -33,15 +31,13 @@ The fee is flat. It does not scale with the size of the trade and is not set in 
 
 | | Value |
 | --- | --- |
-| Current fee on Base | 7,925,700,000,000 wei (0.0000079257 ETH), roughly two US cents at current ETH prices |
-| Current fee on the testnets | 0 |
+| Fee on Base, read on chain on 28 September 2026 | 7,925,700,000,000 wei (0.0000079257 ETH) |
+| Fee on Base Sepolia and OP Sepolia, same date | 0 |
 | Maximum the owner can set | `MAX_FEE`, 0.01 ETH |
 
-Read the live value with `commitmentFee()`. The owner can change it with `setCommitmentFee(newFee)`, up to `MAX_FEE`, and every change emits `FeeUpdated(oldFee, newFee)`.
+The contract owner sets the fee and can change it at any time, so read the live value with `commitmentFee()` before you build a commit. The owner changes it with `setCommitmentFee(newFee)`, up to `MAX_FEE`, and every change emits `FeeUpdated(oldFee, newFee)`.
 
-The fee is charged on each `commit`, in native ETH, on top of the native assets in the committed leg: `msg.value` must equal the leg's native total plus `commitmentFee` exactly. A swap takes two commits, one per side, so each side pays the fee once. The fee is not returned when a side reclaims.
-
-**TODO(vas):** confirm the fee is intended to be paid once by each side, so twice per completed swap, and that the Base value above is the launch value.
+The fee is charged on each `commit`, in native ETH, on top of the native assets in the committed leg: `msg.value` must equal the leg's native total plus `commitmentFee` exactly. A swap takes two commits, one per side, so each side pays the fee once, when it commits. The fee is not returned when a side reclaims.
 
 Because the owner can change the fee between the moment a client reads it and the moment its commit lands, a commit can revert with `IncorrectNativeAmountReceived`. Treat that revert as retryable.
 
@@ -57,9 +53,9 @@ Escrowed native assets stay owed to each side's `reclaimRecipient`, and `withdra
 
 ## Owner powers
 
-The owner can activate or deactivate signature verifiers, set the fee up to `MAX_FEE`, and withdraw accrued fees. The owner cannot touch escrowed assets, change the state of a swap, or upgrade the contract. Ownership changes hands through a two-step transfer (`Ownable2Step`), and `renounceOwnership` always reverts, so the contract can never be left without an owner.
+The owner is readable with `owner()`. On 28 September 2026 the Base deployment's owner was `0xc68B64770Da7914DEb0EF238b048a0Bf3B5f6A26`, an externally owned account, with no pending transfer.
 
-**TODO(vas):** is ownership of the Base deployment moving to a multisig before or after launch?
+The owner can activate or deactivate signature verifiers, set the fee up to `MAX_FEE`, and withdraw accrued fees. The owner cannot touch escrowed assets, change the state of a swap, or upgrade the contract. Ownership changes hands through a two-step transfer (`Ownable2Step`), and `renounceOwnership` always reverts, so the contract can never be left without an owner.
 
 ## Who can commit
 
@@ -84,12 +80,10 @@ The signer must be an ERC-7913 keyed identity. A blob of 20 bytes or fewer, a ba
 
 The order book commits through the wallet route only: it sends an empty signature, and the call is executed by the user's Quip account. On the wallet route, a commit can only come from a Quip account, the smart account described in [Quip Accounts](../interlock/quip-accounts.md). Each account authorizes its calls with hash-based post-quantum signatures, so every swap it commits was signed that way. On the wallet route the `signer` in the `Commitment` event is attribution only: the contract does not verify it, so never treat it as proof that a particular identity agreed to the trade. Check `Commitment.sender` against the counterparty's known account address instead.
 
-On the keyed route, the signature binds the domain (tag, chain ID and contract address), the lock, both sides' terms and the signer, so it cannot be replayed on another chain, another deployment or the other side. One verifier is active on all three deployments: `0xF2f9E6D692da41b089c3c261c41509669eEc5567`.
+On the keyed route, the signature binds the domain (tag, chain ID and contract address), the lock, both sides' terms and the signer, so it cannot be replayed on another chain, another deployment or the other side. The verifier `0xF2f9E6D692da41b089c3c261c41509669eEc5567` is active on all three deployments.
 
-**TODO(vas):** the live contract accepts keyed-route commits from any sender that holds a valid signature for the active verifier. Confirm whether the keyed route is supported for third-party integrators at launch, or whether the docs should state that only Quip accounts can start a swap.
+In short, the contract accepts a commit from a Quip account on the wallet route, or from any sender that presents a valid signature from an active verifier on the keyed route. The QuipSwap order book app uses Quip accounts.
 
 ## Source and verification
 
-The contracts are in the `quip-swap-solidity` repository: `src/Omnibus.sol`, `src/TermsLib.sol`, `src/interfaces/IOmnibus.sol` and `src/interfaces/IWalletFactory.sol`. They compile with solc 0.8.33 and are licensed AGPL-3.0-or-later.
-
-**TODO(vas):** name the branch or commit the Base deployment was built from, whether the repository is public, and whether the source is verified on Basescan, so this section can link them.
+The source of the Base deployment is verified on Basescan: [read `Omnibus` on Basescan](https://basescan.org/address/0xA7955981D5759a799267063110Be0F7AeCc26F8A#code). It comprises `src/Omnibus.sol`, `src/TermsLib.sol`, `src/interfaces/IOmnibus.sol` and `src/interfaces/IWalletFactory.sol`, compiled with solc 0.8.33 and licensed AGPL-3.0-or-later.
