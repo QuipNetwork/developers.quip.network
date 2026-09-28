@@ -96,7 +96,7 @@ The order book spaces all six deadlines one gap apart, starting from the moment 
 | Proposer `reclaimRelease` | `s + 5g` |
 | Taker `reclaimRelease` | `s + 6g` |
 
-The default gap is 1,800 seconds, so a swap that nobody settles is fully reclaimable three hours after acceptance. A maker can set a gap as short as 60 seconds; a gap under 1,800 seconds, or under the minimum the order book sets for that chain pair if higher, asks for confirmation. The longest gap keeps the last `reclaimRelease` within 14 days of acceptance.
+The default gap is 1,800 seconds. In plain terms, with the default gap the maker commits within 30 minutes of accepting, the taker commits in the next 30 minutes, and the maker settles in the 30 minutes after that. Each side must be online for its step. A swap that nobody settles is fully reclaimable three hours after acceptance. A maker can set a gap as short as 60 seconds; a gap under 1,800 seconds, or under the minimum the order book sets for that chain pair if higher, asks for confirmation. The longest gap keeps the last `reclaimRelease` within 14 days of acceptance.
 
 ## Lock states
 
@@ -164,9 +164,9 @@ The `commitmentFee` paid at commit is not returned by a reclaim.
 
 ## Responsibilities the contract leaves to the integrator
 
-* **Confirm the remote commit.** Cross-chain, the taker must confirm the proposer's commit on the proposer's chain before committing, at a confirmation depth it trusts. The contract checks deadlines only. The SDK's `verifyRemoteCommitment` reads the proposer chain's storage for this.
+* **Confirm the proposer's commit.** The taker must confirm the proposer has committed before committing its own leg, on the same chain as well as across chains, because the contract checks deadlines only. On the same chain, a taker commit on an `Unused` swap moves it to `Free` and leaves the taker's leg escrowed until `T.reclaimRelease`. Cross-chain, a taker who commits against a proposer that never committed can lose its leg; confirm on the proposer's chain at a confirmation depth you trust. The SDK's `verifyRemoteCommitment` reads the proposer chain's storage for this.
 * **Keep the secret.** If the proposer loses the secret, the swap cannot settle and both sides wait for reclaim.
 * **Watch for the reveal.** The taker has to claim inside `[P.claimDeadline, P.reclaimRelease)` on the proposer's chain.
-* **Vet the counter-leg asset.** Fee-on-transfer and other lossy tokens are rejected at commit. Rebasing, pausable and blacklisting tokens are unsupported, as is any token or NFT contract whose transfers are dishonest. The contract enforces the order of settlement. Judging whether the counter-leg asset is sound is up to each side before it commits.
+* **Vet the counter-leg asset.** Fee-on-transfer and other lossy tokens are rejected at commit. Rebasing tokens are unsupported, as is any token or NFT contract whose transfers are dishonest. Tokens whose issuer can pause transfers or blacklist addresses, such as USDC, USDT, EURC and AUSD, carry issuer freeze risk: if a freeze hits, `claim` reverts and the swap falls back to reclaim, and the frozen leg cannot move until the issuer lifts the freeze. The contract enforces the order of settlement. Judging whether the counter-leg asset is sound is up to each side before it commits.
 
 Source: `src/Omnibus.sol`, `src/TermsLib.sol` and `src/interfaces/IOmnibus.sol` in the `quip-swap-solidity` repository.

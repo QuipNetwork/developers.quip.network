@@ -23,7 +23,7 @@ The report states that the audit covered three repositories:
 
 The report lists each finding with its severity. Read the findings in the report itself; this page does not summarize them.
 
-The source of the Base deployment is [verified on Basescan](https://basescan.org/address/0xA7955981D5759a799267063110Be0F7AeCc26F8A#code), so the deployed code can be compared with the audited code directly.
+The source of the Base deployment is [verified on Basescan](https://basescan.org/address/0xA7955981D5759a799267063110Be0F7AeCc26F8A#code). It is not the audited commit `b6af8ff2cb`: it includes the remediation made after the audit, in the fix-review commits `bb38f2a60b`, `e8cf43cd2d` and `3f265baf98`, and one later change to the wallet-factory gating (commit `46fa73b`, which switched the factory membership check to `commitmentOf`).
 
 ## Protections in the contract
 
@@ -44,8 +44,8 @@ These are properties of the design, stated in the contract and repository docume
 * **The taker's reaction window is a parameter.** If the proposer reveals late and the taker does not claim before `P.reclaimRelease`, the proposer can end up with both legs. The contract enforces the order of the deadlines; the width of the window, including allowance for clock skew between the two chains, is set when the terms are built.
 * **Lock poisoning is possible and recoverable.** A lock is public from the first commit. Anyone can commit a different pairing under the same lock, but because state is keyed by swap ID it occupies its own slot, and it cannot redirect any payout.
 * **Deactivating a verifier can stall a keyed-route swap.** The keyed route reads verifier status live on every commit. If the owner deactivates a verifier between the two commits of a same-chain swap, the second keyed commit fails and the first leg waits for its `reclaimRelease`. The wallet route does not read verifier status.
-* **Some tokens are unsupported.** Fee-on-transfer and other lossy tokens are rejected at commit. Rebasing, slashable, pausable and blacklisting tokens are unsupported, and so is any token or NFT contract whose transfers are dishonest. Use a non-rebasing wrapper where one exists, such as wstETH in place of stETH.
-* **No slashing.** A side that commits and then walks away is not penalized. The other side waits for its `reclaimRelease` and recovers its leg, minus the commitment fee.
+* **Issuer-controlled tokens carry freeze risk.** Fee-on-transfer and other lossy tokens are rejected at commit. Rebasing and slashable tokens are unsupported, and so is any token or NFT contract whose transfers are dishonest; use a non-rebasing wrapper where one exists, such as wstETH in place of stETH. Tokens whose issuer can pause transfers or blacklist addresses, such as USDC, USDT, EURC and AUSD, carry issuer freeze risk. If a freeze hits an escrowed leg, `claim` reverts because its payout is exact or nothing, and the swap falls back to reclaim. Each side reclaims its own leg independently, but a leg that holds the frozen token cannot move until the issuer lifts the freeze.
+* **No slashing.** A side that commits and then walks away is not penalized beyond its own commitment fee. The other side waits for its `reclaimRelease` and recovers its leg, but its own commitment fee is not refunded either.
 
 ## Reporting a vulnerability
 

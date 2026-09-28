@@ -27,6 +27,6 @@ When multiple parties exchange QUIPs, there are also two timeout cases:
 1. _No counterparty commit_: If the taker never commits, the proposer reclaims its assets once its reclaim deadline passes.
 2. _No claim_: If both parties committed but the swap is not claimed, each party reclaims its own assets after its own reclaim deadline. The proposer's reclaim opens first and the taker's last.
 
-Neither timeout slashes anyone. A party that walks away loses nothing but the commitment fee, and the other party loses time. The full deadline schedule is on [How a Swap Works](../quipswap/how-a-swap-works.md).
+Neither timeout slashes anyone. Each party that committed pays a non-refundable commitment fee, so a party that walks away loses its fee, and the honest party loses time and its own fee. The full deadline schedule is on [How a Swap Works](../quipswap/how-a-swap-works.md).
 
 These states are what a cross-chain trade moves through in practice; see [QuipSwap](../interlock/quipswap.md) for how two parties use them to settle without a bridge or a custodian.

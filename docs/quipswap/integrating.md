@@ -31,14 +31,13 @@ This script reads the current commitment fee on Base and lists the swaps settled
 
 ```ts
 import { createPublicClient, http, formatEther } from 'viem'
-import { base } from 'viem/chains'
 import {
   createOmnibusClient,
   resolveDeployment,
   getClaimEvents,
 } from '@quip.network/quip-swap-sdk'
 
-const publicClient = createPublicClient({ chain: base, transport: http() })
+const publicClient = createPublicClient({ transport: http('https://mainnet.base.org') })
 
 // The SDK ships the deployment registry, so the address resolves by chain ID.
 const { omnibusAddress } = resolveDeployment(8453n)
@@ -57,6 +56,8 @@ const claims = await getClaimEvents({
 })
 for (const c of claims) console.log(c.lock, c.recipient, c.secret)
 ```
+
+For a full history scan, start at the Base deployment block, 50545260, as `fromBlock`, and page through in ranges your RPC allows.
 
 To follow one swap, compute its ID with the SDK's `swapId(lock, party, counterparty)` and read `omnibus.getLockState(id)`. Watch for new reveals with `watchClaimEvents`.
 
@@ -119,7 +120,7 @@ event VerifierActivityUpdated(address indexed verifier, bool active);
 * `Claim` fires once per leg paid out: once for a cross-chain claim, twice for a same-chain claim. It carries the secret, which is public from that block on. A cross-chain taker reads the secret from this event on the other chain.
 * `Reclaimed` fires once per reclaim, for the caller's own side.
 
-When you decode receipts, filter logs by the `Omnibus` address. A settlement receipt also contains the token contracts' logs, and a raw decoder that matches by event signature alone can be fooled by another contract emitting the same signature. The SDK's `client.waitForReceipt`, `getClaimEvents` and `extractSecretFromClaims` scope to the address and check that the secret hashes back to the lock.
+When you decode receipts, filter logs by the `Omnibus` address. A settlement receipt also contains the token contracts' logs, and a raw decoder that matches by event signature alone can be fooled by another contract emitting the same signature. The SDK's `client.waitForReceipt` and `getClaimEvents` scope decoding to the `Omnibus` address. `extractSecretFromClaims` additionally checks that each revealed secret hashes back to the lock, so read secrets through it.
 
 ### Errors
 

@@ -39,7 +39,9 @@ Publishing a listing escrows nothing. The maker's assets stay in their account u
 4. **Taker commits.** Once the maker's commit window has closed, the taker approves and commits their leg.
 5. **Settle.** The maker claims, which reveals the secret. On a same-chain swap that one claim settles both legs. On a cross-chain swap the taker then claims the maker's leg with the revealed secret.
 
-Each on-chain step runs when the user selects its action. The maker's steps are Commit, Share and Settle; the taker's are Approve, Commit and Settle. If a swap stalls, each side reclaims its own leg once its `reclaimRelease` passes.
+The secret stays only in the maker's browser local storage, under the key `quip.orderbook.secret.<lock>`. If the maker clears site data or switches device before Settle, the order book reports the secret as unavailable, and the swap can then only end in reclaim.
+
+Each on-chain step runs when the user selects its action. With the default 1,800-second gap, the maker commits within 30 minutes of accepting, the taker commits in the following 30 minutes, and the maker settles in the 30 minutes after that, so both sides need to be online for their steps. The taker should confirm the maker's commit before committing its own leg; the contract does not check it. The maker's steps are Commit, Share and Settle; the taker's are Approve, Commit and Settle. If a swap stalls, each side reclaims its own leg once its `reclaimRelease` passes.
 
 Every commit is executed by the user's Quip account and authorized with its post-quantum signature. See [Who can commit](contracts-and-fees.md#who-can-commit).
 
@@ -53,7 +55,7 @@ Every commit is executed by the user's Quip account and authorized with its post
 | vs market | How the rate compares with the current market price |
 | Maker | The maker's name, a Yours tag on your own listings, and the maker's count of completed swaps |
 | Listed | How long ago the listing was published, and how many requests are active on it |
-| Action | Take, or the reason the listing cannot be taken |
+| (last column) | A Take button, or the reason the listing cannot be taken |
 
 Each row also shows when the listing expires. Listings within an hour of expiry are highlighted as closing.
 
@@ -82,6 +84,4 @@ Paper mode at [swap.quip.network/demo](https://swap.quip.network/demo) is a prac
 | Assets | Real assets escrowed in `Omnibus` | None move |
 | Chain transactions | Commit, claim and reclaim, paid in gas plus the commitment fee | None |
 | Counterparties | Other users | A generated book |
-| Points | 5 per swap, up to 75 per day | 1 per paper swap, up to 15 per day |
-
-Paper takes of your own listings earn no points. Point caps are per UTC day.
+| Points | 5 per swap, up to 75 per UTC day | 1 per paper swap |

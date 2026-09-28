@@ -86,4 +86,4 @@ In short, the contract accepts a commit from a Quip account on the wallet route,
 
 ## Source and verification
 
-The source of the Base deployment is verified on Basescan: [read `Omnibus` on Basescan](https://basescan.org/address/0xA7955981D5759a799267063110Be0F7AeCc26F8A#code). It comprises `src/Omnibus.sol`, `src/TermsLib.sol`, `src/interfaces/IOmnibus.sol` and `src/interfaces/IWalletFactory.sol`, compiled with solc 0.8.33 and licensed AGPL-3.0-or-later.
+The source of the Base deployment is verified on Basescan: [read `Omnibus` on Basescan](https://basescan.org/address/0xA7955981D5759a799267063110Be0F7AeCc26F8A#code). The Quip sources are `src/Omnibus.sol`, `src/TermsLib.sol`, `src/interfaces/IOmnibus.sol` and `src/interfaces/IWalletFactory.sol`, alongside the OpenZeppelin, Solady and hashsigs dependencies they import. They compile with solc 0.8.33 and are licensed AGPL-3.0-or-later.
