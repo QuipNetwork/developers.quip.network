@@ -38,9 +38,9 @@ For why the network is built this way, see [Motivation](../basics/motivation.md)
 
 ### 2.2. Interlock
 
-* Two parties can perform atomic swaps across chains by cryptographically exchanging quantum-resistant private keys
-* With their single use keys, each party encrypts a new quip wallet holding the assets they want to trade with a commitment to the details of the receiver and transferred tokens, and this begins a timer
-* If one executes their half of the trade, they reveal the information necessary for the other to execute the other half of the trade. If neither party acts, the expired timers allow refunds
+* Two parties can perform atomic swaps, on one chain or across two, coordinated by a shared hash secret: only the hash of the secret is published until the swap settles
+* Each party commits the assets it is trading to the settlement contract on its own chain, bound to the agreed terms of both sides, and this starts the swap's deadlines
+* When one party claims its half of the trade, the claim reveals the secret the other needs to claim the other half. If neither party acts, each party reclaims its own assets once its deadline passes. See [How a Swap Works](../quipswap/how-a-swap-works.md)
 * No bridges or oracles required.
 
 ### 2.3. Consensus – Quantum PoW (QPoW)
@@ -86,12 +86,14 @@ One billion QUIP will have been emitted when all pre-mine allocations finish ves
 | **Asset (Wallet)**   | Account deposit | Creator         | Flat fee (protocol fee) |
 |                      | Transfer        | Sender          | Flat fee → validators |
 |                      | Contract exec   | Caller          | % routed to treasury  |
-|                      | Swap open       | Both parties    | Escrow (slashable)    |
+|                      | Swap commit     | Both parties    | Escrow (reclaimable)  |
 |                      | Swap claim      | Claimer         | Nominal fee           |
 | **Compute (Sinnet)** | Job bid         | Consumer        | Variable fee          |
 |                      | Block reward    | Protocol        | Newly-minted          |
 |                      | Staking bond    | Validators/Noms | Locked collateral     |
 |                      | Bounty payout   | Treasury        | Stream release        |
+
+**TODO(vas):** on the deployed swap contract, each commit pays a flat commitment fee in ETH, escrow is returned by reclaim with no slashing, and claim carries no protocol fee. Confirm how the two swap rows above map to that.
 
 Key points: universal denomination, predictable costs, treasury buyback into permanent liquidity (no burn), security-fee coupling.
 

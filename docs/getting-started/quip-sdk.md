@@ -42,7 +42,7 @@ Install with the tags shown below. A plain `npm install` resolves the `latest` t
 
 ### Packages that do not exist yet
 
-There is no public `@quip.network/quip-swap` or `@quip.network/sdk` package, and no swap SDK is published today. Use the wallet for swaps.
+There is no public `@quip.network/quip-swap` or `@quip.network/sdk` package. The swap SDK is published under a different name, `@quip.network/quip-swap-sdk`, as a prerelease on the `beta` dist-tag (`npm install @quip.network/quip-swap-sdk@beta viem`). See [Integrating](../quipswap/integrating.md).
 
 ### Previous-generation libraries
 

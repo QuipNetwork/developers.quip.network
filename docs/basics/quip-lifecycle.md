@@ -1,23 +1,32 @@
 ---
 description: >-
-  How a QUIP moves through propose, approve, and claim, plus the two timeout
-  cases that protect counterparties.
+  How a QUIP moves through commit, claim, and reclaim, the four states the
+  settlement contract tracks, and the timeouts that protect counterparties.
 icon: arrows-rotate-reverse
 ---
 
 # QUIP Lifecycle
 
-A user creates a QUIP when they deposit funds to a QUIP-enabled smart contract or QUIP-enabled wallet. At any time, the user can transfer the QUIP to another owner using a regular cryptocurrency transaction. The QUIP also has three additional states that enable programmability:
+A user creates a QUIP when they deposit funds to a QUIP-enabled smart contract or QUIP-enabled wallet. At any time, the user can transfer the QUIP to another owner using a regular cryptocurrency transaction. When two parties trade QUIPs, the settlement contract moves each side through three actions:
 
-<figure><img src="../.gitbook/assets/quip_lifecycle.svg" alt="State diagram titled A Quip's Journey: a new QUIP moves to Proposed, then Approved, then Claimable, while a proposal timeout diverts it to Cancellable and an approval timeout to Slashable, all enclosed by a post-quantum signature wall separating the coins from attacking qubits" width="2685" height="1619" decoding="async"><figcaption><p>The QUIP Lifecycle</p></figcaption></figure>
+1. _Commit_: Each party locks the assets it is trading in the settlement contract on its own chain, bound to the agreed terms of both sides and to the hash of a secret that one party, the proposer, generated
+2. _Claim_: The proposer reveals the secret to take the other party's assets, and the revealed secret lets the other party, the taker, claim the proposer's assets
+3. _Reclaim_: If the swap is not claimed in time, each party takes back its own assets once its reclaim deadline passes
 
-1. _Propose_: A proposed QUIP signals that a user is ready to conduct a transaction&#x20;
-2. _Approve_: An approval accepts the proposal and enables changes to the network state
-3. _Claim_: A claim executes the approved changes to the network state
+On chain, each swap is in one of four states:
+
+| State | Meaning |
+| --- | --- |
+| `Unused` | Nothing has been committed |
+| `Free` | Same-chain only: one side has committed and the other is expected |
+| `Committed` | Same-chain: both sides have committed. Cross-chain: this chain's side has committed |
+| `Spent` | Terminal: the swap was claimed or reclaimed |
 
 When multiple parties exchange QUIPs, there are also two timeout cases:
 
-1. _Cancellable proposal timeout_: A user can cancel a proposed QUIP once an initial timer expires with no counterparty matching the proposal. This resets the QUIP state.
-2. _Slashable approval timeout_: If a user has approved a matching proposal and a second timer expires without all parties’ approval, any approver can slash QUIPs belonging to the delinquent parties.
+1. _No counterparty commit_: If the taker never commits, the proposer reclaims its assets once its reclaim deadline passes.
+2. _No claim_: If both parties committed but the swap is not claimed, each party reclaims its own assets after its own reclaim deadline. The proposer's reclaim opens first and the taker's last.
+
+Neither timeout slashes anyone. A party that walks away loses nothing but the commitment fee, and the other party loses time. The full deadline schedule is on [How a Swap Works](../quipswap/how-a-swap-works.md).
 
 These states are what a cross-chain trade moves through in practice; see [QuipSwap](../interlock/quipswap.md) for how two parties use them to settle without a bridge or a custodian.
