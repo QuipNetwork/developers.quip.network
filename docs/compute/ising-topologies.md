@@ -25,7 +25,7 @@ A topology is identified by a hash that covers the graph and the value sets toge
 
 When you post a job, the tools map your model's variables onto a topology's nodes, one variable to one node, so that every coupling in your model lands on an edge the hardware actually has. That is subgraph placement, and it is the reason your problem's shape matters: your graph has to fit inside the machine's graph as it is.
 
-There is no minor embedding. The tools will not spread one of your variables across several hardware nodes to synthesize a connection the machine does not have. Your graph fits or it does not, and if it does not, placement fails with a clear error before anything is submitted, so you spend nothing on a shape that cannot work.
+There is no minor embedding. The tools will not spread one of your variables across several hardware nodes to synthesize a connection the machine does not have. If your graph does not fit, or the search for a placement gives up before finding one, placement fails with a clear error before anything is submitted, so you spend nothing on a shape that cannot work. Native mode skips placement and submits your model over its own graph instead; see [Submit Your First Compute Job](submit-a-job.md#placed-or-native).
 
 Placement is deterministic. The same model against the same topology places the same way every time, which is what lets the tools read an answer back later without having stored the mapping.
 

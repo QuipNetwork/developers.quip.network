@@ -22,7 +22,7 @@ Install the `xquad` package from the Python Package Index (PyPI). It requires Py
 pip install "xquad[quip]"
 ```
 
-The base install of `xqsa` includes a local simulated annealing solver that runs on your central processing unit (CPU), so you can test a model without touching the network or spending anything. The `[quip]` extra adds the two pieces that the network backend, `SolverQuip`, needs: a chain client and a signing extension that produces the hybrid (classical plus post-quantum) signatures Quip transactions require. Every other solver in `xqsa` installs and runs without the extra.
+The base install of `xqsa` includes a local simulated annealing solver that runs on your central processing unit (CPU), so you can test a model without touching the network or spending anything. The `[quip]` extra adds the two pieces that the network backend, `SolverQuip`, needs: a chain client and a signing extension that produces the hybrid (classical plus post-quantum) signatures Quip transactions require. Every other solver in `xqsa` installs and runs without the extra. The signing extension, `quip-signer`, ships a prebuilt wheel for Linux; on macOS and Windows, `pip` builds it from source, which needs a local [Rust toolchain](https://rustup.rs).
 
 {% hint style="info" %}
 The chain interfaces behind the `[quip]` extra are pre-release. The package's own documentation notes that chain metadata and economic parameters can change between releases, so expect to update the packages as the network evolves.
@@ -40,7 +40,7 @@ energy = sum over nodes of (bias × spin) + sum over edges of (coupling × spin 
 
 The best answer is the one with the lowest energy. That is the entire contract: you describe what you want by choosing biases and couplings so that good outcomes have low energy, and miners search for low-energy assignments.
 
-One convention matters for integrators: all coefficients and energies travel as whole numbers carrying thousandths (a value of 1.5 is transmitted as 1500). This fixed-point rule means every machine on the network computes the identical energy for the same answer, with no floating-point disagreement.
+One convention matters for integrators: all coefficients and energies travel as whole numbers carrying thousandths (a value of 1.5 is transmitted as 1500). This fixed-point rule means every machine on the network computes the identical energy for the same answer, with no floating-point disagreement. Coefficients finer than a thousandth or larger in magnitude than 2,147,483 are rejected before submission; if you hit either limit, scale your model, as [Allowed values are advisory for your job](ising-topologies.md#allowed-values-are-advisory-for-your-job) explains.
 
 In code, you build a model and hand it to a solver. This example uses the local CPU solver, which needs no network connection:
 
@@ -63,15 +63,46 @@ To submit the same model to the network, swap in the `SolverQuip` backend. It co
 ```python
 from xqsa import SolverQuip
 
-solver = SolverQuip(
-    url="<websocket address of a Quip node>",   # or set QUIP_RPC_URL
-    keystore="<path to your keystore>",         # or seed=..., or set QUIP_KEYSTORE
-)
+solver = SolverQuip.for_network("aglais", keystore="~/.quip/keystore.json")
 result = solver.solve(model)
 print(result.sample, result.energy)
 ```
 
-You need two things to construct the solver: the WebSocket remote procedure call (RPC) address of a Quip node, and a funded account (a seed or a keystore file, which is created for you on first use if it does not exist). You can also set a reward explicitly; if you do not, the solver uses the chain's configured minimum. Connection details for the public test network have not been published yet, so this page cannot include a node address.
+This example prints a warning that some coefficients fall outside the topology's allowed values. The job is still submitted and solved as given; [Allowed values are advisory for your job](ising-topologies.md#allowed-values-are-advisory-for-your-job) explains why.
+
+`for_network("aglais")` connects to the public test network using its published node and faucet addresses. Your account lives in the keystore, `~/.quip/keystore.json`, which is also the default when you leave out `keystore=`. It is created on first use with no password, so keep it private, and it starts empty; [the faucet step](#fund-your-account-from-the-faucet) covers that.
+
+To reach a node of your own, construct `SolverQuip(url=..., keystore=...)` with its WebSocket remote procedure call (RPC) address, or set `QUIP_RPC_URL`. Test network endpoints can move between releases; [aglais.quip.network](https://aglais.quip.network) publishes the current ones.
+
+## What a job costs
+
+A job on `aglais` costs the chain's minimum reward, 1 AGLS, plus a transaction fee that is a small fraction of that. The minimum reward is a runtime constant that gates submissions, not a price for the work: the chain [meters none of the solver's compute](https://gitlab.com/quip.network/quip-validator/-/blob/161667b2ed7e375390ada523a459258f0f576f78/runtime/src/configs/mod.rs#L650).
+
+* **The fee** grows with the size of your model. On the `aglais` test network it is burned, which is the test network's behavior, not the $QUIP fee model described on the [Token](../network/token.md) page.
+* **The reward** is nearly all of the cost. It is reserved from your account when the job is posted and paid to the winning miners. Pass `reward=` (in planck; 1 AGLS is 1,000,000,000,000 planck) to offer more than the minimum.
+
+AGLS is free from the faucet. The exact amounts can change with runtime upgrades, so ask the chain:
+
+```python
+quote = solver.quote(model)
+print(quote)
+```
+
+It builds the same transaction `solve()` would send, asks the chain for the fee, checks your balance, and submits nothing. `solve()` prints the same quote before it submits. The [first-job tutorial](/docs/xquad/solving/quip-first-job.html) walks through a full run with its output.
+
+## Fund your account from the faucet
+
+A new account holds no AGLS, and you do not need to fund it by hand. By default, `solve()` quotes the job, draws one faucet drip of 10 AGLS if your balance is short, and submits. Pass `autoconfirm=False` or `autofund=False` to be asked on the terminal first; a job you decline draws no drip and puts nothing on chain. The [solver reference](/docs/xquad/solving/quip-network.html) covers the gates in full.
+
+To fund an account yourself, send a POST request to the faucet:
+
+```sh
+curl -X POST https://faucet.aglais.quip.network/request \
+  -H 'Content-Type: application/json' \
+  -d '{"dest": "<your address>"}'
+```
+
+Your address is the `account_id_hex` field of your keystore file. Each request sends one drip. A `429` with `retry_after_seconds` means the address was funded seconds ago, so wait that long and retry; a `429` without it means a request for the address is still in flight. A `403` means the address already holds more than one drip; it can draw again once spending takes it back below that.
 
 ## What makes a set of answers acceptable
 
@@ -83,22 +114,28 @@ Miners do not submit one answer; they submit a set of candidate answers. When yo
 
 Diversity is measured pairwise across the submitted set, using a distance that accounts for the mirror symmetry of Ising models (flipping every spin in an answer produces the same energy, so a flipped copy does not count as different). The practical effect is that a miner cannot pad a submission with twenty copies of the same answer: duplicates collapse to one, and a set that fails your floors is rejected.
 
-## Your problem must fit a registered topology
+## Placed or native
 
-At present, a submitted problem must fit inside a hardware topology that is registered on the chain. Concretely, the solver places your model's variables onto the nodes of a registered topology, so your problem's graph must be a subgraph of one of those registered shapes. Arbitrary problem shapes are not yet supported.
+The solver can submit your problem in one of two modes.
 
-The placement step fails with a clear error before your reward is committed if your graph does not fit, so you lose nothing by trying a shape that does not work. [Ising Topologies](ising-topologies.md) explains what a topology is, why the shapes are what they are, and why the chain does not filter jobs by topology.
+By default, the solver places your model's variables onto the nodes of the chain's default registered topology, one variable to one node, so that every coupling lands on an edge the hardware has. This is subgraph placement. The search for a placement can give up on dense models, such as the one-hot cliques in a travelling-salesman encoding. When it finds no placement, it raises `PlacementError` before anything is submitted or spent, so you lose nothing by trying.
+
+In native mode, the solver submits your problem over its own coupling graph and skips placement, so any shape is accepted up to the job mempool's limits of 5,000 nodes and 50,000 edges. Turn it on with `topology="native"` on `for_network()` or on a single `solve()` call. The cost is who can answer: a miner that cannot embed an arbitrary graph, such as one backed by a quantum processing unit (QPU), cannot solve a native job. The simulated annealing miners on the test network can.
+
+[Ising Topologies](ising-topologies.md) explains what a topology is, why the shapes are what they are, and why the chain does not filter jobs by topology.
 
 ## What happens to your job
 
 From your `solve()` call to the answer coming back:
 
-1. **You post the job with a bid.** The solver encodes your model, places it onto the target topology, checks that your account can cover the reward plus the transaction fee, and submits the job to the Quip job mempool. Your reward is reserved on-chain, held in escrow until the job resolves.
+1. **You post the job with a bid.** The solver encodes your model, places it onto the target topology unless native mode is on, checks that your account can cover the reward plus the transaction fee, and submits the job to the Quip job mempool. Your reward is reserved on-chain, held in escrow until the job resolves.
 2. **A miner picks it up.** The open order is visible to miners on the network's optimization subnet, which spans CPU, graphics processing unit (GPU), and quantum annealing hardware. By default any registered solver may compete; you can instead restrict a job to named miners or to particular hardware types.
 3. **The chain verifies answers.** Every submitted answer is checked on-chain against your problem: spins must be minus one or plus one, the energy is recomputed from your coefficients, diversity is computed across the set, and your quality floors are enforced. Miners cannot grade their own homework.
 4. **Competition runs on a clock.** Each job carries a hard deadline, measured in blocks. When the first valid solution arrives, a shorter competition window opens so that other miners have a fair chance to beat it. The order closes at whichever comes first, the hard deadline or the end of that window.
 5. **The reward is split.** You choose the split when posting: the single best answer takes the whole reward, or the top answers share it weighted by quality, or the top answers share it equally.
-6. **The result comes back to you.** Your `solve()` call polls until the order is final and returns the winning answer as `result.sample` with its energy in `result.energy`. The result is also readable on-chain by order identifier, so a timed-out client can recover it later through the solver's `query()` method. If the job closes with no acceptable answer, the reserved reward is reclaimed to your account.
+6. **The result comes back to you.** Your `solve()` call polls until the order is final and returns the winning answer as `result.sample` with its energy in `result.energy`. The result is also readable on-chain by order identifier, so a timed-out client can recover it later through the solver's `query()` method.
+
+If the order closes with no submissions, `solve()` tries to reclaim the reserved reward and raises `QuipJobFailedError`; if it does not close in time, it raises `QuipTimeoutError`. Both carry the `order_id`. The reclaim is best-effort: if it fails, the error says so, and `query()` with that `order_id` frees the reward later. The fee is not refunded. The [Failure Taxonomy](/docs/xquad/solving/quip-network.html#failure-taxonomy) lists every error the solver raises.
 
 {% hint style="info" %}
 Interested in the other side of this marketplace, earning rewards by solving jobs? See the [Nodes section](../nodes/run-a-node-testnet.md) for running a miner.
