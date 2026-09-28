@@ -22,7 +22,7 @@ const AGENT_PROMPT = [
   `Docs index: ${AI.llmsTxt}. Any docs page returns markdown if you append .md to its URL.`,
   `Testnet EVM JSON-RPC: ${EVM.rpcUrl} (chain ID ${EVM.chainId}). Verify on-chain results against ${EXPLORER.url}.`,
   `Confirm you are on the right chain by genesis hash ${CHAIN.genesis}, not by chain ID.`,
-  "TypeScript SDK: @quip.network/ethereum-sdk@beta. Python compute toolchain: xquad, with xqsa[quip] for solvers.",
+  "TypeScript SDK: @quip.network/ethereum-sdk@beta. Python compute toolchain: xquad[quip], which installs the xqsa solvers and the Quip Network backend.",
 ].join("\n\n");
 
 const SURFACES = [
