@@ -45,7 +45,7 @@ const body = `# Quip Network for developers
 
 ## Run compute jobs
 
-- [Submit Your First Compute Job](${DOCS.submitAJob}): Ising-model optimization through the job mempool. Install: pip install "xqsa[quip]"
+- [Submit Your First Compute Job](${DOCS.submitAJob}): Ising-model optimization through the job mempool. Install: pip install "xquad[quip]"
 - [Quantum Randomness (QVRF)](${DOCS.qvrf}): Concepts only. Not a cryptographic VRF.
 - [xquad on PyPI](${REGISTRIES.xquad}): Problem-formulation toolchain, Python 3.13 or newer.
 - [xqsa on PyPI](${REGISTRIES.xqsa}): Solver adapters, local CPU and network backends.

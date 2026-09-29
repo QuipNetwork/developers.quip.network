@@ -39,12 +39,12 @@ A written specification defines every behavior, and CI runs each conformance vec
 | Backend | Hardware | Install |
 | --- | --- | --- |
 | Simulated annealing | CPU | `pip install xquad` |
-| CUDA annealer | NVIDIA GPU | `pip install xquad[cuda]` |
-| Metal annealer | Apple Silicon GPU | `pip install xquad[metal]` |
-| D-Wave Advantage | Quantum annealer | `pip install xquad[dwave]` |
+| CUDA annealer | NVIDIA GPU | `pip install "xquad[cuda]"` |
+| Metal annealer | Apple Silicon GPU | `pip install "xquad[metal]"` |
+| D-Wave Advantage | Quantum annealer | `pip install "xquad[dwave]"` |
 | Quip Network | Network-provided solvers | `pip install "xquad[quip]"` |
 
-Extras compose: `pip install xquad[cuda,dwave]`.
+Extras compose: `pip install "xquad[cuda,dwave]"`.
 
 ## Getting started
 

@@ -38,8 +38,7 @@ Install with the tags shown below. A plain `npm install` resolves the `latest` t
 
 | Package | Install | What it is |
 | --- | --- | --- |
-| `xquad` | `pip install xquad` | Builds optimization models in the network's Ising format. |
-| `xqsa` | `pip install xqsa` | Solver adapters for those models, including the backend that submits jobs to Quip Network. See [Submit Your First Compute Job](../compute/submit-a-job.md). |
+| `xquad[quip]` | `pip install "xquad[quip]"` | The XQuad toolchain: model building, solver adapters, and the backend that submits jobs to Quip Network. See [Submit Your First Compute Job](../compute/submit-a-job.md). |
 
 ### Packages that do not exist yet
 
