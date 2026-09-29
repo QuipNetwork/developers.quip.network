@@ -103,7 +103,7 @@ async function getJson(url) {
  * guaranteed complete by docs:publish's `needs:`.
  *
  * With no body -- a git push, or a manual "Trigger deploy" -- there is no pipeline to name,
- * so take the latest release tag, whose pipeline finished long ago.
+ * so take the newest release whose book actually built. See latestRelease.
  */
 async function resolveArtifact() {
   const body = process.env.INCOMING_HOOK_BODY ?? "";
@@ -122,24 +122,41 @@ async function resolveArtifact() {
     fail(`pipeline ${pipelineId} is for ${kind} "${pipeline.ref}", not a release tag. Refusing to publish it.`);
   }
 
-  const jobs = await getJson(`${API}/pipelines/${pipelineId}/jobs?scope[]=success&per_page=100`);
-  const job = jobs.find((candidate) => candidate.name === JOB);
+  const job = await successfulBuild(pipelineId);
   if (!job) {
     fail(`pipeline ${pipelineId} has no successful "${JOB}" job, so there is no book to publish.`);
   }
   return { url: `${API}/jobs/${job.id}/artifacts`, source: `pipeline ${pipelineId}, job ${job.id}` };
 }
 
-/* GitLab's version sort puts v0.4.1-beta1 ahead of v0.4.1, so filter rather than trust the
- * first tag. */
+async function successfulBuild(pipelineId) {
+  const jobs = await getJson(`${API}/pipelines/${pipelineId}/jobs?scope[]=success&per_page=100`);
+  return jobs.find((candidate) => candidate.name === JOB);
+}
+
+/*
+ * The newest release tag whose book actually built. A tag is listable the moment it is
+ * pushed, but its docs:build lands minutes later (14 on v0.4.1), and a tag whose pipeline
+ * fails before docs:build never gets one. Taking the newest tag regardless would turn
+ * either into a red portal build for a reason living in another repository; stepping back
+ * to the previous release publishes what is already live instead. Branches and prereleases
+ * are still never candidates.
+ *
+ * GitLab's version sort puts v0.4.1-beta1 ahead of v0.4.1, so filter rather than trust the
+ * first tag. A tag can carry several pipelines when one is retried; any of them will do.
+ */
 async function latestRelease() {
   const tags = await getJson(`${API}/repository/tags?order_by=version&per_page=100`);
-  const tag = tags.find((candidate) => RELEASE_TAG.test(candidate.name));
-  if (!tag) fail("xquad has no release tag, so there is no shipped book to publish.");
-  return {
-    url: `${API}/jobs/artifacts/${encodeURIComponent(tag.name)}/download?job=${encodeURIComponent(JOB)}`,
-    source: `release tag ${tag.name}`,
-  };
+  for (const tag of tags.filter((candidate) => RELEASE_TAG.test(candidate.name))) {
+    const ref = encodeURIComponent(tag.name);
+    const pipelines = await getJson(`${API}/pipelines?ref=${ref}&scope=tags&per_page=100`);
+    for (const pipeline of pipelines) {
+      const job = await successfulBuild(pipeline.id);
+      if (job) return { url: `${API}/jobs/${job.id}/artifacts`, source: `release tag ${tag.name}, job ${job.id}` };
+    }
+    console.warn(`fetch-book: release tag ${tag.name} has no successful "${JOB}" yet; trying the previous release.`);
+  }
+  fail(`no xquad release tag has a successful "${JOB}", so there is no shipped book to publish.`);
 }
 
 async function download(url) {
