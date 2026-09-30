@@ -3,12 +3,12 @@
  *
  * The book is built by the xquad project, not this one. Rather than vendor 125
  * generated files, the portal pulls xquad's `docs:build` artifact at build time, and
- * xquad fires a Netlify build hook on push so the copy here stays current without a
- * manual step (QUI-1331).
+ * xquad fires a Netlify build hook when it tags a release so the copy here stays current
+ * without a manual step (QUI-1331).
  *
  * Which build it pulls is the subtle part, and getting it wrong is not obvious from
- * the outside -- the site looks fine, it is just one merge out of date. See
- * resolveArtifact.
+ * the outside -- the site looks fine, it is just one release out of date, or worse, a
+ * release ahead of what shipped. See resolveArtifact.
  *
  * No token: xquad is a public project with public jobs, so every endpoint used here is
  * readable unauthenticated. Nothing secret belongs in this build.
@@ -17,9 +17,9 @@
  * scripts/sync-docs.mjs does `rm -rf public/docs` and would delete the book on the
  * next docs:sync.
  *
- * Fails closed on a missing, truncated, broken or wrong-branch artifact: shipping a
- * docs section that silently 404s, or one built from someone's branch, is worse than a
- * red build.
+ * Fails closed on a missing, truncated, broken or unreleased artifact: shipping a
+ * docs section that silently 404s, or one built from a branch or a prerelease, is worse
+ * than a red build.
  */
 import { execFileSync } from "node:child_process";
 import { cp, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
@@ -29,11 +29,10 @@ import process from "node:process";
 
 const PROJECT_ID = "80173065"; // gitlab.com/quip.network/xquad
 const API = `https://gitlab.com/api/v4/projects/${PROJECT_ID}`;
-const REF = "main";
 const JOB = "docs:build";
-/* Latest *successful* pipeline on the ref. Correct only when no pipeline is named -- see
- * resolveArtifact. */
-const BY_REF_URL = `${API}/jobs/artifacts/${REF}/download?job=${encodeURIComponent(JOB)}`;
+/* `tag_pattern` from xquad's cliff.toml, which is also what decides which tags publish
+ * docs there. Prereleases (v0.4.1-beta1, v0.4.0-rc2) do not match. */
+const RELEASE_TAG = /^v\d+\.\d+\.\d+$/;
 /* The artifact preserves the xquad build path; this is the directory inside it. */
 const ARTIFACT_PREFIX = "docs/book/build";
 const DESTINATION = path.resolve(import.meta.dirname, "../dist/docs/xquad");
@@ -90,40 +89,74 @@ async function getJson(url) {
 /*
  * Which build of the book to fetch.
  *
+ * xquad publishes docs from release tags only (QUI-1256): its `main` is a working branch at
+ * x.y.z-dev, and the portal must publish the book that shipped, never main's in-progress
+ * one. So whatever pipeline we take has to be a release tag's.
+ *
  * xquad's docs:publish fires the Netlify build hook with `pipeline_id=<id>` in the POST
  * body, and Netlify hands that to this build as INCOMING_HOOK_BODY. Resolving docs:build
  * inside that named pipeline is the only correct answer: the hook fires from a job that is
- * still running, so BY_REF_URL -- the latest *successful* pipeline -- cannot yet be the
- * pipeline that triggered us and would serve the previous merge's book instead. Measured on
- * the 2026-09-11 rollout, the pipeline reached success 83s after docs:publish finished,
- * which is wider than the time this build takes to get here, so that is the normal case
- * rather than a rare race. docs:build is guaranteed complete by docs:publish's `needs:`.
+ * still running, so the by-ref artifact URL -- the latest *successful* pipeline -- cannot
+ * yet be the pipeline that triggered us. Measured on the 2026-09-11 rollout, the pipeline
+ * reached success 83s after docs:publish finished, which is wider than the time this build
+ * takes to get here, so that is the normal case rather than a rare race. docs:build is
+ * guaranteed complete by docs:publish's `needs:`.
  *
- * With no body -- a git push, or a manual "Trigger deploy" -- there is no pipeline to name
- * and the latest successful one is exactly right.
+ * With no body -- a git push, or a manual "Trigger deploy" -- there is no pipeline to name,
+ * so take the newest release whose book actually built. See latestRelease.
  */
 async function resolveArtifact() {
   const body = process.env.INCOMING_HOOK_BODY ?? "";
   const pipelineId = new URLSearchParams(body).get("pipeline_id");
-  if (!pipelineId) return { url: BY_REF_URL, source: `latest successful ${REF} pipeline` };
+  if (!pipelineId) return latestRelease();
   if (!/^\d+$/.test(pipelineId)) {
     fail(`the build hook sent pipeline_id="${pipelineId}", which is not a pipeline id.`);
   }
 
-  /* The hook URL is a secret, but a book built from some other branch must never reach the
-   * host that owns the docs canonical. This also catches a future xquad change that lets
-   * docs:publish run on merge-request pipelines. */
+  /* The hook URL is a secret, but a book built from a branch or a prerelease must never
+   * reach the host that owns the docs canonical. This also catches a future xquad change
+   * that lets docs:publish run on branch or merge-request pipelines. */
   const pipeline = await getJson(`${API}/pipelines/${pipelineId}`);
-  if (pipeline.ref !== REF) {
-    fail(`pipeline ${pipelineId} is for ref "${pipeline.ref}", not "${REF}". Refusing to publish it.`);
+  if (pipeline.tag !== true || !RELEASE_TAG.test(pipeline.ref)) {
+    const kind = pipeline.tag === true ? "tag" : "branch";
+    fail(`pipeline ${pipelineId} is for ${kind} "${pipeline.ref}", not a release tag. Refusing to publish it.`);
   }
 
-  const jobs = await getJson(`${API}/pipelines/${pipelineId}/jobs?scope[]=success&per_page=100`);
-  const job = jobs.find((candidate) => candidate.name === JOB);
+  const job = await successfulBuild(pipelineId);
   if (!job) {
     fail(`pipeline ${pipelineId} has no successful "${JOB}" job, so there is no book to publish.`);
   }
   return { url: `${API}/jobs/${job.id}/artifacts`, source: `pipeline ${pipelineId}, job ${job.id}` };
+}
+
+async function successfulBuild(pipelineId) {
+  const jobs = await getJson(`${API}/pipelines/${pipelineId}/jobs?scope[]=success&per_page=100`);
+  return jobs.find((candidate) => candidate.name === JOB);
+}
+
+/*
+ * The newest release tag whose book actually built. A tag is listable the moment it is
+ * pushed, but its docs:build lands minutes later (14 on v0.4.1), and a tag whose pipeline
+ * fails before docs:build never gets one. Taking the newest tag regardless would turn
+ * either into a red portal build for a reason living in another repository; stepping back
+ * to the previous release publishes what is already live instead. Branches and prereleases
+ * are still never candidates.
+ *
+ * GitLab's version sort puts v0.4.1-beta1 ahead of v0.4.1, so filter rather than trust the
+ * first tag. A tag can carry several pipelines when one is retried; any of them will do.
+ */
+async function latestRelease() {
+  const tags = await getJson(`${API}/repository/tags?order_by=version&per_page=100`);
+  for (const tag of tags.filter((candidate) => RELEASE_TAG.test(candidate.name))) {
+    const ref = encodeURIComponent(tag.name);
+    const pipelines = await getJson(`${API}/pipelines?ref=${ref}&scope=tags&per_page=100`);
+    for (const pipeline of pipelines) {
+      const job = await successfulBuild(pipeline.id);
+      if (job) return { url: `${API}/jobs/${job.id}/artifacts`, source: `release tag ${tag.name}, job ${job.id}` };
+    }
+    console.warn(`fetch-book: release tag ${tag.name} has no successful "${JOB}" yet; trying the previous release.`);
+  }
+  fail(`no xquad release tag has a successful "${JOB}", so there is no shipped book to publish.`);
 }
 
 async function download(url) {
