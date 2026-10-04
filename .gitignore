@@ -12,3 +12,7 @@ public/docs.md
 # addresses is exactly what the city-granularity rule in scripts/recount-nodes.mjs
 # exists to prevent. CI carries it between runs as a job cache instead.
 .geo-cache.json
+.beads/
+.beads-*/
+.beads-credential-key
+.dolt/
