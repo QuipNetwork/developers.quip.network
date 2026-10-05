@@ -29,9 +29,30 @@ const groups = docs.reduce<Record<string, Doc[]>>((all, item) => {
 }, {});
 const canonical = `/docs${doc.data.route ? `/${doc.data.route}` : ""}`;
 const description = doc.data.description ?? `${doc.data.title} — Quip Network documentation.`;
+const breadcrumbs = [
+  { name: "Developers", href: "/" },
+  { name: "Documentation", href: "/docs" },
+  ...(doc.data.route ? [{ name: doc.data.title, href: canonical }] : []),
+];
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: breadcrumbs.map((crumb, index) => ({
+    "@type": "ListItem",
+    position: index + 1,
+    name: crumb.name,
+    item: new URL(crumb.href, Astro.site).href,
+  })),
+};
 ---
 
 <BaseLayout title={`${doc.data.title} | Quip Network Docs`} {description} {canonical}>
+  <script
+    slot="head"
+    is:inline
+    type="application/ld+json"
+    set:html={JSON.stringify(breadcrumbSchema).replaceAll("<", "\\u003c")}
+  ></script>
   <Fragment slot="netlify-forms"></Fragment>
   <div class="docs-shell">
     <header class="docs-header">
@@ -63,6 +84,20 @@ const description = doc.data.description ?? `${doc.data.title} — Quip Network 
       </aside>
 
       <main class="docs-article">
+        <nav class="docs-breadcrumbs" aria-label="Breadcrumb">
+          <ol>
+            {breadcrumbs.map((crumb, index) => (
+              <li>
+                {index > 0 && <span aria-hidden="true">/</span>}
+                {index === breadcrumbs.length - 1 ? (
+                  <span aria-current="page">{crumb.name}</span>
+                ) : (
+                  <a href={crumb.href}>{crumb.name}</a>
+                )}
+              </li>
+            ))}
+          </ol>
+        </nav>
         <article><Content /></article>
         <footer>
           <a href={`${canonical}.md`}>View as Markdown</a>
