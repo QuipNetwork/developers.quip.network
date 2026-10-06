@@ -17,6 +17,15 @@
 * [QuipSwap](interlock/quipswap.md)
 * [QUIP Lifecycle](basics/quip-lifecycle.md)
 
+## QuipSwap
+
+* [Overview](quipswap/overview.md)
+* [How a Swap Works](quipswap/how-a-swap-works.md)
+* [The Order Book](quipswap/order-book.md)
+* [Contracts and Fees](quipswap/contracts-and-fees.md)
+* [Integrating](quipswap/integrating.md)
+* [Security](quipswap/security.md)
+
 ## Compute
 
 * [Submit Your First Compute Job](compute/submit-a-job.md)

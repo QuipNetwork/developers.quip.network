@@ -32,6 +32,7 @@ Install with the tags shown below. A plain `npm install` resolves the `latest` t
 | Package | Install | What it is |
 | --- | --- | --- |
 | `@quip.network/ethereum-sdk` | `npm install @quip.network/ethereum-sdk@beta` | The account client for EVM chains. Use the `beta` tag for the current generation; `latest` still points to the earlier generation. |
+| `@quip.network/quip-swap-sdk` | `npm install @quip.network/quip-swap-sdk@beta viem` | The QuipSwap client: terms and asset builders, schedule validation, a typed `Omnibus` client and event decoders. Prerelease; use the `beta` tag. See [Integrating](../quipswap/integrating.md). |
 | `@quip.network/hashsigs-wasm` | `npm install @quip.network/hashsigs-wasm@rc` | The current hash-based signature signer and verifier (SHRINCS), compiled from the audited Rust implementation to WebAssembly. Works in Node.js and the browser. Use the `rc` tag; `latest` points to an earlier release candidate. |
 
 ### Python (PyPI)
@@ -42,7 +43,7 @@ Install with the tags shown below. A plain `npm install` resolves the `latest` t
 
 ### Packages that do not exist yet
 
-There is no public `@quip.network/quip-swap` or `@quip.network/sdk` package, and no swap SDK is published today. Use the wallet for swaps.
+There is no public `@quip.network/quip-swap` or `@quip.network/sdk` package. For swaps, use `@quip.network/quip-swap-sdk` from the table above.
 
 ### Previous-generation libraries
 
