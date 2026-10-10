@@ -68,7 +68,7 @@ export const CODE = {
   nodeServer: "https://gitlab.com/quip.network/nodes.quip.network",
   ethereumSdk: "https://gitlab.com/quip.network/ethereum-sdk",
   hashsigs: "https://gitlab.com/quip.network/hashsigs-rs",
-  miner: "https://gitlab.com/quip.network/quip-miner",
+  miner: "https://gitlab.com/quip.network/quip-solver",
 };
 
 export const REGISTRIES = {
