@@ -22,7 +22,7 @@ These layers share the **same token ($QUIP)** and the same validator/miner econo
 Quip delivers **two coupled services**:
 
 1. **Decentralized compute marketplace** – miners solve real optimization jobs instead of wasteful hashes, proving quantum advantage under a single token economy.
-2. **Post-quantum asset security** – hybrid accounts wrap the chain's existing ECC signature with a quantum-resistant SHRINCS signature (see [pqhybridsign](https://github.com/QuipNetwork/pqhybridsign)), so the worst case is the security the chain already has, offering drop-in protection on supported chains.
+2. **Post-quantum asset security** – hybrid signing through the open-source [pqhybridsign](https://github.com/QuipNetwork/pqhybridsign) library, which always pairs a post-quantum signature (NIST-approved schemes and SHRINCS) with the chain's existing ECDSA or secp256k1 signature, so base security never degrades and the post-quantum protection is additive. On EVM networks this is an ERC-4337 compatible account with verifier contracts audited by Oak Security, compatible with WalletConnect and smart-account dApps.
 
 This secures existing value, monetizes idle quantum-classical hardware, and funds open-source quantum research.
 
