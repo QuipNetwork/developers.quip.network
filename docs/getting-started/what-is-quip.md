@@ -15,14 +15,14 @@ Quip is **not** a single blockchain or a single quantum computer. Think of it as
 These layers share the **same token ($QUIP)** and the same validator/miner economy, but either layer can function on its own:
 
 * **Only need useful-work mining?** Point your QPU/GPU/CPU farm at the Quip Network; earn $QUIP even if you never lock assets.
-* **Only need PQ security?** Use wallets on Ethereum/Solana/Bitcoin/Substrate with no exposure to mining.
+* **Only need PQ security?** Use Quip Accounts on Ethereum, EVM L2s and Bitcoin L2s with no exposure to mining.
 
 ## 1. Mission & Scope
 
 Quip delivers **two coupled services**:
 
 1. **Decentralized compute marketplace** – miners solve real optimization jobs instead of wasteful hashes, proving quantum advantage under a single token economy.
-2. **Post-quantum asset security** – hash-based vaults wrap ECC keys with quantum-resistant WOTS+ keys, offering drop-in protection on any chain.
+2. **Post-quantum asset security** – hash-based accounts wrap ECC keys with quantum-resistant SHRINCS signatures, offering drop-in protection on supported chains.
 
 This secures existing value, monetizes idle quantum-classical hardware, and funds open-source quantum research.
 
@@ -32,8 +32,8 @@ For why the network is built this way, see [Motivation](../basics/motivation.md)
 
 ### 2.1. QUIP Account
 
-* Deposit on any chain → vault ID & first WOTS+ public key.
-* Each action signed with next WOTS+ key → immutable hash-chain of ownership.
+* Deposit on a supported chain → vault ID & first post-quantum public key.
+* Each action signed with the next hash-based key → immutable hash-chain of ownership.
 * Safe through host-chain reorgs; can always withdraw back to native chain.
 
 ### 2.2. Interlock
@@ -48,7 +48,7 @@ For why the network is built this way, see [Motivation](../basics/motivation.md)
 * **Canonical chain:** Random Ising models are generated using a block header `prevHash‖Merkle‖height‖addr‖keys` with difficulty determined by chain clock speed
 * **Side-chains/uncles:** Jobs submitted by consumers can be included as an uncle block in any chain: different processors can mine same job class, and publish alternate solutions to validate quality
 * Miner must output **N** low-energy, pairwise-distant solutions.
-* Identity = {ECDSA, rolling WOTS+}; difficulty & streak bonuses bind to key.
+* Identity = {ECDSA, rolling hash-based key}; difficulty & streak bonuses bind to key.
 
 ### 2.4 Subnet & Pipeline Marketplace
 

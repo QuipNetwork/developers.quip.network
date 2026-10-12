@@ -45,7 +45,7 @@ This creates a $QUIP-native economy where the protocol continuously earns a larg
 * Initial allocation: 1 billion QUIP will have been emitted when all pre-mine allocations finish vesting, split 40% subnet emissions / 20% Quip Foundation / 15% early investors / 15% builders / 10% community programs
 * Emission: 40 million QUIP per year, fixed and flat — emissions continue at this rate after the first billion has vested, so the first billion is not a maximum supply
 * Implicit decay: each new subnet competes for a share of the same 40M annual emission, so issuance per subnet falls as the network grows — no halvings, no burns
-* Token Standard: PSP-3 on Substrate, ERC-20 on Ethereum, SPL on Solana
+* Token Standard: PSP-3 on Substrate, ERC-20 on Ethereum
 
 ## Governance
 

@@ -15,7 +15,7 @@ This SDK is meant to help you work with quantum computers of all kinds: adiabati
 
 2. An SDK for existing smart contracts that lets you upgrade your contracts one ABI at a time. Import the file with your package manager and reference the SDK anytime you need to unwrap a post-quantum commitment into its associated classical public key.
 
-The wallet SDK is compatible with WalletConnect, Solana `wallet-adapter`, and other major cryptocurrency wallet clients. Its most versatile use case is a smart account much like a Coinbase smart account or a Safe wallet, which wraps any contract with a post-quantum signature read and aborts the subsequent contract call if the read fails.
+The wallet SDK is compatible with WalletConnect and other major cryptocurrency wallet clients. Its most versatile use case is a smart account much like a Coinbase smart account or a Safe wallet, which wraps any contract with a post-quantum signature read and aborts the subsequent contract call if the read fails.
 
 However, sometimes contracts may require token allowances, specialized permissions, or access to collateral held in the contract. For these use cases, it is necessary for the contract to implement the Quip SDK's post-quantum ABI extension directly.
 
