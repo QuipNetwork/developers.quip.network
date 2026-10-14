@@ -3,6 +3,11 @@ description: >-
   Install the XQuad Python tools, express your problem as an Ising model, and
   post it to the Quip job mempool for miners to solve.
 icon: paper-plane
+title: "Submit Your First Compute Job"
+group: "Compute"
+order: 16
+route: "compute/submit-a-job"
+source_path: "compute/submit-a-job.md"
 ---
 
 # Submit your first compute job
@@ -15,7 +20,7 @@ This page walks you through installing the tools, describing a problem, and foll
 
 Install the `xquad` package from the Python Package Index (PyPI). It requires Python 3.13 or newer and installs the compatible versions of the lower-level packages it uses.
 
-* **`xquad`** is the umbrella package for the [XQuad toolchain](../xquad/toolchain.md): it provides the modeling and program interface and installs compatible versions of the lower-level packages, including `xqsa`.
+* **`xquad`** is the umbrella package for the [XQuad toolchain](/docs/xquad-toolchain): it provides the modeling and program interface and installs compatible versions of the lower-level packages, including `xqsa`.
 * **`xqsa`** contains the solver adapters. Its `quip` extra is included by the `xquad[quip]` install below. Every solver exposes the same `solve()` call, whether it runs on your own machine or on the Quip Network, so you can develop locally and switch to the network by changing one line.
 
 ```sh
@@ -24,9 +29,8 @@ pip install "xquad[quip]"
 
 The base install of `xqsa` includes a local simulated annealing solver that runs on your central processing unit (CPU), so you can test a model without touching the network or spending anything. The `[quip]` extra adds the two pieces that the network backend, `SolverQuip`, needs: a chain client and a signing extension that produces the hybrid (classical plus post-quantum) signatures Quip transactions require. Every other solver in `xqsa` installs and runs without the extra. The signing extension, `quip-signer`, ships a prebuilt wheel for Linux; on macOS and Windows, `pip` builds it from source, which needs a local [Rust toolchain](https://rustup.rs).
 
-{% hint style="info" %}
-The chain interfaces behind the `[quip]` extra are pre-release. The package's own documentation notes that chain metadata and economic parameters can change between releases, so expect to update the packages as the network evolves.
-{% endhint %}
+> **Note**
+> The chain interfaces behind the `[quip]` extra are pre-release. The package's own documentation notes that chain metadata and economic parameters can change between releases, so expect to update the packages as the network evolves.
 
 ## Describe your problem as an Ising model
 
@@ -40,7 +44,7 @@ energy = sum over nodes of (bias × spin) + sum over edges of (coupling × spin 
 
 The best answer is the one with the lowest energy. That is the entire contract: you describe what you want by choosing biases and couplings so that good outcomes have low energy, and miners search for low-energy assignments.
 
-One convention matters for integrators: all coefficients and energies travel as whole numbers carrying thousandths (a value of 1.5 is transmitted as 1500). This fixed-point rule means every machine on the network computes the identical energy for the same answer, with no floating-point disagreement. Coefficients finer than a thousandth or larger in magnitude than 2,147,483 are rejected before submission; if you hit either limit, scale your model, as [Allowed values are advisory for your job](ising-topologies.md#allowed-values-are-advisory-for-your-job) explains.
+One convention matters for integrators: all coefficients and energies travel as whole numbers carrying thousandths (a value of 1.5 is transmitted as 1500). This fixed-point rule means every machine on the network computes the identical energy for the same answer, with no floating-point disagreement. Coefficients finer than a thousandth or larger in magnitude than 2,147,483 are rejected before submission; if you hit either limit, scale your model, as [Allowed values are advisory for your job](/docs/compute/ising-topologies#allowed-values-are-advisory-for-your-job) explains.
 
 In code, you build a model and hand it to a solver. This example uses the local CPU solver, which needs no network connection:
 
@@ -68,7 +72,7 @@ result = solver.solve(model)
 print(result.sample, result.energy)
 ```
 
-This example prints a warning that some coefficients fall outside the topology's allowed values. The job is still submitted and solved as given; [Allowed values are advisory for your job](ising-topologies.md#allowed-values-are-advisory-for-your-job) explains why.
+This example prints a warning that some coefficients fall outside the topology's allowed values. The job is still submitted and solved as given; [Allowed values are advisory for your job](/docs/compute/ising-topologies#allowed-values-are-advisory-for-your-job) explains why.
 
 `for_network("aglais")` connects to the public test network using its published node and faucet addresses. Your account lives in the keystore, `~/.quip/keystore.json`, which is also the default when you leave out `keystore=`. It is created on first use with no password, so keep it private, and it starts empty; [the faucet step](#fund-your-account-from-the-faucet) covers that.
 
@@ -78,7 +82,7 @@ To reach a node of your own, construct `SolverQuip(url=..., keystore=...)` with 
 
 A job on `aglais` costs the chain's minimum reward, 1 AGLS, plus a transaction fee that is a small fraction of that. The minimum reward is a runtime constant that gates submissions, not a price for the work: the chain [meters none of the solver's compute](https://gitlab.com/quip.network/quip-validator/-/blob/161667b2ed7e375390ada523a459258f0f576f78/runtime/src/configs/mod.rs#L650).
 
-* **The fee** grows with the size of your model. On the `aglais` test network it is burned, which is the test network's behavior, not the $QUIP fee model described on the [Token](../network/token.md) page.
+* **The fee** grows with the size of your model. On the `aglais` test network it is burned, which is the test network's behavior, not the $QUIP fee model described on the [Token](/docs/network/token) page.
 * **The reward** is nearly all of the cost. It is reserved from your account when the job is posted and paid to the winning miners. Pass `reward=` (in planck; 1 AGLS is 1,000,000,000,000 planck) to offer more than the minimum.
 
 AGLS is free from the faucet. The exact amounts can change with runtime upgrades, so ask the chain:
@@ -122,7 +126,7 @@ By default, the solver places your model's variables onto the nodes of the chain
 
 In native mode, the solver submits your problem over its own coupling graph and skips placement, so any shape is accepted up to the job mempool's limits of 5,000 nodes and 50,000 edges. Turn it on with `topology="native"` on `for_network()` or on a single `solve()` call. The cost is who can answer: a miner that cannot embed an arbitrary graph, such as one backed by a quantum processing unit (QPU), cannot solve a native job. The simulated annealing miners on the test network can.
 
-[Ising Topologies](ising-topologies.md) explains what a topology is, why the shapes are what they are, and why the chain does not filter jobs by topology.
+[Ising Topologies](/docs/compute/ising-topologies) explains what a topology is, why the shapes are what they are, and why the chain does not filter jobs by topology.
 
 ## What happens to your job
 
@@ -137,6 +141,5 @@ From your `solve()` call to the answer coming back:
 
 If the order closes with no submissions, `solve()` tries to reclaim the reserved reward and raises `QuipJobFailedError`; if it does not close in time, it raises `QuipTimeoutError`. Both carry the `order_id`. The reclaim is best-effort: if it fails, the error says so, and `query()` with that `order_id` frees the reward later. The fee is not refunded. The [Failure Taxonomy](/docs/xquad/solving/quip-network.html#failure-taxonomy) lists every error the solver raises.
 
-{% hint style="info" %}
-Interested in the other side of this marketplace, earning rewards by solving jobs? See the [Nodes section](../nodes/run-a-node-testnet.md) for running a miner.
-{% endhint %}
+> **Note**
+> Interested in the other side of this marketplace, earning rewards by solving jobs? See the [Nodes section](/docs/nodes/run-a-node-testnet) for running a miner.
