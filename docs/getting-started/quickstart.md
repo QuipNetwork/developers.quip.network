@@ -19,13 +19,13 @@ For more node running options see the [Nodes section](../nodes/run-a-node-testne
 
 ## Generate quantum-resistant keys
 
-Right now there's not much to do other than mine blocks, generate some quantum-resistant keys through our wallets on Ethereum, Solana, their L2s, and the Bitcoin L2s Arch and Midl, but we are building out the smart contract layer so you can take advantage of the quantum computers too.
+Right now there's not much to do other than mine blocks, generate some quantum-resistant keys through our wallets on Ethereum, its L2s, and the Bitcoin L2s Arch and Midl, but we are building out the smart contract layer so you can take advantage of the quantum computers too.
 
 You can generate post-quantum keys to prepare for the smart contract layer by using our wallets at [account.quip.network](https://account.quip.network/) or you can use the libraries below.
 
 ## Use the libraries directly
 
-Quip's implementation of various hash algorithms, especially the preferred Winternitz One-Time Signature (WOTS+), is available as a library for [rust](https://crates.io/crates/hashsigs-rs), [c++](https://github.com/quipnetwork/hashsigs-cpp), [typescript](https://www.npmjs.com/package/@quip.network/hashsigs), and [solidity](https://www.npmjs.com/package/@quip.network/hashsigs-solidity). If you do not want to use these libraries directly, you can use the interface at [account.quip.network](https://account.quip.network/).
+Quip's hash-based signature implementations, including the Winternitz One-Time Signature (WOTS+) used by the earlier account generation and the SHRINCS scheme used by current accounts, are available as libraries for [rust](https://crates.io/crates/hashsigs-rs), [c++](https://github.com/quipnetwork/hashsigs-cpp), [typescript](https://www.npmjs.com/package/@quip.network/hashsigs), and [solidity](https://www.npmjs.com/package/@quip.network/hashsigs-solidity). If you do not want to use these libraries directly, you can use the interface at [account.quip.network](https://account.quip.network/).
 
 All Quip Network libraries and contracts are available for review on [GitHub](https://github.com/QuipNetwork).
 
