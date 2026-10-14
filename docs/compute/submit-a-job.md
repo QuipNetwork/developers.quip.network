@@ -3,11 +3,6 @@ description: >-
   Install the XQuad Python tools, express your problem as an Ising model, and
   post it to the Quip job mempool for miners to solve.
 icon: paper-plane
-title: "Submit Your First Compute Job"
-group: "Compute"
-order: 16
-route: "compute/submit-a-job"
-source_path: "compute/submit-a-job.md"
 ---
 
 # Submit your first compute job
