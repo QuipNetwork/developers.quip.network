@@ -60,7 +60,7 @@ The tools accept binary models (variables of 0 or 1) as well as spin models, and
 To submit the same model to the network, swap in the `SolverQuip` backend. It connects to a Quip node, posts your model to the job mempool, waits for a miner to solve it, and returns the best answer, all through the same single `solve()` call:
 
 ```python
-from xqsa import SolverQuip
+from xqsa.quip import SolverQuip
 
 solver = SolverQuip.for_network("aglais", keystore="~/.quip/keystore.json")
 result = solver.solve(model)
@@ -87,7 +87,54 @@ quote = solver.quote(model)
 print(quote)
 ```
 
-It builds the same transaction `solve()` would send, asks the chain for the fee, checks your balance, and submits nothing. `solve()` prints the same quote before it submits. The [first-job tutorial](/docs/xquad/solving/quip-first-job.html) walks through a full run with its output.
+It builds the same transaction `solve()` would send, asks the chain for the fee, checks your balance, and submits nothing. `solve()` prints the same quote before it submits.
+
+As of xquad 0.4.3, `SolverQuip` lives in `xqsa.quip` (also reachable as `xquad.sa.quip`). The old `from xqsa import SolverQuip` still works but prints a deprecation warning and goes away in 0.5.0.
+
+## Job orders: draft, price, submit, pick up later
+
+`solve()` is the one-call path. When you want to set the terms of a job before anything is spent, or come back to it from another session, work with a job order instead. An order is a draft until you submit it: every option is checked against the chain's limits first, and nothing is signed until `submit()`.
+
+```python
+from xqsa.quip import SolverQuip, ResolutionTopNEqual
+
+solver = SolverQuip.for_network("aglais")
+
+# Draft the order. Options override the solver's defaults for this job only.
+order = solver.create_order(
+    model,
+    reward=2_000_000_000_000,            # 2 AGLS, in planck
+    deadline_blocks=200,                 # hard deadline for the competition
+    resolution=ResolutionTopNEqual(3),   # top three answers split the reward
+    min_solutions=4,                     # each answer must carry at least 4 vectors
+)
+
+print(order.quote())     # reward plus fee, from the chain; nothing is sent
+order.submit()           # signs and posts the job; the reward is reserved
+order.wait()             # polls until the order is final
+best = order.best()
+print(best.sample, best.energy)
+print(order.receipt())   # the chain's record: fee, winner, payout
+```
+
+Options you can set on an order (all optional):
+
+* `reward`: planck reserved at proposal, at least the chain's minimum reward.
+* `deadline_blocks` and `block_wait`: the hard deadline and the competition window that opens after the first valid answer.
+* `access`: who may answer. `"Open"` (the default), or `AccessAllow(accounts=[...], types=[...])` to restrict the job to named solvers or solver types.
+* `resolution`: the payout rule. `"SingleBest"` (the default), `ResolutionTopNEqual(n)` or `ResolutionTopNWeighted(n)` (runtime 119 or newer).
+* `max_energy` and `min_solutions`: the quality floors described below. Answers above the energy ceiling are dropped by the chain; each answer must store at least `min_solutions` vectors.
+* `topology` and `mapping`: a registered topology hash or `"native"`, and an explicit variable-to-node placement.
+
+A submitted order can be picked up again from its id alone, from any session, because the receipt reads everything from the chain:
+
+```python
+ids = solver.list_orders()             # this account's orders, newest first
+receipt = solver.get_receipt(ids[0])
+print(receipt.status())
+```
+
+Coefficients that fall off the chain's thousandths grid are rounded, and the rounding error is reported, rather than refused. The [first-job tutorial](/docs/xquad/solving/quip-first-job.html) walks through a full run with its output.
 
 ## Fund your account from the faucet
 
