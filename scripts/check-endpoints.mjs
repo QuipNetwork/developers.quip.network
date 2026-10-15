@@ -67,7 +67,7 @@ const BANNED = [
 const REQUIRED = [
   { text: "aglais.quip.network", min: 5, why: "the live zone" },
   {
-    text: "0x59e064bddd49a920d1392693c728c3bf9867f2cf3e0f8fea8c2498b389b0c286",
+    text: "0x542a9915acf840b8940d35ca6de242f669a0c6e3b40f9a8d8c14b9bf7b8ebecb",
     min: 1,
     why: "genesis hash — the only reliable way to tell this chain from the retired one",
   },
