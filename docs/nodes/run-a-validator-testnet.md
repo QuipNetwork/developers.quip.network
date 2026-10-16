@@ -195,7 +195,18 @@ The old node's last block comes just before the session change, and the new node
 
 * The network carries on without you. Blocks keep coming, a little slower because your slots stay empty.
 * Finality needs more than two thirds of the active validators online: 3 of 3, 3 of 4, 4 of 5. With fewer online, blocks are still produced but are not finalized until enough validators are back. **Staking → Overview** shows how many validators are active.
-* Keep your node online. A validator that goes offline is removed from the active set and cannot rejoin.
+* Keep your node online. A validator that goes offline is removed from the active set and cannot rejoin. To take your node down on purpose, see [Take your node down for maintenance](#take-your-node-down-for-maintenance).
+
+## Take your node down for maintenance
+
+To restart your server, update its operating system or take the node down for any other planned work, leave the active set first. Downtime after you have left does not count as going offline.
+
+1. On **Network → Staking → Accounts**, choose **Stop** on your stash. You leave the active set when the next era starts, within about 70 minutes. Keep your node running until **Staking → Overview** no longer lists you as active.
+2. Do the maintenance.
+3. Start the node and wait until it is fully synced (see [Step 2](#step-2-run-your-validator-node)).
+4. On **Network → Staking → Accounts**, choose **Validate** on your stash, set your commission and sign. Your approval and your bond stay in place, so you are a candidate at the next election and active again within about 70 minutes.
+
+To move to a new server without a break, see [Change your session keys or move to a new server](#change-your-session-keys-or-move-to-a-new-server) instead.
 
 ## Leaving
 
