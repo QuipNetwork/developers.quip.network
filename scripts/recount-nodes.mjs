@@ -474,6 +474,10 @@ function isPublicIPv4(h) {
   if (p[0] === 192 && p[1] === 168) return false;
   if (p[0] === 169 && p[1] === 254) return false;
   if (p[0] === 100 && p[1] >= 64 && p[1] <= 127) return false; // CGNAT
+  if (p[0] === 192 && p[1] === 0 && (p[2] === 0 || p[2] === 2)) return false;  // IETF, TEST-NET-1
+  if (p[0] === 198 && (p[1] === 18 || p[1] === 19)) return false;              // benchmarking
+  if (p[0] === 198 && p[1] === 51 && p[2] === 100) return false;               // TEST-NET-2
+  if (p[0] === 203 && p[1] === 0 && p[2] === 113) return false;                // TEST-NET-3
   if (p[0] >= 224) return false;                               // multicast/reserved
   return true;
 }
