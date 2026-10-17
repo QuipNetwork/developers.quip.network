@@ -29,11 +29,11 @@
  */
 export const NETWORK_SNAPSHOT = {
   chain: "Aglais",
-  takenOn: "2026-10-15",
-  atBlock: 13599,
+  takenOn: "2026-10-17",
+  atBlock: 28254,
   source: "chain storage, read directly from a public bootnode RPC",
-  miners: 277,
-  minersWithWins: 5,
+  miners: 382,
+  minersWithWins: 7,
   validators: 4,
   topologyNodes: 4577,
   topologyEdges: 41514,
