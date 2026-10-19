@@ -83,8 +83,7 @@ A job on `aglais` costs the chain's minimum reward, 1 AGLS, plus a transaction f
 AGLS is free from the faucet. The exact amounts can change with runtime upgrades, so ask the chain:
 
 ```python
-quote = solver.quote(model)
-print(quote)
+print(solver.create_order(model).quote())
 ```
 
 It builds the same transaction `solve()` would send, asks the chain for the fee, checks your balance, and submits nothing. `solve()` prints the same quote before it submits.
@@ -178,10 +177,10 @@ From your `solve()` call to the answer coming back:
 2. **A miner picks it up.** The open order is visible to miners on the network's optimization subnet, which spans CPU, graphics processing unit (GPU), and quantum annealing hardware. By default any registered solver may compete; you can instead restrict a job to named miners or to particular hardware types.
 3. **The chain verifies answers.** Every submitted answer is checked on-chain against your problem: spins must be minus one or plus one, the energy is recomputed from your coefficients, diversity is computed across the set, and your quality floors are enforced. Miners cannot grade their own homework.
 4. **Competition runs on a clock.** Each job carries a hard deadline, measured in blocks. When the first valid solution arrives, a shorter competition window opens so that other miners have a fair chance to beat it. The order closes at whichever comes first, the hard deadline or the end of that window.
-5. **The reward is split.** You choose the split when posting: the single best answer takes the whole reward, or the top answers share it weighted by quality, or the top answers share it equally.
-6. **The result comes back to you.** Your `solve()` call polls until the order is final and returns the winning answer as `result.sample` with its energy in `result.energy`. The result is also readable on-chain by order identifier, so a timed-out client can recover it later through the solver's `query()` method.
+5. **The reward is split.** You choose the split when posting: the single best answer takes the whole reward, or the top answers share it by rank, or the top answers share it equally. In the ranked split the chain orders the answers by energy and pays by position, so the energy values themselves do not set the shares.
+6. **The result comes back to you.** Your `solve()` call polls until the order is final and returns the winning answer as `result.sample` with its energy in `result.energy`. The result is also readable on-chain by order identifier: a client that timed out follows the order with `solver.get_receipt(order_id)`.
 
-If the order closes with no submissions, `solve()` tries to reclaim the reserved reward and raises `QuipJobFailedError`; if it does not close in time, it raises `QuipTimeoutError`. Both carry the `order_id`. The reclaim is best-effort: if it fails, the error says so, and `query()` with that `order_id` frees the reward later. The fee is not refunded. The [Failure Taxonomy](/docs/xquad/solving/quip-network.html#failure-taxonomy) lists every error the solver raises.
+If the order closes with no submissions, `solve()` tries to reclaim the reserved reward and raises `QuipJobFailedError`; if it does not close in time, it raises `QuipTimeoutError`. Both carry the `order_id`. The reclaim is best-effort: if it fails, the error says so, and `solver.get_receipt(order_id).reclaim()` frees the reward later. A `QuipTimeoutError` raised while waiting carries the order's receipt as `.receipt`. An order sent with `submit()` is never reclaimed on its own; only `solve()` reclaims an unanswered order by itself. The fee is not refunded. The [Failure Taxonomy](/docs/xquad/solving/quip-network.html#failure-taxonomy) lists every error the solver raises.
 
 > **Note**
 > Interested in the other side of this marketplace, earning rewards by solving jobs? See the [Nodes section](/docs/nodes/run-a-node-testnet) for running a miner.
