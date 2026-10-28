@@ -268,8 +268,18 @@ async function readFigures() {
  * what that date is there to caveat. What a date cannot excuse is a figure that
  * went BACKWARDS, or a date that is itself old. Those are what this checks now.
  *
- * Governance settings are untouched and still exact: validators and topology
- * move only when someone deliberately moves them, so any movement is news.
+ * Topology is still exact: it moves only when someone deliberately moves it, so
+ * any movement is news.
+ *
+ * Validators used to be exact too, and that turned every seat change into a
+ * deadlock. This check runs before refresh-data in the same pipeline, so a red
+ * check skips the one job that would write the new count, and the refresh stays
+ * stopped until someone commits the figure by hand. Seats now change routinely
+ * (applicants approved, offline validators removed), each change is already
+ * announced by the validator admission and liveness alerts, and the page does
+ * not print the figure at all. So it takes the growth rule: an approval or a
+ * removal is recorded by the next refresh, and only a collapse fails (a drop of
+ * more than the shrink band: 5 seats, or 25% once the set is past 20).
  */
 const TOLERANCE = {
   // Growth is excused by the date; a drop is not. Mass deregistration inside
@@ -279,7 +289,7 @@ const TOLERANCE = {
   // are wrong even though every number on the page still reads correctly.
   descriptors: "growth",
   minersWithWins: "growth",
-  validators: "exact",
+  validators: "growth",
   topologyNodes: "exact",
   topologyEdges: "exact",
 };
