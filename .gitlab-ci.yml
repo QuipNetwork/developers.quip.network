@@ -21,10 +21,16 @@
 # someone else's CDN is having a bad afternoon. That exclusion is also what stops
 # refresh-data's own commit from starting another pipeline.
 
+include:
+  - project: quip.network/ci-templates
+    ref: v1.1.0
+    file: templates/dependency-gate.yml
+
 stages: [check, refresh]
 
 workflow:
   rules:
+    - if: $CI_COMMIT_TAG
     - if: $CI_PIPELINE_SOURCE == "schedule"
     - if: $CI_PIPELINE_SOURCE == "web"
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
