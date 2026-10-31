@@ -195,7 +195,7 @@ The old node's last block comes just before the session change, and the new node
 
 * The network carries on without you. Blocks keep coming, a little slower because your slots stay empty.
 * Finality needs more than two thirds of the active validators online: 3 of 3, 3 of 4, 4 of 5. With fewer online, blocks are still produced but are not finalized until enough validators are back. **Staking → Overview** shows how many validators are active.
-* Keep your node online. If it stops producing blocks for 10 minutes or more, that counts as an outage. The first outage is recorded as a warning, and you keep your seat.
+* Keep your node online. If it stops producing blocks for 21 minutes or more, that counts as an outage. The first outage is recorded as a warning, and you keep your seat.
 * A second outage, or a first one that lasts more than 6 hours, gets your stash removed from the active set. The Foundation removes your approval and won't approve that stash again, even if your node is back by then.
 * A restart of a few minutes, for example to update your node, doesn't count, and neither do outages the network causes. To take your node down on purpose, see [Take your node down for maintenance](#take-your-node-down-for-maintenance).
 
