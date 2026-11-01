@@ -106,6 +106,28 @@ const websiteSchema = {
       type="font/woff2"
       crossorigin
     />
+    <script defer src="https://cloud.umami.is/script.js" data-website-id="4d97cda9-1fb5-4705-aea2-cb757cae3ad8"></script>
+    <script is:inline>
+      (() => {
+        if (!location.pathname.startsWith("/docs/guides/")) return;
+        const page = location.pathname;
+        const sent = new Set();
+        const track = (name, data) => window.umami?.track(name, { page, ...data });
+        addEventListener("scroll", () => {
+          const depth = (scrollY + innerHeight) / document.documentElement.scrollHeight;
+          for (const mark of [25, 50, 75, 100]) {
+            if (depth * 100 >= mark && !sent.has(mark)) {
+              sent.add(mark);
+              track("guide-scroll", { depth: mark });
+            }
+          }
+        }, { passive: true });
+        addEventListener("click", (event) => {
+          const link = event.target.closest?.("article a, main a");
+          if (link) track("guide-link", { href: link.getAttribute("href") });
+        });
+      })();
+    </script>
     <slot name="head" />
   </head>
   <body
