@@ -9,6 +9,10 @@
 * [Quip SDK](getting-started/quip-sdk.md)
 * [Use These Docs with AI](getting-started/use-with-ai.md)
 
+## Guides
+
+* [What Is a QVM?](guides/what-is-a-qvm.md)
+
 ## Quip Interlock Protocol
 
 * [How Quip Network Fits Together](interlock/how-quip-fits-together.md)
