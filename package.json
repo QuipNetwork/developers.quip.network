@@ -9,7 +9,7 @@
     "dev": "next dev",
     "docs:sync": "node scripts/sync-docs.mjs",
     "xquad:sync": "node scripts/sync-xquad.mjs",
-    "prebuild": "node scripts/check-endpoints.mjs && npm run docs:sync && npm run xquad:sync",
+    "prebuild": "node scripts/check-endpoints.mjs && npm run docs:sync && npm run xquad:sync && node scripts/sync-reference.mjs",
     "build": "next build",
     "start": "cp -r public .next/standalone/ && cp -r .next/static .next/standalone/.next/ && node .next/standalone/server.js",
     "check": "npm run docs:sync && next typegen && tsc --noEmit",
@@ -23,6 +23,7 @@
     "clsx": "^2.1.1",
     "fumadocs-core": "16.17.10",
     "fumadocs-mdx": "15.4.10",
+    "fumadocs-openapi": "12.5.8",
     "fumadocs-ui": "npm:@fumadocs/base-ui@16.17.10",
     "katex": "0.16.47",
     "lucide-react": "^1.61.0",
@@ -35,16 +36,20 @@
     "zod": "^4.1.12"
   },
   "devDependencies": {
+    "@quip.network/ethereum-sdk": "1.0.6",
+    "@quip.network/quip-swap-sdk": "0.1.1",
     "@tailwindcss/postcss": "4.2.4",
     "@types/mdx": "^2.0.14",
     "@types/node": "^22.18.0",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "fumadocs-typescript": "5.5.2",
     "postcss": "^8.5.31",
     "prettier": "^3.8.3",
     "prettier-plugin-tailwindcss": "^0.8.0",
     "tailwindcss": "4.2.4",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "yaml": "2.9.1"
   },
   "engines": {
     "node": ">=22"

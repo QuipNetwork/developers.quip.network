@@ -5,7 +5,9 @@ import { metaSchema, pageSchema } from "fumadocs-core/source/schema";
 import { remarkMdxMermaid } from "fumadocs-core/mdx-plugins/remark-mdx-mermaid";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
+import { remarkAutoTypeTable } from "fumadocs-typescript";
 import { z } from "zod";
+import { createReferenceGenerator, typeTableOptions } from "./reference-tables.mjs";
 import { docsRoute } from "./shared";
 
 const docs = defineDocs({
@@ -16,8 +18,14 @@ const docs = defineDocs({
     schema: pageSchema.extend({ source_path: z.string().optional(), noindex: z.boolean().optional() }),
     // applyMdxPreset keeps Fumadocs' defaults (GFM, heading ids, code highlighting).
     mdxOptions: applyMdxPreset({
-      // Only $$ opens math: the Documentation pages print prices and $QUIP with a bare $.
-      remarkPlugins: (defaults) => [...defaults, remarkMdxMermaid, [remarkMath, { singleDollarTextMath: false }]],
+      // Type tables first, so the defaults index them for search. Only $$ opens math: the
+      // Documentation pages print prices and $QUIP with a bare $.
+      remarkPlugins: (defaults) => [
+        [remarkAutoTypeTable, { generator: createReferenceGenerator(), options: typeTableOptions }],
+        ...defaults,
+        remarkMdxMermaid,
+        [remarkMath, { singleDollarTextMath: false }],
+      ],
       rehypePlugins: (defaults) => [rehypeKatex, ...defaults],
     }),
     postprocess: {

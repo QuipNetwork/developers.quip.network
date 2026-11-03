@@ -1,0 +1,66 @@
+# The Aglais test network faucet. Written from FAUCET in src/data/testnet.ts and
+# docs/compute/submit-a-job.md, plus read-only probes of /, /request and /health on
+# 2026-11-03. No POST was sent while writing it, so the success status and body are left
+# undocumented here rather than guessed. Rendered at /docs/reference/faucet.
+openapi: 3.1.0
+info:
+  title: Aglais test network faucet
+  version: 2026-11-03
+  description: >-
+    API only. The root path returns 404. There is no CORS preflight, so call it from a
+    server or curl, not from a browser.
+servers:
+  - url: https://faucet.aglais.quip.network
+paths:
+  /request:
+    post:
+      operationId: requestDrip
+      summary: Request a drip
+      description: >-
+        Sends one drip of 10 AGLS to the destination. Rate-limited per destination.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [dest]
+              properties:
+                dest:
+                  type: string
+                  description: >-
+                    The address to fund: an SS58 address, a 0x-prefixed 64-hex AccountId,
+                    or a 0x-prefixed 40-hex EVM address.
+            example:
+              dest: <your address>
+      responses:
+        2XX:
+          description: >-
+            The drip was requested. The exact status code and response body are not
+            documented.
+        "403":
+          description: >-
+            The address already holds more than one drip. It can draw again once spending
+            takes it back below that.
+        "429":
+          description: >-
+            With `retry_after_seconds`, the address was funded seconds ago: wait that long
+            and retry. Without it, a request for the address is still in flight.
+  /health:
+    get:
+      operationId: getHealth
+      summary: Check health
+      description: Reports whether the faucet is up. Dispenses nothing.
+      responses:
+        "200":
+          description: The faucet is up.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                properties:
+                  status:
+                    type: string
+              example:
+                status: ok

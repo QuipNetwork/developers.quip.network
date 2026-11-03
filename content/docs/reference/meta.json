@@ -1,0 +1,6 @@
+{
+  "title": "Reference",
+  "description": "SDK types and the faucet API",
+  "root": true,
+  "pages": ["index", "ethereum-sdk", "quip-swap-sdk", "faucet"]
+}
