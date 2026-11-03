@@ -16,12 +16,16 @@ function treeOf(slugs: string[]) {
   return { name: "Documentation", href: "/docs", llms: "/docs/llms.txt" };
 }
 
-// Links to other sites open in a new tab, as they did on the Astro site.
-function externalAware(Base: FC<AnchorHTMLAttributes<HTMLAnchorElement>>) {
+/*
+ * Same-tab and new-tab behaviour as the old site: the docs opened other sites in a new tab,
+ * the XQuad book never did, and mailto: and links back to this site stayed in the tab.
+ */
+function linkFor(Base: FC<AnchorHTMLAttributes<HTMLAnchorElement>>, newTab: boolean) {
   return function Anchor(props: AnchorHTMLAttributes<HTMLAnchorElement>) {
     const href = props.href ?? "";
-    const external = /^https?:\/\//.test(href) && !href.startsWith(SITE_URL);
-    return external ? <a {...props} target="_blank" rel="noopener noreferrer" /> : <Base {...props} />;
+    if (/^mailto:/.test(href) || href.startsWith(SITE_URL)) return <a {...props} />;
+    if (/^https?:\/\//.test(href)) return newTab ? <a {...props} target="_blank" rel="noopener noreferrer" /> : <a {...props} />;
+    return <Base {...props} />;
   };
 }
 
@@ -50,20 +54,47 @@ export default async function Page({ params }: Props) {
     })),
   };
 
+  // Pages from docs/ and the book carry their own H1 and no lede, as they did. The outline
+  // lists h2 and h3, also as it did. Reference pages have no H1 in the body.
+  const hasOwnHeading = page.data.toc.some((item) => item.depth === 1);
+  const toc = page.data.toc.filter((item) => item.depth === 2 || item.depth === 3);
+  const inBook = page.slugs[0] === "xquad";
+  const inDocs = tree.href === "/docs";
+
   return (
-    <DocsPage toc={page.data.toc} full={page.data.full}>
+    <DocsPage toc={toc} full={page.data.full}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema).replaceAll("<", "\\u003c") }}
       />
-      <DocsTitle>{page.data.title}</DocsTitle>
-      <DocsDescription className="mb-0">{page.data.description}</DocsDescription>
-      <div className="flex flex-row items-center gap-2 border-b border-fd-border pb-6">
-        <MarkdownCopyButton markdownUrl={markdownUrl} />
-        <ViewOptionsPopover markdownUrl={markdownUrl} githubUrl={editUrl} />
+      {hasOwnHeading ? null : (
+        <>
+          <DocsTitle>{page.data.title}</DocsTitle>
+          <DocsDescription className="mb-0">{page.data.description}</DocsDescription>
+        </>
+      )}
+      <div className="flex flex-row flex-wrap items-center justify-between gap-2">
+        {inDocs ? (
+          <nav aria-label="Breadcrumb" className="text-[13px] text-fd-muted-foreground">
+            <ol className="flex flex-wrap gap-2">
+              {breadcrumbs.map((crumb, index) => (
+                <li key={crumb.href} className="flex gap-2">
+                  {index > 0 ? <span aria-hidden="true">/</span> : null}
+                  {index === breadcrumbs.length - 1 ? <span aria-current="page">{crumb.name}</span> : <a href={crumb.href}>{crumb.name}</a>}
+                </li>
+              ))}
+            </ol>
+          </nav>
+        ) : (
+          <span />
+        )}
+        <div className="flex flex-row items-center gap-2">
+          <MarkdownCopyButton markdownUrl={markdownUrl} />
+          <ViewOptionsPopover markdownUrl={markdownUrl} githubUrl={editUrl} />
+        </div>
       </div>
       <DocsBody>
-        <MDX components={getMDXComponents({ a: externalAware(createRelativeLink(source, page)) })} />
+        <MDX components={getMDXComponents({ a: linkFor(createRelativeLink(source, page), !inBook) })} />
       </DocsBody>
       <footer className="quip-eyebrow mt-10 flex gap-4 border-t border-fd-border pt-4">
         <a href={markdownUrl}>View as Markdown</a>
@@ -82,6 +113,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const page = source.getPage(slug);
   if (!page) notFound();
+  // The book's <title> keeps mdBook's form. Its pages have no description, as before.
+  if (page.slugs[0] === "xquad") {
+    const bookTitle = "XQuad Documentation";
+    return {
+      title: { absolute: page.slugs.length === 1 ? bookTitle : `${page.data.title} - ${bookTitle}` },
+      description: "",
+      alternates: { canonical: page.url },
+      robots: { index: false, follow: false },
+    };
+  }
   return {
     title: page.data.title,
     description: page.data.description ?? `${page.data.title} — Quip Network documentation.`,

@@ -191,10 +191,9 @@ function cardsToMdx(table) {
 }
 
 function toMdx(markdown, sourcePath) {
-  // The page template renders the title, so a leading H1 would print it twice. The twins
-  // keep theirs: an agent reading only the Markdown needs it.
-  const withoutTitle = markdown.replaceAll("&#x20;", "").replace(/^\s*# .*\n+/, "");
-  let text = escapeOutsideFences(withoutTitle);
+  // The page's own H1 stays in the body: it is often worded differently from the sidebar
+  // title in SUMMARY.md, and the old site printed it.
+  let text = escapeOutsideFences(markdown.replaceAll("&#x20;", ""));
   text = text.replace(/^\{% tabs %\}\n([\s\S]*?)^\{% endtabs %\}$/gm, (_, inner) => {
     const tabs = [...inner.matchAll(/^\{% tab title="([^"]+)" %\}\n([\s\S]*?)^\{% endtab %\}$/gm)];
     const items = tabs.map(([, title]) => title);

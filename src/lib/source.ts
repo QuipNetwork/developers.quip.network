@@ -5,6 +5,7 @@ import { metaSchema, pageSchema } from "fumadocs-core/source/schema";
 import { remarkMdxMermaid } from "fumadocs-core/mdx-plugins/remark-mdx-mermaid";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
+import remarkSmartypants from "remark-smartypants";
 import { remarkAutoTypeTable } from "fumadocs-typescript";
 import { z } from "zod";
 import { createReferenceGenerator, typeTableOptions } from "./reference-tables.mjs";
@@ -25,6 +26,9 @@ const docs = defineDocs({
         ...defaults,
         remarkMdxMermaid,
         [remarkMath, { singleDollarTextMath: false }],
+        // Curly quotes, en and em dashes, ellipses: both old renderers did this (Astro by
+        // default, mdBook's smart-punctuation). Code and math are left alone.
+        [remarkSmartypants, { dashes: "oldschool" }],
       ],
       rehypePlugins: (defaults) => [rehypeKatex, ...defaults],
     }),

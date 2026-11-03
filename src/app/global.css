@@ -256,3 +256,22 @@ kbd {
   outline: 2px solid var(--quip-coral);
   outline-offset: 2px;
 }
+
+/* ---------- Carried over from the old docs stylesheet ---------- */
+
+.prose :where(th) {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.prose :where(ul ul) {
+  list-style-type: circle;
+}
+
+/* Code blocks show in full, as they did; Fumadocs caps them at 600 px with a scrollbar. */
+.prose figure .fd-scroll-container {
+  max-height: none;
+}

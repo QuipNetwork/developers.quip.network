@@ -488,7 +488,7 @@ export function convert(markdown, source, resolveLink) {
   return { mdx: admonitionsToCallouts(mdx), twin };
 }
 
-/** The page title: the leading H1, which the page template prints, so MDX drops it. */
+/** The page's leading H1, for the twin index. The body keeps it. */
 export function takeTitle(mdx, fallback) {
   const match = mdx.match(/^\s*# +(.+)\n*/);
   if (!match) return { title: fallback, body: mdx };
@@ -607,9 +607,12 @@ async function main() {
         return readFileSync(included, "utf8");
       });
       const { mdx, twin } = convert(fenceIndentedCode(expanded), chapter.source, resolveLink);
-      const { title, body } = takeTitle(mdx, chapter.title);
+      // The H1 stays in the body, as the old book printed it. The sidebar and <title> use
+      // SUMMARY's label, as mdBook did.
+      const { title } = takeTitle(mdx, chapter.title);
+      const body = mdx;
       const route = routeOf(chapter.source);
-      const frontmatter = [`title: ${JSON.stringify(title)}`, "noindex: true"].join("\n");
+      const frontmatter = [`title: ${JSON.stringify(chapter.title)}`, "noindex: true"].join("\n");
       const contentPath = path.join(contentOut, `${fileOf(chapter)}.mdx`);
       await mkdir(path.dirname(contentPath), { recursive: true });
       await writeFile(contentPath, `---\n${frontmatter}\n---\n\n${body.trim()}\n`);
