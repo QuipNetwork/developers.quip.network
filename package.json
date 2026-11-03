@@ -8,13 +8,14 @@
     "predev": "npm run docs:sync",
     "dev": "next dev",
     "docs:sync": "node scripts/sync-docs.mjs",
-    "book:fetch": "node scripts/fetch-book.mjs",
-    "prebuild": "node scripts/check-endpoints.mjs && npm run docs:sync && npm run book:fetch",
+    "xquad:sync": "node scripts/sync-xquad.mjs",
+    "prebuild": "node scripts/check-endpoints.mjs && npm run docs:sync && npm run xquad:sync",
     "build": "next build",
     "start": "cp -r public .next/standalone/ && cp -r .next/static .next/standalone/.next/ && node .next/standalone/server.js",
     "check": "npm run docs:sync && next typegen && tsc --noEmit",
     "check:parity": "node scripts/check-parity.mjs",
     "check:links": "node scripts/check-links.mjs",
+    "check:xquad-urls": "node scripts/check-xquad-urls.mjs",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\""
   },
   "dependencies": {
@@ -23,11 +24,14 @@
     "fumadocs-core": "16.17.10",
     "fumadocs-mdx": "15.4.10",
     "fumadocs-ui": "npm:@fumadocs/base-ui@16.17.10",
+    "katex": "0.16.47",
     "lucide-react": "^1.61.0",
     "mermaid": "^11.12.0",
     "next": "16.4.2",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
+    "rehype-katex": "7.0.1",
+    "remark-math": "6.0.0",
     "zod": "^4.1.12"
   },
   "devDependencies": {

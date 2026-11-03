@@ -4,12 +4,11 @@
 # 3000. Stateless, no volumes. The same image runs on staging and production; staging
 # sets ROBOTS_NOINDEX=1. See deploy/README.md.
 #
-# Building needs network access: the XQuad book is pulled from its GitLab release.
+# Building needs network access: the XQuad book's source is pulled from its GitLab release.
 
 FROM node:22-bookworm-slim AS build
-# fetch-book.mjs unpacks the book's artifact with unzip.
 RUN apt-get update \
- && apt-get install -y --no-install-recommends unzip ca-certificates \
+ && apt-get install -y --no-install-recommends ca-certificates \
  && rm -rf /var/lib/apt/lists/*
 ENV NEXT_TELEMETRY_DISABLED=1
 WORKDIR /app

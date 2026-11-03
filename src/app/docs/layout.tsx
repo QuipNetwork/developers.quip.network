@@ -1,3 +1,4 @@
+import "katex/dist/katex.min.css";
 import { DocsLayout } from "fumadocs-ui/layouts/notebook";
 import type { ReactNode } from "react";
 import { baseOptions } from "@/lib/layout.shared";

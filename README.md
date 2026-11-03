@@ -114,6 +114,12 @@ role and `write_repository`, because `main` restricts pushes to Maintainers.
   public routes from `SUMMARY.md`, normalizes GitBook-only markup, rewrites
   internal links, copies assets, and builds `llms.txt`, `llms-full.txt`, and
   per-page Markdown mirrors.
+- **The XQuad book is not in this repo.** `scripts/sync-xquad.mjs` takes its Markdown
+  from the latest xquad release tag at build and writes MDX to `content/docs/xquad/`
+  and twins to `public/docs/xquad/`, all ignored build output. `npm run dev` does not
+  run it, so run `npm run xquad:sync` once to see the book locally.
+  `npm run check:xquad-urls` checks that every URL the old mdBook site published still
+  answers.
 - **`npm run build` runs a guard first.** `scripts/check-endpoints.mjs` fails the
   build if a retired endpoint reappears anywhere in `src/`, or if the aglais
   endpoints and genesis hash go missing. It is offline by design and never

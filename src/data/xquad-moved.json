@@ -1,0 +1,10 @@
+{
+  "404": "",
+  "print": "",
+  "toc": "",
+  "xqvm/cli": "cli/vm",
+  "xqvm/cli/asm": "cli/vm/asm",
+  "xqvm/cli/dis": "cli/vm/dis",
+  "xqvm/cli/run": "cli/vm/run",
+  "xqvm/cli/check": "cli/vm/check"
+}

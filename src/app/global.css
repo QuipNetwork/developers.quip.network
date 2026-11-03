@@ -241,6 +241,14 @@ kbd {
   --quip-callout-bar: var(--quip-positive);
 }
 
+/* ---------- Math: wide equations scroll inside the column, not the page ---------- */
+
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-block: 2px;
+}
+
 /* ---------- Focus ring: coral, 2 px, offset 2 px ---------- */
 
 :where(a, button, input, [tabindex]):focus-visible {
