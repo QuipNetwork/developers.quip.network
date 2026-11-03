@@ -198,7 +198,9 @@ function toMdx(markdown, sourcePath) {
   text = text.replace(/^\{% tabs %\}\n([\s\S]*?)^\{% endtabs %\}$/gm, (_, inner) => {
     const tabs = [...inner.matchAll(/^\{% tab title="([^"]+)" %\}\n([\s\S]*?)^\{% endtab %\}$/gm)];
     const items = tabs.map(([, title]) => title);
-    const panels = tabs.map(([, title, content]) => `<Tab value=${jsxString(title)}>\n\n${content.trim()}\n\n</Tab>`);
+    // The id keeps the anchor these sections had as headings (/docs/network/participants#validators):
+    // following it opens that tab.
+    const panels = tabs.map(([, title, content]) => `<Tab id="${slugify(title)}" value=${jsxString(title)}>\n\n${content.trim()}\n\n</Tab>`);
     return `<Tabs items=${jsxString(items)}>\n\n${panels.join("\n\n")}\n\n</Tabs>`;
   });
   text = text.replace(/^\{% hint style="([^"]+)" %\}\n([\s\S]*?)^\{% endhint %\}$/gm, (_, style, content) => {
