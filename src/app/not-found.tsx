@@ -1,10 +1,12 @@
 import Link from "next/link";
+import { Track404 } from "@/components/analytics-events";
 
 export const metadata = { title: "Page not found" };
 
 export default function NotFound() {
   return (
     <main className="mx-auto flex max-w-[560px] flex-1 flex-col justify-center gap-3 px-4 py-24">
+      <Track404 />
       <p className="quip-eyebrow">404</p>
       <h1 className="quip-page-title m-0">This page does not exist</h1>
       <p className="m-0 text-[15px] leading-[1.6] text-fd-muted-foreground">

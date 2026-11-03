@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import type { ReactNode } from "react";
 import { SITE_URL } from "@/lib/shared";
+import { AnalyticsEvents } from "@/components/analytics-events";
 import { UMAMI } from "@/lib/analytics";
 import "./global.css";
 
@@ -38,6 +39,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       </head>
       <body className="flex min-h-screen flex-col">
         <RootProvider theme={{ defaultTheme: "system", enableSystem: true }}>{children}</RootProvider>
+        <AnalyticsEvents />
         {UMAMI.websiteId ? (
           // Cookie-free. data-domains limits reporting to production, so staging and
           // local runs of the same image send nothing.

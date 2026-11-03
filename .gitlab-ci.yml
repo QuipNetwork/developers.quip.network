@@ -2,31 +2,29 @@
 #
 # This repo does NOT deploy from CI.
 #
-# Production deploys come from Netlify's own GitLab integration — a webhook and
-# a deploy key on this project — which is how every sibling site in the estate
-# works (agls, hello, main, blog, vault, account). Build configuration lives in
-# netlify.toml.
+# CI builds the site's Docker image and pushes it to this project's registry. The
+# server pulls new tags on its own (deploy/README.md). There is exactly one path from
+# a commit to the site, and CI hands off at the registry.
 #
-# NEVER ADD A DEPLOY JOB HERE. Two deploy paths pointed at one Netlify site is a
-# race between a stale artifact and a fresh one, and the loser is whichever
-# finishes second.
+# NEVER ADD A DEPLOY JOB HERE. Two deploy paths pointed at one site is a race between
+# a stale artifact and a fresh one, and the loser is whichever finishes second.
 #
-# refresh-data below COMMITS, which is not the same thing as deploying and does
-# not break that rule. It pushes regenerated data files to the default branch;
-# Netlify's webhook then does what it does for any other commit. There is still
-# exactly one path from a commit to the site, and CI is not on it.
+# refresh-data below COMMITS, which is not the same thing as deploying and does not
+# break that rule. It pushes regenerated data files to the default branch; the image
+# job then does what it does for any other commit.
 #
-# Jobs run on a schedule, on a manual "Run pipeline", and on merge requests —
-# deliberately NOT on branch pushes, because a push must not go red because
-# someone else's CDN is having a bad afternoon. That exclusion is also what stops
-# refresh-data's own commit from starting another pipeline.
+# The checks run on a schedule, on a manual "Run pipeline", and on merge requests,
+# deliberately NOT on branch pushes, because a push must not go red because someone
+# else's CDN is having a bad afternoon. Pushes to main and to the fumadocs branch run
+# only build-image. A "trigger" pipeline (xquad's release hook) rebuilds the image so
+# the book stays current.
 
 include:
   - project: quip.network/ci-templates
     ref: v1.1.0
     file: templates/dependency-gate.yml
 
-stages: [check, refresh]
+stages: [check, refresh, image]
 
 workflow:
   rules:
@@ -34,8 +32,42 @@ workflow:
     - if: $CI_PIPELINE_SOURCE == "schedule"
     - if: $CI_PIPELINE_SOURCE == "web"
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_PIPELINE_SOURCE == "trigger"
+    - if: $CI_PIPELINE_SOURCE == "push" && ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH == "fumadocs")
+
+.checks-only:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "trigger"
+      when: never
+    - when: on_success
+
+build-image:
+  stage: image
+  image: docker:27
+  services: [docker:27-dind]
+  interruptible: true
+  timeout: 30m
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push"
+    - if: $CI_PIPELINE_SOURCE == "trigger"
+  script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+    # The branch tag is what the server follows; the commit tag is what a rollback names.
+    # NEXT_PUBLIC_UMAMI_* are public values, set as project CI variables.
+    - >
+      docker build
+      --build-arg NEXT_PUBLIC_UMAMI_SRC="${NEXT_PUBLIC_UMAMI_SRC:-https://cloud.umami.is/script.js}"
+      --build-arg NEXT_PUBLIC_UMAMI_WEBSITE_ID="${NEXT_PUBLIC_UMAMI_WEBSITE_ID:-}"
+      -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+      -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
+      .
+    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
+    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
 
 link-health:
+  extends: .checks-only
   stage: check
   # No install step: scripts/check-links.mjs has zero dependencies, on purpose.
   image: node:22-alpine
@@ -59,6 +91,7 @@ link-health:
 # people and different fixes, and reading a log to tell them apart is exactly
 # the friction that gets alerts muted.
 snapshot-drift:
+  extends: .checks-only
   stage: check
   image: node:22-alpine
   interruptible: true

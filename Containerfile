@@ -10,7 +10,7 @@ RUN apt-get update \
 
 ENV DENO_DIR=/app/node_modules/.deno
 
-ENV ASTRO_TELEMETRY_DISABLED=1
+ENV NEXT_TELEMETRY_DISABLED=1
 ENV DO_NOT_TRACK=1
 RUN mkdir -p /root/.config/netlify \
  && echo '{"telemetryDisabled":true}' > /root/.config/netlify/config.json
