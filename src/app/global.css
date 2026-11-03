@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "fumadocs-ui/css/neutral.css";
 @import "fumadocs-ui/css/preset.css";
+@import "fumadocs-openapi/css/preset.css";
 /* Fonts and the zinc scale come from the vendored design system, as on the home page. */
 @import "../vendor/quip-design/styles/base.css";
 
