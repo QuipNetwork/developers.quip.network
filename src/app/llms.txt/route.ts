@@ -32,7 +32,6 @@ const body = `# Quip Network for developers
 - [Docs llms.txt](${AI.llmsTxt}): Annotated index of every documentation page.
 - [Docs llms-full.txt](${AI.llmsFullTxt}): The entire documentation set as one markdown file.
 - Any documentation page also returns markdown if you append .md to its URL.
-- MCP server: ${AI.mcp} over Streamable HTTP, public and read-only. Tools: search_docs, get_page, list_pages. Covers the docs, the XQuad book and the reference.
 - [Use These Docs with AI](${DOCS.useWithAi}): Machine-readable indexes and markdown mirrors. Any docs page also returns markdown if you append .md to its URL.
 
 ## Build applications

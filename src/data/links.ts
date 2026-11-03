@@ -52,7 +52,6 @@ export const DOCS = {
 export const AI = {
   llmsTxt: `${DOCS_BASE}/llms.txt`,
   llmsFullTxt: `${DOCS_BASE}/llms-full.txt`,
-  mcp: new URL("/mcp", SITE_ORIGIN).href,
 };
 
 /** GitLab is canonical. GitHub is a mirror, and is labelled as one. */

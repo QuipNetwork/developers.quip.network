@@ -1,56 +1,20 @@
 ---
 description: >-
   Connect these docs to Claude, ChatGPT, Cursor, or Claude Code: every page
-  has a markdown mirror, the whole site is indexed for language models, and an
-  MCP server lets assistants search and read it directly.
+  has a markdown mirror, and the whole site is indexed for language models.
 icon: robot
 ---
 
 # Use These Docs with AI
 
-These docs are built to be read by AI tools as well as people. Every page has a plain-markdown mirror, the whole site is indexed for language models, and an MCP server lets an assistant search and read the docs itself.
+These docs are built to be read by AI tools as well as people. Every page has a plain-markdown mirror, and the whole site is indexed for language models. Both are live today.
 
 **Which option should you use?**
 
 | You are | Use |
 | --- | --- |
-| Working in Claude Code, Cursor, or another MCP client | [Connect the MCP server](use-with-ai.md#connect-an-assistant-over-mcp) |
 | Asking questions about one page | [Open the page in your assistant](use-with-ai.md#ask-an-assistant-about-one-page) |
 | Feeding the docs to your own tool, agent, or evaluation | [The site indexes](use-with-ai.md#give-a-model-the-whole-site), never scrape the HTML |
-
-## Connect an assistant over MCP
-
-**What it does.** Gives your assistant three tools: `search_docs` finds pages, `get_page` reads one as markdown, and `list_pages` lists them all. It covers these docs, the XQuad book, and the SDK and API reference.
-
-**When to use it.** You are working in a coding assistant and want it to look things up in the docs as it goes, rather than guess.
-
-**How to use it.** The server is at `https://developers.quip.network/mcp`, over Streamable HTTP. It is public and read-only, so it needs no key.
-
-In Claude Code:
-
-```bash
-claude mcp add --transport http quip-docs https://developers.quip.network/mcp
-```
-
-In Cursor, add this to `.cursor/mcp.json`:
-
-```json
-{
-  "mcpServers": {
-    "quip-docs": { "url": "https://developers.quip.network/mcp" }
-  }
-}
-```
-
-In VS Code, add this to `.vscode/mcp.json`:
-
-```json
-{
-  "servers": {
-    "quip-docs": { "type": "http", "url": "https://developers.quip.network/mcp" }
-  }
-}
-```
 
 ## Ask an assistant about one page
 
