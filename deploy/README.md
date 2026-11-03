@@ -42,6 +42,11 @@ CI builds and pushes; it never deploys (see the top of `.gitlab-ci.yml`).
 | Push to `fumadocs` | `:fumadocs`, `:<short sha>` | Staging |
 | Push to `main` | `:main`, `:<short sha>` | Production |
 
+**The registry must be private.** The image contains the Dinamo fonts, whose licence rules
+out a public registry, and this project is public. Under Settings, General, Visibility, set
+Container registry to "Only Project Members", and give the host a deploy token with
+`read_registry` to log in with.
+
 The host pulls those tags on its own, with Watchtower, Nomad, Argo or a cron job. That must
 work unattended, because the data-refresh bot commits to `main` daily and each commit needs
 to reach production.

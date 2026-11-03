@@ -18,7 +18,7 @@ import { CHAIN, EVM, EXPLORER } from "../data/testnet";
 // EVM chain ID is identical on both.
 const AGENT_PROMPT = [
   "You are helping me build on Quip Network.",
-  `Docs index: ${AI.llmsTxt}. Any docs page returns markdown if you append .md to its URL.`,
+  `Docs index: ${AI.llmsTxt}. Any docs page returns markdown if you append .md to its URL. Docs MCP server: ${AI.mcp}.`,
   `Testnet EVM JSON-RPC: ${EVM.rpcUrl} (chain ID ${EVM.chainId}). Verify on-chain results against ${EXPLORER.url}.`,
   `Confirm you are on the right chain by genesis hash ${CHAIN.genesis}, not by chain ID.`,
   "TypeScript SDK: @quip.network/ethereum-sdk@beta. Python compute toolchain: xquad[quip], which installs the xqsa solvers and the Quip Network backend.",
@@ -39,6 +39,11 @@ const SURFACES = [
     label: "Markdown mirrors",
     description: "Append .md to any page",
     href: DOCS.useWithAi,
+  },
+  {
+    label: "MCP server",
+    description: "Search and read the docs",
+    href: `${DOCS.useWithAi}#connect-an-assistant-over-mcp`,
   },
   {
     label: "This portal's llms.txt",

@@ -65,6 +65,12 @@ await inParallel(twins, async (url) => {
   if (response.status !== 200 || !type.startsWith("text/markdown")) failures.push(`${url}: answered ${response.status} ${type}`);
 });
 
+// Every page's footer links the book's own index; it must answer as a text file.
+const bookIndex = await fetch(`${ORIGIN}/docs/xquad/llms.txt`);
+if (bookIndex.status !== 200 || !(bookIndex.headers.get("content-type") ?? "").startsWith("text/plain")) {
+  failures.push(`/docs/xquad/llms.txt: answered ${bookIndex.status} ${bookIndex.headers.get("content-type")}`);
+}
+
 // 3. Links between pages, fragments included. Only the article, not the sidebar.
 const idsOf = (page) => new Set([...page.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]));
 let links = 0;
@@ -73,6 +79,7 @@ for (const [url, page] of html) {
   for (const [, href] of article.matchAll(/href="((?:\/docs\/xquad[^"]*)|(?:#[^"]*))"/g)) {
     const [target, fragment] = href.split("#");
     if (target.endsWith(".md")) continue; // The page's own twin, in the footer; checked above.
+    if (target === "/docs/xquad/llms.txt") continue; // The footer's index link; checked above.
     links += 1;
     const pathname = target || url;
     const body = html.get(pathname);

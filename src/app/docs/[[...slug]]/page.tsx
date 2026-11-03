@@ -9,6 +9,13 @@ import { source } from "@/lib/source";
 
 type Props = { params: Promise<{ slug?: string[] }> };
 
+// The three sidebar trees, for the breadcrumb and the footer's index link.
+function treeOf(slugs: string[]) {
+  if (slugs[0] === "xquad") return { name: "XQuad", href: "/docs/xquad", llms: "/docs/xquad/llms.txt" };
+  if (slugs[0] === "reference") return { name: "Reference", href: "/docs/reference", llms: "/docs/llms.txt" };
+  return { name: "Documentation", href: "/docs", llms: "/docs/llms.txt" };
+}
+
 // Links to other sites open in a new tab, as they did on the Astro site.
 function externalAware(Base: FC<AnchorHTMLAttributes<HTMLAnchorElement>>) {
   return function Anchor(props: AnchorHTMLAttributes<HTMLAnchorElement>) {
@@ -26,10 +33,11 @@ export default async function Page({ params }: Props) {
   const MDX = page.data.body;
   const markdownUrl = markdownUrlOf(page);
   const editUrl = sourceUrlOf(page.data.source_path);
+  const tree = treeOf(page.slugs);
   const breadcrumbs = [
     { name: "Developers", href: "/" },
-    { name: "Documentation", href: "/docs" },
-    ...(page.slugs.length ? [{ name: page.data.title, href: page.url }] : []),
+    { name: tree.name, href: tree.href },
+    ...(page.url !== tree.href ? [{ name: page.data.title, href: page.url }] : []),
   ];
   const breadcrumbSchema = {
     "@context": "https://schema.org",
@@ -59,7 +67,7 @@ export default async function Page({ params }: Props) {
       </DocsBody>
       <footer className="quip-eyebrow mt-10 flex gap-4 border-t border-fd-border pt-4">
         <a href={markdownUrl}>View as Markdown</a>
-        <a href="/docs/llms.txt">llms.txt</a>
+        <a href={tree.llms}>llms.txt</a>
         {editUrl ? <a href={editUrl}>Edit on GitLab</a> : null}
       </footer>
     </DocsPage>

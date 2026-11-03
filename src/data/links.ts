@@ -46,15 +46,13 @@ export const DOCS = {
 };
 
 /*
- * No mcpEndpoint. The only MCP server for these docs was hosted by GitBook, on
- * the domain this migration retires, so pointing agents at it would keep the
- * dependency we are removing. The generated llms.txt / llms-full.txt and the
- * per-page .md twins cover the machine-readable need from the canonical host.
- * A self-hosted MCP server is tracked separately.
+ * Machine-readable surfaces, all on the canonical host. The MCP server is part of
+ * this app (src/app/mcp/route.ts); GitBook's went away with GitBook.
  */
 export const AI = {
   llmsTxt: `${DOCS_BASE}/llms.txt`,
   llmsFullTxt: `${DOCS_BASE}/llms-full.txt`,
+  mcp: new URL("/mcp", SITE_ORIGIN).href,
 };
 
 /** GitLab is canonical. GitHub is a mirror, and is labelled as one. */

@@ -39,6 +39,9 @@ const INTENDED = new Map([
   ["/docs/xquad/", { status: 301, location: "/docs/xquad" }],
   ["/docs/xquad/index.html", { status: 301, location: "/docs/xquad" }],
 ]);
+// Agent files whose text changes on purpose: they now describe the MCP server. Status,
+// headers and everything else about them are still compared.
+const BODY_CHANGED = new Set(["/llms.txt", "/docs/llms-full.txt", "/docs/getting-started/use-with-ai.md"]);
 const stripCharset = (type) => (type ?? "").split(";")[0].trim().toLowerCase();
 
 async function probe(origin, url) {
@@ -71,7 +74,10 @@ for (const url of [...new Set(urls)]) {
   if (before.location !== after.location) problems.push(`location ${before.location} -> ${after.location}`);
   if (before.status === 200 && before.type !== after.type) problems.push(`type ${before.type} -> ${after.type}`);
   if (before.robots !== after.robots) problems.push(`x-robots-tag ${before.robots} -> ${after.robots}`);
-  if (before.body !== null && before.status === 200 && before.body !== after.body) problems.push("body differs");
+  if (before.body !== null && before.status === 200 && before.body !== after.body) {
+    if (BODY_CHANGED.has(url)) console.log(`INTENDED ${url}: body describes the MCP server`);
+    else problems.push("body differs");
+  }
   if (problems.length) {
     failures += 1;
     console.log(`DIFF ${url}: ${problems.join("; ")}`);
