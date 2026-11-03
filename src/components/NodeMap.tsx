@@ -1,3 +1,5 @@
+"use client";
+
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
   WORLD,
@@ -267,6 +269,7 @@ export function NodeMap() {
         {cluster && detail && (
           <div
             ref={tipRef}
+            data-tone="dark"
             className="pointer-events-none absolute z-20 w-[224px] border border-zinc-700 bg-zinc-900 p-2.5 text-zinc-50 shadow-[0_4px_14px_rgba(9,9,11,0.22)]"
             style={{
               left: `${tip.left}px`,

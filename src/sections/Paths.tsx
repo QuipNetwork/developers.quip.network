@@ -1,0 +1,171 @@
+import clsx from "clsx";
+import { Panel } from "../components/Panel";
+import { LinkRow } from "../components/LinkRow";
+import { MonoLabel } from "@design/components/Headings";
+import { PrimaryLink } from "@design/components/Buttons";
+import { PersonaIcon, type PersonaShape } from "@design/components/PersonaIcon";
+import { DOCS, CODE, SITE } from "../data/links";
+import { EXPLORER } from "../data/testnet";
+
+/*
+ * Each path is a compact audience profile: the brand glyph in its own tint, the
+ * canonical benefit line, the requirements someone needs to rule themselves in
+ * or out, then the shortest routes and one CTA.
+ *
+ * Requirements are stated plainly and only where they exist. Python 3.13+ and
+ * Compose v2 are both from the docs; there are no time-to-complete estimates,
+ * since none of the reference portals publish them and we have not measured
+ * ours. Evaluators genuinely need nothing, so that path says so once.
+ */
+
+interface Audience {
+  name: string;
+  shape: PersonaShape;
+  benefit: string;
+  tint: string;
+  ink: string;
+  requirements: string[];
+  links: { label: string; description: string; href: string }[];
+  cta: { label: string; href: string };
+}
+
+const AUDIENCES: Audience[] = [
+  {
+    name: "Developers",
+    shape: "square",
+    benefit: "Build on quantum compute without owning a machine.",
+    tint: "var(--color-aud-dev-tint)",
+    ink: "var(--color-aud-dev-ink)",
+    requirements: ["npm or Python 3.13+", "A chain you deploy to"],
+    links: [
+      { label: "Quickstart", description: "Docs", href: DOCS.quickstart },
+      {
+        label: "How it fits together",
+        description: "Concepts",
+        href: DOCS.howItFitsTogether,
+      },
+      { label: "ethereum-sdk", description: "Source", href: CODE.ethereumSdk },
+    ],
+    cta: { label: "Read the Docs", href: DOCS.quickstart },
+  },
+  {
+    name: "Operators",
+    shape: "plus",
+    benefit: "Earn from hardware you already run, classical or quantum.",
+    tint: "var(--color-aud-ops-tint)",
+    ink: "var(--color-aud-ops-ink)",
+    requirements: [
+      "Docker Compose v2",
+      "An always-on machine",
+      "CPU, GPU, or QPU",
+    ],
+    links: [
+      { label: "Run a node", description: "Testnet", href: DOCS.runANode },
+      { label: "Miners", description: "Useful work", href: DOCS.miners },
+      { label: "Node manager", description: "Desktop", href: CODE.nodeManager },
+    ],
+    cta: { label: "Run a Node", href: DOCS.runANode },
+  },
+  {
+    name: "Evaluators",
+    shape: "circle",
+    benefit: "Check what the network does before committing to it.",
+    tint: "var(--color-aud-eval-tint)",
+    ink: "var(--color-aud-eval-ink)",
+    requirements: [],
+    links: [
+      { label: "Explorer", description: "Live chain", href: EXPLORER.url },
+      { label: "Whitepaper", description: "PDF", href: SITE.whitepaper },
+      { label: "Token", description: "Economics", href: DOCS.token },
+    ],
+    cta: { label: "Explore", href: EXPLORER.url },
+  },
+];
+
+export function Paths() {
+  return (
+    <Panel
+      id="paths"
+      eyebrow="02"
+      title="Paths"
+      hint="Three groups, almost no overlap in what they read first"
+      bodyClass="p-0"
+    >
+      <div className="flex flex-col md:grid md:grid-cols-3 md:grid-rows-[auto_auto_1fr_auto]">
+        {AUDIENCES.map((audience, index) => (
+          <div
+            key={audience.name}
+            className={clsx(
+              "flex flex-col gap-3 p-4 md:[grid-row:span_4] md:grid md:[grid-template-rows:subgrid]",
+              index > 0 &&
+                "border-t border-(--color-border) md:border-t-0 md:border-l",
+            )}
+          >
+            <header className="flex flex-col gap-2">
+              <div className="flex items-center">
+                <span
+                  className="inline-flex items-center gap-1.5 px-2 py-1 [font-family:var(--font-mono)] font-features-['case'] text-[10px] leading-none font-medium tracking-[0.4px] uppercase"
+                  style={{ background: audience.tint, color: audience.ink }}
+                >
+                  <PersonaIcon shape={audience.shape} />
+                  {audience.name}
+                </span>
+              </div>
+              <p className="m-0 text-[13px] leading-[1.45] font-medium text-zinc-950">
+                {audience.benefit}
+              </p>
+            </header>
+
+            {/*
+              Top rule only: the link list below opens with its own top border, so
+              a bottom rule here reads as a doubled hairline.
+
+              Bulleted because without a marker two short requirements read as one
+              wrapped sentence. The marker is the brand's CSS triangle, not a glyph
+              character. min-height holds all three columns to the same depth so the
+              link lists below them line up across the row.
+            */}
+            <div className="flex flex-col gap-1.5 border-t border-(--color-border) pt-2">
+              <MonoLabel size="xs">Requirements</MonoLabel>
+              <ul className="m-0 flex list-none flex-col gap-0.5 p-0">
+                {(audience.requirements.length === 0
+                  ? ["Nothing"]
+                  : audience.requirements
+                ).map((req) => (
+                  <li
+                    key={req}
+                    className={clsx(
+                      "relative pl-3 [font-family:var(--font-mono)] text-[11.5px] leading-[1.5] before:absolute before:top-[6px] before:left-0 before:block before:h-1.25 before:w-1.75 before:bg-current before:content-[''] before:[clip-path:polygon(0%_0%,100%_50%,0%_100%)]",
+                      audience.requirements.length === 0
+                        ? "text-(--color-muted)"
+                        : "text-zinc-950",
+                    )}
+                  >
+                    {req}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <ul className="m-0 flex list-none flex-col p-0">
+              {audience.links.map((link) => (
+                <LinkRow
+                  key={link.label}
+                  label={link.label}
+                  description={link.description}
+                  href={link.href}
+                />
+              ))}
+            </ul>
+
+            <div className="mt-auto pt-1">
+              <PrimaryLink href={audience.cta.href} external>
+                {audience.cta.label}
+              </PrimaryLink>
+            </div>
+          </div>
+        ))}
+      </div>
+    </Panel>
+  );
+}
