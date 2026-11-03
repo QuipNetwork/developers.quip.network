@@ -22,8 +22,7 @@ const config = {
   env: { NEXT_PUBLIC_BUILD_DATE: new Date().toISOString().slice(0, 10) },
   reactStrictMode: true,
   poweredByHeader: false,
-  // Trailing slashes are handled in src/proxy.ts: stripped everywhere except the XQuad
-  // book, whose relative links need its folder URLs to end in "/".
+  // Trailing slashes are handled in src/proxy.ts, which strips them.
   skipTrailingSlashRedirect: true,
   async headers() {
     return [
@@ -34,6 +33,13 @@ const config = {
       { source: "/docs.md", headers: markdown },
       {
         source: "/docs/:file(llms.txt|llms-full.txt)",
+        headers: [
+          { key: "Content-Type", value: "text/plain; charset=utf-8" },
+          { key: "X-Robots-Tag", value: "noindex" },
+        ],
+      },
+      {
+        source: "/docs/xquad/llms.txt",
         headers: [
           { key: "Content-Type", value: "text/plain; charset=utf-8" },
           { key: "X-Robots-Tag", value: "noindex" },

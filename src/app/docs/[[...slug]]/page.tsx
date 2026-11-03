@@ -78,5 +78,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: page.data.title,
     description: page.data.description ?? `${page.data.title} — Quip Network documentation.`,
     alternates: { canonical: page.url },
+    ...(page.data.noindex ? { robots: { index: false, follow: false } } : {}),
   };
 }

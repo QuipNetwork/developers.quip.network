@@ -221,9 +221,9 @@ function descriptionOf(frontmatter) {
 // ---------- write ----------
 
 await rm(contentRoot, { recursive: true, force: true });
-// public/docs/xquad is the XQuad book, written by scripts/fetch-book.mjs; keep it.
+// public/docs/xquad and xquad.md are the XQuad book's twins, written by scripts/sync-xquad.mjs; keep them.
 for (const entry of await readdir(publicRoot).catch(() => [])) {
-  if (entry !== "xquad") await rm(path.join(publicRoot, entry), { recursive: true, force: true });
+  if (entry !== "xquad" && entry !== "xquad.md") await rm(path.join(publicRoot, entry), { recursive: true, force: true });
 }
 await rm(rootMirror, { force: true });
 await mkdir(contentRoot, { recursive: true });

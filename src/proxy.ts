@@ -1,5 +1,6 @@
 import { isMarkdownPreferred } from "fumadocs-core/negotiation";
 import { NextRequest, NextResponse } from "next/server";
+import moved from "@/data/xquad-moved.json";
 
 const BOOK = "/docs/xquad";
 
@@ -26,18 +27,25 @@ function redirect(request: NextRequest, pathname: string) {
   return NextResponse.redirect(at(request, pathname), 301);
 }
 
-function route(request: NextRequest, pathname: string) {
-  // The XQuad book is static mdBook output. Its relative links need folder URLs to end
-  // in "/", and a folder is served by its index.html.
-  if (pathname === BOOK) return redirect(request, `${BOOK}/`);
-  if (pathname.startsWith(`${BOOK}/`)) {
-    if (pathname.endsWith("/")) {
-      return NextResponse.rewrite(at(request, `${pathname}index.html`));
-    }
-    return NextResponse.next();
-  }
+/*
+ * Where an old URL of the XQuad book lives now. It was static mdBook output, so a page was
+ * <path>.html and a folder was <dir>/ or <dir>/index.html. Print, table-of-contents and
+ * 404 pages, and pages mdBook itself redirected, are in xquad-moved.json.
+ */
+function movedBookPage(pathname: string) {
+  if (!pathname.startsWith(`${BOOK}/`)) return undefined;
+  if (pathname === `${BOOK}/sitemap.xml`) return "/sitemap.xml";
+  const page = pathname.slice(BOOK.length + 1).replace(/\/+$/, "").replace(/\.html$/, "").replace(/(^|\/)index$/, "");
+  const now = (moved as Record<string, string>)[page] ?? page;
+  const target = now ? `${BOOK}/${now}` : BOOK;
+  return target === pathname ? undefined : target;
+}
 
-  // Everywhere else a trailing slash is stripped, as today.
+function route(request: NextRequest, pathname: string) {
+  const book = movedBookPage(pathname);
+  if (book) return redirect(request, book);
+
+  // A trailing slash is stripped, as today.
   if (pathname.length > 1 && pathname.endsWith("/")) return redirect(request, pathname.replace(/\/+$/, ""));
 
   // An agent that asks for Markdown gets the page's twin at the page's own URL.

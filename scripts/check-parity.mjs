@@ -31,7 +31,14 @@ const urls = [
   ...twins, ...pages, ...redirects,
 ];
 const exactBytes = (url) => url.endsWith(".md") || url.endsWith(".txt");
-// Differences the new site intends: an empty /robots.txt rule set stays, the book is unchanged.
+// Differences the new site intends. The XQuad book was static mdBook output, whose relative
+// links needed a folder URL ending in "/". It is now real pages, under the same rule as every
+// other URL: no trailing slash. scripts/check-xquad-urls.mjs covers the rest of the book.
+const INTENDED = new Map([
+  ["/docs/xquad", { status: 200, location: null }],
+  ["/docs/xquad/", { status: 301, location: "/docs/xquad" }],
+  ["/docs/xquad/index.html", { status: 301, location: "/docs/xquad" }],
+]);
 const stripCharset = (type) => (type ?? "").split(";")[0].trim().toLowerCase();
 
 async function probe(origin, url) {
@@ -49,6 +56,16 @@ async function probe(origin, url) {
 let failures = 0;
 for (const url of [...new Set(urls)]) {
   const [before, after] = await Promise.all([probe(OLD, url), probe(NEW, url)]);
+  const intended = INTENDED.get(url);
+  if (intended) {
+    if (after.status === intended.status && after.location === intended.location) {
+      console.log(`INTENDED ${url}: status ${before.status} -> ${after.status}, location ${before.location} -> ${after.location}`);
+    } else {
+      failures += 1;
+      console.log(`DIFF ${url}: expected ${intended.status} ${intended.location}, got ${after.status} ${after.location}`);
+    }
+    continue;
+  }
   const problems = [];
   if (before.status !== after.status) problems.push(`status ${before.status} -> ${after.status}`);
   if (before.location !== after.location) problems.push(`location ${before.location} -> ${after.location}`);
