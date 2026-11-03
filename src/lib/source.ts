@@ -9,6 +9,7 @@ import remarkSmartypants from "remark-smartypants";
 import { remarkAutoTypeTable } from "fumadocs-typescript";
 import { z } from "zod";
 import { quipCodeTheme } from "./code-theme.mjs";
+import { rehypeReadable } from "./rehype-readable.mjs";
 import { createReferenceGenerator, typeTableOptions } from "./reference-tables.mjs";
 import { docsRoute } from "./shared";
 
@@ -33,7 +34,7 @@ const docs = defineDocs({
         // default, mdBook's smart-punctuation). Code and math are left alone.
         [remarkSmartypants, { dashes: "oldschool" }],
       ],
-      rehypePlugins: (defaults) => [rehypeKatex, ...defaults],
+      rehypePlugins: (defaults) => [rehypeKatex, ...defaults, rehypeReadable],
     }),
     postprocess: {
       includeProcessedMarkdown: true,

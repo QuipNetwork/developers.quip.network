@@ -18,15 +18,21 @@ function Callout({ type = "info", title, children }: { type?: CalloutType; title
 }
 
 /*
- * Inline code. A token with no spaces (a package name, a flag, a tag) never breaks across
- * lines; wrapping "@quip.network/ethereum-" away from "sdk" is what makes tables look broken.
- * Very long tokens still may, so they cannot push a phone screen sideways.
+ * Inline code never breaks inside a word: wrapping "@quip.network/ethereum-" away from "sdk" is
+ * what makes tables look broken. A command wraps only between its words. Copying still gives the
+ * original text. Tokens too long to fit a phone screen may break, so they cannot push it sideways.
  */
-function InlineCode({ className, children, ...props }: ComponentProps<"code">) {
-  const token = typeof children === "string" && !/\s/.test(children) && children.length <= 44;
+function InlineCode({ children, ...props }: ComponentProps<"code">) {
+  if (typeof children !== "string") return <code {...props}>{children}</code>;
   return (
-    <code {...props} className={[className, token ? "quip-token" : ""].filter(Boolean).join(" ") || undefined}>
-      {children}
+    <code {...props}>
+      {children.split(/(\s+)/).map((part, index) =>
+        index % 2 === 1 || part.length > 44 ? part : (
+          <span key={index} className="quip-nowrap">
+            {part}
+          </span>
+        ),
+      )}
     </code>
   );
 }
