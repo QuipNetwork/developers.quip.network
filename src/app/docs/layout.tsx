@@ -8,7 +8,14 @@ export default function Layout({ children }: { children: ReactNode }) {
   const base = baseOptions();
   return (
     // The notebook layout puts the bar across the top, as on the portal home page.
-    <DocsLayout tree={source.getPageTree()} {...base} nav={{ ...base.nav, mode: "top" }}>
+    <DocsLayout
+      tree={source.getPageTree()}
+      {...base}
+      nav={{ ...base.nav, mode: "top" }}
+      // Documentation, XQuad and Reference are tabs in the bar, not a dropdown in the sidebar.
+      tabMode="navbar"
+      sidebar={{ collapsible: false, defaultOpenLevel: 0 }}
+    >
       {children}
     </DocsLayout>
   );

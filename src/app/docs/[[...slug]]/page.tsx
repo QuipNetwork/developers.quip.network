@@ -62,7 +62,7 @@ export default async function Page({ params }: Props) {
   const inDocs = tree.href === "/docs";
 
   return (
-    <DocsPage toc={toc} full={page.data.full}>
+    <DocsPage toc={toc} full={page.data.full} breadcrumb={{ enabled: false }}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema).replaceAll("<", "\\u003c") }}

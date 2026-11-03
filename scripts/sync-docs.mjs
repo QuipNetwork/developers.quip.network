@@ -259,19 +259,18 @@ for (const page of pages) {
   full.push(normalized);
 
   const [folder, file] = page.route.includes("/") ? page.route.split("/") : [null, page.route || "index"];
-  if (page.group !== lastGroup && page.group !== "Overview") {
-    rootPages.push(`---${page.group}---`);
-    lastGroup = page.group;
-  }
   if (folder) {
+    // A collapsible group in the sidebar. The section you are in opens by itself.
     if (!folderPages.has(folder)) {
       folderPages.set(folder, { title: page.group, pages: [] });
-      rootPages.push(`...${folder}`);
+      rootPages.push(folder);
     }
     folderPages.get(folder).pages.push(file);
   } else {
+    if (page.group !== lastGroup && page.group !== "Overview") rootPages.push(`---${page.group}---`);
     rootPages.push(file);
   }
+  lastGroup = page.group;
 }
 
 // Nav-only links (the XQuad book) go into the sidebar after their group's pages.

@@ -86,17 +86,43 @@ html > body[data-scroll-locked] {
   --removed-body-scroll-bar-size: 0px !important;
 }
 
-body {
-  font-family: var(--font-body);
-  font-feature-settings: "tnum" 0;
+
+/* A column you can read: about 760 px of text between a 260 px sidebar and a 240 px outline. */
+:root {
+  --fd-layout-width: 84rem;
 }
 
-/* ---------- Reading scale (design brief starting proposal) ---------- */
+#nd-notebook-layout {
+  --fd-sidebar-width: 260px !important;
+  --fd-toc-width: 240px !important;
+}
+
+body {
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ==========================================================================
+   Reading scale. Headings as on quip.network: Gaisyr, large, with real space
+   above them so a page can be scanned by its headings alone.
+   ========================================================================== */
 
 .prose {
   --tw-prose-body: var(--color-fd-foreground);
-  font-size: 15px;
-  line-height: 1.6;
+  --tw-prose-headings: var(--color-fd-foreground);
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+.prose :where(p, li, td, figcaption, blockquote) {
+  /* No stranded last words. */
+  text-wrap: pretty;
+}
+
+.prose :where(h1, h2, h3, h4) {
+  text-wrap: balance;
+  scroll-margin-top: calc(var(--fd-docs-row-2, 96px) + 24px);
 }
 
 .prose :where(h1, h2) {
@@ -105,37 +131,473 @@ body {
   letter-spacing: -0.02em;
 }
 
+.prose :where(h1),
+.quip-page-title,
+#nd-page > h1 {
+  font-family: var(--font-heading);
+  font-size: clamp(32px, 2.4vw + 18px, 44px);
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  margin: 0 0 0.6em;
+}
+
 .prose :where(h2) {
-  font-size: 24px;
-  line-height: 1.2;
+  font-size: 28px;
+  line-height: 1.15;
+  margin-top: 2.2em;
+  margin-bottom: 0.6em;
 }
 
 .prose :where(h3) {
   font-family: var(--font-body);
+  font-size: 18px;
   font-weight: 500;
-  font-size: 17px;
+  line-height: 1.3;
+  margin-top: 1.9em;
+  margin-bottom: 0.5em;
+}
+
+.prose :where(h4) {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--color-fd-muted-foreground);
+}
+
+/* Anchor glyph on headings: quiet until hovered. */
+.prose :where(h1, h2, h3, h4) svg {
+  color: var(--color-fd-muted-foreground);
 }
 
 .prose :where(a):not(:where([data-card], .not-prose a)) {
   color: var(--quip-link);
   text-decoration: none;
   font-weight: inherit;
+  transition: color 150ms;
 }
 
 .prose :where(a):not(:where([data-card], .not-prose a)):hover {
   text-decoration: underline;
   text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
 }
 
+.prose :where(ul ul) {
+  list-style-type: circle;
+}
+
+.prose :where(ul, ol) > li::marker {
+  color: var(--color-fd-muted-foreground);
+}
+
+.prose :where(hr) {
+  border-color: var(--color-fd-border);
+  margin-block: 2.5em;
+}
+
+/* Inline code: a flat tint, no pill outline. Long tokens break only where they must. */
 .prose :where(code):not(:where(pre code)) {
   font-family: var(--font-mono);
+  font-size: 0.86em;
+  font-weight: 400;
+  background: var(--color-fd-muted);
+  border: 0;
+  border-radius: 0;
+  padding: 0.12em 0.36em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  overflow-wrap: anywhere;
+}
+
+.prose code.quip-token {
+  white-space: nowrap;
+  overflow-wrap: normal;
+}
+
+.prose :where(code):not(:where(pre code))::before,
+.prose :where(code):not(:where(pre code))::after {
+  content: none;
+}
+
+/* ==========================================================================
+   Tables. Headers as eyebrows, rules only between rows, and code never broken
+   mid-token: a wide table scrolls in its own box rather than wrapping a name.
+   ========================================================================== */
+
+.prose :where(table) {
+  font-size: 14px;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+  width: 100%;
+  border-collapse: collapse;
+  border: 0;
+  margin-block: 1.5em;
+}
+
+.prose :where(div:has(> table)) {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  overflow-x: auto;
+}
+
+.prose :where(th) {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  text-align: left;
+  white-space: nowrap;
+  color: var(--color-fd-muted-foreground);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--color-fd-foreground);
+  padding: 0 16px 8px 0;
+}
+
+.prose :where(td) {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--color-fd-border);
+  padding: 10px 16px 10px 0;
+  vertical-align: top;
+  min-width: 7ch;
+}
+
+.prose :where(th, td):last-child {
+  padding-right: 0;
+}
+
+/* Code in a table sits flush with its column. */
+.prose td code {
+  background: transparent;
+  padding: 0;
+}
+
+.prose tbody tr,
+.prose tbody tr:nth-child(2n),
+.prose tbody td {
+  background: transparent;
+}
+
+.prose :where(tr:last-child td) {
+  border-bottom: 0;
+}
+
+/* ==========================================================================
+   Code blocks. Dark in both themes, like the dark panels on the portal home.
+   ========================================================================== */
+
+.prose :where(figure.shiki),
+.prose figure.shiki {
+  background: #18181b;
+  color: #f4f4f5;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  margin-block: 1.5em;
+  --color-fd-muted-foreground: #9f9fa9;
+  --color-fd-accent: #27272a;
+  --color-fd-accent-foreground: #fafafa;
+  --color-fd-border: #3f3f46;
+}
+
+.dark .prose figure.shiki {
+  background: #18181b;
+  outline: 1px solid #27272a;
+}
+
+.prose figure.shiki :where(pre, code) {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.65;
+  background: transparent;
+}
+
+/* Blocks show in full; Fumadocs caps them at 600 px with an inner scrollbar. */
+.prose figure .fd-scroll-container {
+  max-height: none;
+}
+
+/* ==========================================================================
+   Callouts. A quiet panel and a solid mono chip, the same device as the
+   PROBLEM label on quip.network. Colour marks only the warnings.
+   ========================================================================== */
+
+.quip-callout {
+  --chip-bg: #18181b;
+  --chip-fg: #fafafa;
+  background: var(--color-fd-muted);
+  padding: 16px 20px 18px;
+  margin-block: 1.75em;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.dark .quip-callout {
+  --chip-bg: #f4f4f5;
+  --chip-fg: #09090b;
+}
+
+.quip-callout > .quip-callout-label {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 10.5px;
+  line-height: 1;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--chip-fg);
+  background: var(--chip-bg);
+  padding: 5px 7px 4px;
+  margin: 0 0 10px;
+}
+
+.quip-callout > div > :first-child {
+  margin-top: 0;
+}
+
+.quip-callout > div > :last-child {
+  margin-bottom: 0;
+}
+
+.quip-callout[data-type="warn"],
+.quip-callout[data-type="error"] {
+  --chip-bg: var(--quip-coral);
+  --chip-fg: #09090b;
+  background: #ffedee;
+}
+
+.dark .quip-callout[data-type="warn"],
+.dark .quip-callout[data-type="error"] {
+  --chip-bg: var(--quip-coral);
+  --chip-fg: #09090b;
+  background: #2a1a1c;
+}
+
+/* Inline code sits on the panel's tint, so it steps up one surface. */
+.quip-callout code {
+  background: rgb(9 9 11 / 0.06) !important;
+}
+
+.dark .quip-callout code {
+  background: rgb(255 255 255 / 0.08) !important;
+}
+
+/* Coral as text uses the AA variant on light; raw coral stays for fills and rules. */
+.text-fd-primary,
+[data-active="true"][class*="text-fd-primary"] {
+  color: var(--quip-link);
+}
+
+/* Reference tables: names in the text colour, not all in coral. */
+#nd-page code.text-fd-primary {
+  color: var(--color-fd-foreground);
   font-size: 13px;
 }
 
-.prose :where(table) {
-  font-size: 13.5px;
-  font-variant-numeric: tabular-nums;
+/* ==========================================================================
+   Top bar, as on quip.network: logo, quiet links, nothing competing.
+   ========================================================================== */
+
+#nd-subnav {
+  background: color-mix(in srgb, var(--color-fd-background) 92%, transparent);
+  backdrop-filter: blur(10px);
+  border-color: var(--color-fd-border);
 }
+
+#nd-subnav a,
+#nd-subnav button {
+  border-radius: 0;
+}
+
+/* Search trigger: a real field, not a chip. */
+[data-search-full] {
+  height: 38px;
+  min-width: 280px;
+  padding-inline: 12px 6px;
+  font-size: 14px;
+  background: var(--color-fd-muted);
+  border-color: transparent;
+}
+
+[data-search-full]:hover {
+  background: var(--color-fd-secondary);
+}
+
+[data-search-full] kbd,
+kbd {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  border-radius: 0;
+}
+
+/* Theme switch: square, like everything else. */
+[data-theme-toggle] {
+  border-radius: 0;
+}
+
+[data-theme-toggle] * {
+  border-radius: 0;
+}
+
+/* ==========================================================================
+   Sidebar. Scan by section, then by page: section names carry the weight,
+   pages sit quietly under them, and the current page is a flat tint.
+   ========================================================================== */
+
+#nd-sidebar {
+  font-size: 14px;
+}
+
+#nd-sidebar a,
+#nd-sidebar button {
+  font-size: 14px;
+  line-height: 1.35;
+  padding-block: 6px;
+  border-radius: 0;
+  color: var(--color-fd-muted-foreground);
+  transition: color 120ms, background-color 120ms;
+}
+
+#nd-sidebar a:hover,
+#nd-sidebar button:hover {
+  color: var(--color-fd-foreground);
+  background: transparent;
+}
+
+/* Section names. */
+#nd-sidebar button {
+  color: var(--color-fd-foreground);
+  font-weight: 500;
+}
+
+/* No indicator lines: nesting reads from the indent. */
+#nd-sidebar a::before,
+#nd-sidebar button::before,
+#nd-sidebar [data-active]::before {
+  display: none;
+}
+
+#nd-sidebar [class*="before:"]::before {
+  display: none;
+}
+
+#nd-sidebar a[data-active="true"] {
+  color: var(--color-fd-foreground);
+  background: var(--color-fd-muted);
+  font-weight: 500;
+}
+
+/* Group labels that remain, like XQuad in Documentation. */
+#nd-sidebar p,
+.quip-eyebrow {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--color-fd-muted-foreground);
+}
+
+/* ==========================================================================
+   On this page: plain text, current section in coral. No rail.
+   ========================================================================== */
+
+#nd-toc a {
+  font-size: 13px;
+  line-height: 1.35;
+  transition: color 120ms;
+}
+
+#nd-toc a[data-active="true"] {
+  color: var(--quip-link);
+}
+
+#nd-toc [class*="bg-fd-foreground"],
+#nd-toc [class*="bg-fd-primary"],
+#nd-toc [role="none"] {
+  display: none;
+}
+
+/* ==========================================================================
+   Search dialog. Roomy, no ring inside the field, results that scan.
+   ========================================================================== */
+
+[class*="backdrop-blur-xs"] {
+  backdrop-filter: none;
+  background: rgb(9 9 11 / 0.32);
+}
+
+[role="dialog"] {
+  border-radius: 0;
+  box-shadow: var(--shadow-float);
+}
+
+[role="dialog"] input {
+  font-size: 17px;
+  height: 36px;
+}
+
+/* The field's frame is the dialog itself; a ring inside it reads as an error. */
+[role="dialog"] input:focus-visible,
+[role="dialog"] input:focus {
+  outline: 0;
+  box-shadow: none;
+}
+
+[role="dialog"]:has(input) > div:first-of-type {
+  padding: 14px 18px;
+}
+
+/* A hover or keyboard tint on a list row, never a gradient. */
+[role="dialog"] [role="option"],
+[role="dialog"] button {
+  border-radius: 0;
+}
+
+/* ==========================================================================
+   Buttons on the page: Copy Markdown and Open, quiet until needed.
+   ========================================================================== */
+
+#nd-page button,
+#nd-page [role="button"] {
+  border-radius: 0;
+}
+
+/* ==========================================================================
+   Cards: flat tiles with hairlines, as the audience row on quip.network.
+   ========================================================================== */
+
+/* Fumadocs also marks heading anchors data-card, so headings are excluded. */
+#nd-page a[data-card]:not(:is(h1, h2, h3, h4, h5, h6) > a) {
+  display: block;
+  padding: 18px 20px;
+  border-radius: 0;
+  border: 1px solid var(--color-fd-border);
+  background: transparent;
+  box-shadow: none;
+  transition: background-color 120ms;
+}
+
+#nd-page a[data-card]:not(:is(h1, h2, h3, h4, h5, h6) > a):hover {
+  background: var(--color-fd-muted);
+}
+
+#nd-page a[data-card] h3 {
+  font-family: var(--font-heading);
+  font-size: 19px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+/* ==========================================================================
+   Figures, tabs, prev/next.
+   ========================================================================== */
 
 .prose :where(figure img) {
   margin-inline: auto;
@@ -148,130 +610,30 @@ body {
   color: var(--color-fd-muted-foreground);
 }
 
-/* Page title: Gaisyr, per the reading scale. */
-#nd-page h1,
-.quip-page-title {
-  font-family: var(--font-heading);
+.prose [role="tablist"] {
+  border-radius: 0;
+}
+
+.prose [role="tablist"] button {
+  font-size: 13.5px;
+  border-radius: 0;
+}
+
+.prose [role="tablist"] button[data-active],
+.prose [role="tablist"] button[aria-selected="true"] {
+  color: var(--color-fd-foreground);
   font-weight: 500;
-  font-size: 34px;
-  line-height: 1.12;
-  letter-spacing: -0.02em;
 }
 
-/* Code: Favorit Mono, 13 px. */
-pre,
-code,
-kbd {
-  font-family: var(--font-mono);
-}
-
-/* ---------- Sidebar: portal rail style ---------- */
-
-/* Group labels: Favorit Mono Medium, 11 px, uppercase, 0.4 px tracking. */
-#nd-sidebar p:not([class*="text-sm"]) {
-  font-family: var(--font-mono);
-}
-
-.quip-eyebrow,
-#nd-sidebar [data-separator],
-#nd-sidebar p.inline-flex {
-  font-family: var(--font-mono);
-  font-weight: 500;
-  font-size: 11px;
-  letter-spacing: 0.4px;
-  text-transform: uppercase;
-  color: var(--color-fd-muted-foreground);
-}
-
-/* Current page: a solid block, not Fumadocs' tinted primary. */
-#nd-sidebar a[data-active="true"] {
-  background: var(--quip-current-bg);
-  color: var(--quip-current-fg);
-}
-
-/* Coral text this small needs the AA variant on light; --quip-link is raw coral on dark. */
-#nd-toc a[data-active="true"] {
-  color: var(--quip-link);
-}
-
-/* ---------- Floating surfaces: the three allowed shadows ---------- */
-
-[role="dialog"],
-[data-radix-popper-content-wrapper] > *,
-[data-side][role="menu"] {
-  box-shadow: var(--shadow-float);
-}
-
-/* ---------- Callouts: left bar, mono label, no icon ---------- */
-
-.quip-callout {
-  border-left: 3px solid var(--quip-callout-bar, var(--quip-coral));
-  background: var(--color-fd-card);
-  padding: 12px 16px;
-  margin-block: 1.25em;
-  font-size: 14.5px;
-}
-
-.quip-callout > .quip-callout-label {
-  font-family: var(--font-mono);
-  font-weight: 500;
-  font-size: 11px;
-  letter-spacing: 0.4px;
-  text-transform: uppercase;
-  color: var(--color-fd-muted-foreground);
-  margin-bottom: 4px;
-}
-
-.quip-callout > div > :first-child {
-  margin-top: 0;
-}
-
-.quip-callout > div > :last-child {
-  margin-bottom: 0;
-}
-
-.quip-callout[data-type="warn"] {
-  --quip-callout-bar: var(--quip-warning);
-}
-
-.quip-callout[data-type="error"] {
-  --quip-callout-bar: #dc2626;
-}
-
-.quip-callout[data-type="success"] {
-  --quip-callout-bar: var(--quip-positive);
-}
-
-/* ---------- Math: wide equations scroll inside the column, not the page ---------- */
-
+/* Math: wide equations scroll inside the column, not the page. */
 .katex-display {
   overflow-x: auto;
   overflow-y: hidden;
   padding-block: 2px;
 }
 
-/* ---------- Focus ring: coral, 2 px, offset 2 px ---------- */
-
-:where(a, button, input, [tabindex]):focus-visible {
+/* Focus: coral, 2 px, offset 2 px. */
+:where(a, button, [tabindex]):focus-visible {
   outline: 2px solid var(--quip-coral);
   outline-offset: 2px;
-}
-
-/* ---------- Carried over from the old docs stylesheet ---------- */
-
-.prose :where(th) {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.3px;
-  text-transform: uppercase;
-}
-
-.prose :where(ul ul) {
-  list-style-type: circle;
-}
-
-/* Code blocks show in full, as they did; Fumadocs caps them at 600 px with a scrollbar. */
-.prose figure .fd-scroll-container {
-  max-height: none;
 }

@@ -24,7 +24,6 @@ export function baseOptions(label = "Documentation"): BaseLayoutProps {
       url: "/",
     },
     links: [
-      { text: "Docs", url: "/docs", active: "nested-url" },
       { text: "Explorer", url: EXPLORER.url, external: true },
       { text: "GitLab", url: CODE.gitlabGroup, external: true },
       { text: "Feedback", url: NETWORK.feedback, external: true },
