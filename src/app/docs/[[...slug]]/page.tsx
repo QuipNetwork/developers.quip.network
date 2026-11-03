@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { AnchorHTMLAttributes, FC } from "react";
 import { getMDXComponents } from "@/components/mdx";
-import { SITE_URL, markdownUrlOf, sourceUrlOf } from "@/lib/shared";
+import { SITE_URL, SOCIAL_IMAGE, markdownUrlOf, sourceUrlOf } from "@/lib/shared";
 import { source } from "@/lib/source";
 
 type Props = { params: Promise<{ slug?: string[] }> };
@@ -86,6 +86,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: page.data.title,
     description: page.data.description ?? `${page.data.title} — Quip Network documentation.`,
     alternates: { canonical: page.url },
+    openGraph: { url: page.url, images: SOCIAL_IMAGE, type: "website" },
     ...(page.data.noindex ? { robots: { index: false, follow: false } } : {}),
   };
 }

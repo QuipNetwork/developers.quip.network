@@ -3,6 +3,7 @@
 export const SITE_URL = "https://developers.quip.network";
 export const appName = "Quip Network Docs";
 export const docsRoute = "/docs";
+export const SOCIAL_IMAGE = { url: "/images/social-preview.png?v=1", width: 1200, height: 630 };
 
 export const gitConfig = {
   host: "https://gitlab.com",
