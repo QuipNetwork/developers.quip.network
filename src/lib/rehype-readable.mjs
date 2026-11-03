@@ -36,9 +36,10 @@ function lastTextNode(node) {
 function joinLastWords(node) {
   const text = lastTextNode(node);
   if (!text) return;
-  const match = text.value.match(/^([\s\S]*\S)[ \t\n]+(\S+)(\s*)$/);
+  const match = text.value.match(/^([\s\S]*\S)?[ \t\n]+(\S+)(\s*)$/);
   if (!match || match[2].length > MAX_LAST_WORD) return;
-  text.value = `${match[1]}${NBSP}${match[2]}${match[3]}`;
+  // With nothing before it in this node, the word follows inline code or a link: tie it to that.
+  text.value = `${match[1] ?? ""}${NBSP}${match[2]}${match[3]}`;
 }
 
 function textOf(node) {
@@ -68,9 +69,38 @@ function labelTable(table) {
   }
 }
 
+/*
+ * Tables holding long values in two or more columns, such as contract addresses, cannot fit
+ * side by side at any width. They read as label and value everywhere.
+ */
+const LONG_VALUE = 30;
+
+function needsStacking(table) {
+  const columns = new Set();
+  const scan = (node) => {
+    for (const child of node.children ?? []) {
+      if (child.type !== "element") continue;
+      if (child.tagName === "tr") {
+        child.children
+          .filter((c) => c.type === "element" && c.tagName === "td")
+          .forEach((cell, index) => {
+            const hasLongCode = (n) =>
+              n.type === "element" && n.tagName === "code" ? textOf(n).length >= LONG_VALUE : (n.children ?? []).some(hasLongCode);
+            if (hasLongCode(cell)) columns.add(index);
+          });
+      } else scan(child);
+    }
+  };
+  scan(table);
+  return columns.size >= 2;
+}
+
 function walk(node) {
   if (node.type === "element") {
-    if (node.tagName === "table") labelTable(node);
+    if (node.tagName === "table") {
+      labelTable(node);
+      if (needsStacking(node)) node.properties = { ...node.properties, "data-stack": "true" };
+    }
     if (JOIN.has(node.tagName)) joinLastWords(node);
   }
   for (const child of node.children ?? []) walk(child);

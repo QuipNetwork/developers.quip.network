@@ -19,21 +19,40 @@ function Callout({ type = "info", title, children }: { type?: CalloutType; title
 
 /*
  * Inline code never breaks inside a word: wrapping "@quip.network/ethereum-" away from "sdk" is
- * what makes tables look broken. A command wraps only between its words. Copying still gives the
- * original text. Tokens too long to fit a phone screen may break, so they cannot push it sideways.
+ * what makes tables look broken. Short code stays whole. A long command wraps only between its
+ * words, and its last word keeps its neighbour. Copying still gives the original text. On phones
+ * very long tokens may break, so they cannot push the page sideways.
  */
+const WHOLE_UNDER = 36;
+
 function InlineCode({ children, ...props }: ComponentProps<"code">) {
   if (typeof children !== "string") return <code {...props}>{children}</code>;
-  return (
-    <code {...props}>
-      {children.split(/(\s+)/).map((part, index) =>
-        index % 2 === 1 || part.length > 44 ? part : (
-          <span key={index} className="quip-nowrap">
-            {part}
-          </span>
-        ),
-      )}
-    </code>
+  if (children.length <= WHOLE_UNDER) {
+    return (
+      <code {...props}>
+        <span className={children.length > 24 ? "quip-nowrap-wide" : "quip-nowrap"}>{children}</span>
+      </code>
+    );
+  }
+  return <code {...props}>{groupWords(children)}</code>;
+}
+
+function groupWords(text: string) {
+  const parts = text.split(/(\s+)/);
+  // Keep the last word with the one before it.
+  if (parts.length >= 3 && parts[parts.length - 1].length < 12) {
+    const last = parts.pop() as string;
+    const gap = parts.pop() as string;
+    parts[parts.length - 1] += gap + last;
+  }
+  return parts.map((part, index) =>
+    index % 2 === 1 ? (
+      part
+    ) : (
+      <span key={index} className="quip-nowrap-wide">
+        {part}
+      </span>
+    ),
   );
 }
 

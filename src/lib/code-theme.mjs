@@ -12,6 +12,7 @@ const c = {
   lavender: "#e6d7ff",
 };
 
+/** @type {any} */
 export const quipCodeTheme = {
   name: "quip",
   type: "dark",
