@@ -188,6 +188,11 @@ kbd {
   color: var(--quip-current-fg);
 }
 
+/* Coral text this small needs the AA variant on light; --quip-link is raw coral on dark. */
+#nd-toc a[data-active="true"] {
+  color: var(--quip-link);
+}
+
 /* ---------- Floating surfaces: the three allowed shadows ---------- */
 
 [role="dialog"],

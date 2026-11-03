@@ -5,7 +5,11 @@ const projectRoot = path.resolve(import.meta.dirname, "..");
 const sourceRoot = path.join(projectRoot, "docs");
 // Fumadocs reads MDX from content/docs. Generated, never edited by hand: docs/ stays the
 // source until the cutover, so edits merged to main carry over with a rebase.
-const contentRoot = path.join(projectRoot, "content/docs");
+//
+// Three sidebar trees share content/docs: this generated one in the (docs) route group,
+// which adds nothing to URLs, plus xquad/ and reference/, which this script leaves alone.
+const docsRoot = path.join(projectRoot, "content/docs");
+const contentRoot = path.join(docsRoot, "(docs)");
 const publicRoot = path.join(projectRoot, "public/docs");
 const rootMirror = path.join(projectRoot, "public/docs.md");
 const slugify = (value) => value.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -187,7 +191,10 @@ function cardsToMdx(table) {
 }
 
 function toMdx(markdown, sourcePath) {
-  let text = escapeOutsideFences(markdown.replaceAll("&#x20;", ""));
+  // The page template renders the title, so a leading H1 would print it twice. The twins
+  // keep theirs: an agent reading only the Markdown needs it.
+  const withoutTitle = markdown.replaceAll("&#x20;", "").replace(/^\s*# .*\n+/, "");
+  let text = escapeOutsideFences(withoutTitle);
   text = text.replace(/^\{% tabs %\}\n([\s\S]*?)^\{% endtabs %\}$/gm, (_, inner) => {
     const tabs = [...inner.matchAll(/^\{% tab title="([^"]+)" %\}\n([\s\S]*?)^\{% endtab %\}$/gm)];
     const items = tabs.map(([, title]) => title);
@@ -276,7 +283,11 @@ for (const [folder, meta] of folderPages) {
 }
 await writeFile(
   path.join(contentRoot, "meta.json"),
-  `${JSON.stringify({ title: "Quip Network docs", root: true, pages: rootPages }, null, 2)}\n`,
+  `${JSON.stringify({ title: "Documentation", description: "Guides and concepts", root: true, pages: rootPages }, null, 2)}\n`,
+);
+await writeFile(
+  path.join(docsRoot, "meta.json"),
+  `${JSON.stringify({ pages: ["(docs)", "xquad", "reference"] }, null, 2)}\n`,
 );
 
 await cp(path.join(sourceRoot, ".gitbook/assets"), path.join(publicRoot, "assets"), { recursive: true });
