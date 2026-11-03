@@ -5,7 +5,7 @@ repo can build on its own. They are NOT the source of truth.
 
     components/Headings.tsx        components/Buttons.tsx
     components/PersonaIcon.tsx     components/pageLayout.ts
-    components/icons/*             layouts/BaseLayout.astro
+    components/icons/*
     styles/base.css
 
 The design system's own rule is "never fork this system into a project, import

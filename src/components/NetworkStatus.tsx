@@ -1,3 +1,5 @@
+"use client";
+
 import { useSyncExternalStore } from "react";
 import { PersonaIcon } from "@design/components/PersonaIcon";
 import { CHAIN } from "../data/testnet";
@@ -217,8 +219,8 @@ function useNetwork() {
  * literally the symbol for the nodes whose health it reports.
  */
 const TONE = {
-  live: "text-[#047857]",
-  syncing: "text-[#9a5b00]",
+  live: "text-[#047857] dark:text-(--quip-positive)",
+  syncing: "text-[#9a5b00] dark:text-(--quip-warning)",
   down: "text-(--color-accent-text)",
   idle: "text-(--color-zinc-300)",
 } as const;

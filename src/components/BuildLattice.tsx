@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useRef } from "react";
 
 /*
@@ -31,6 +33,15 @@ const INK = {
   planned: "#e4e4e7",
   member: "#9f9fa9",
   node: "#52525c",
+  accent: "#ff6c78",
+};
+
+// A canvas cannot read the home page's CSS tokens as it strokes, so the dark theme
+// has its own inks: the same roles, mirrored along the zinc scale, on a zinc-950 panel.
+const INK_DARK: typeof INK = {
+  planned: "#27272a",
+  member: "#71717b",
+  node: "#9f9fa9",
   accent: "#ff6c78",
 };
 
@@ -143,6 +154,7 @@ export function BuildLattice({ className }: { className?: string }) {
     const reduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
+    const root = document.documentElement;
     let truss = buildTruss(0, 0);
     let w = 0;
     let h = 0;
@@ -162,6 +174,7 @@ export function BuildLattice({ className }: { className?: string }) {
 
     const draw = (elapsed: number) => {
       const { members, nodes, total } = truss;
+      const ink = root.classList.contains("dark") ? INK_DARK : INK;
       const phase = (elapsed + START_OFFSET_MS) % CYCLE_MS;
       const building = Math.min(1, phase / BUILD_MS);
       const edge = building * total;
@@ -176,7 +189,7 @@ export function BuildLattice({ className }: { className?: string }) {
       ctx.lineCap = "round";
 
       // The planned truss, always present.
-      ctx.strokeStyle = INK.planned;
+      ctx.strokeStyle = ink.planned;
       ctx.lineWidth = 1;
       ctx.beginPath();
       for (const m of members) {
@@ -186,7 +199,7 @@ export function BuildLattice({ className }: { className?: string }) {
       ctx.stroke();
 
       // Settled members.
-      ctx.strokeStyle = INK.member;
+      ctx.strokeStyle = ink.member;
       ctx.lineWidth = 1.1;
       ctx.beginPath();
       for (const m of members) {
@@ -197,7 +210,7 @@ export function BuildLattice({ className }: { className?: string }) {
       ctx.stroke();
 
       // The leading edge, in the one accent.
-      ctx.strokeStyle = INK.accent;
+      ctx.strokeStyle = ink.accent;
       ctx.lineWidth = 1.8;
       ctx.beginPath();
       for (const m of members) {
@@ -208,7 +221,7 @@ export function BuildLattice({ className }: { className?: string }) {
       ctx.stroke();
 
       // Nodes, once their column has been reached.
-      ctx.fillStyle = INK.node;
+      ctx.fillStyle = ink.node;
       for (const n of nodes) {
         if (n.order > edge) continue;
         diamond(ctx, n.x, n.y, NODE);
@@ -216,7 +229,7 @@ export function BuildLattice({ className }: { className?: string }) {
       }
 
       // Units in flight, just ahead of the edge.
-      ctx.strokeStyle = INK.accent;
+      ctx.strokeStyle = ink.accent;
       ctx.lineWidth = 1.2;
       for (let i = 0; i < 4; i++) {
         const target = members[Math.floor(edge) + i * 3];
@@ -251,9 +264,16 @@ export function BuildLattice({ className }: { className?: string }) {
     };
     window.addEventListener("resize", onResize);
 
+    // Reduced motion draws once, so a theme change has to ask for the new inks.
+    const themeObserver = new MutationObserver(() => {
+      if (reduced) draw(BUILD_MS - START_OFFSET_MS);
+    });
+    themeObserver.observe(root, { attributes: true, attributeFilter: ["class"] });
+
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", onResize);
+      themeObserver.disconnect();
     };
   }, []);
 

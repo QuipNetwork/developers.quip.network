@@ -1,6 +1,5 @@
----
-import Panel from "../components/Panel.astro";
-import LinkRow from "../components/LinkRow.astro";
+import { Panel } from "../components/Panel";
+import { LinkRow } from "../components/LinkRow";
 import { MonoLabel } from "@design/components/Headings";
 import { GhostLink } from "@design/components/Buttons";
 import { CopyCommand } from "../components/CopyCommand";
@@ -47,53 +46,60 @@ const SURFACES = [
     href: "/llms.txt",
   },
 ];
----
 
-<Panel
-  id="ai"
-  eyebrow="03"
-  title="Build with AI"
-  hint="Agents read these docs more than people do"
-  tone="dark"
->
-  <div class="grid grid-cols-12 gap-x-6 gap-y-5">
-    <div class="col-span-7 flex flex-col gap-4 max-md:col-span-12">
-      <div class="flex flex-col gap-2">
-        <div class="flex items-baseline gap-2.5">
-          <MonoLabel size="xs" tone="dark">Bootstrap prompt</MonoLabel>
-          <p class="m-0 text-[12.5px] leading-[1.45] text-zinc-400">
-            Docs index, testnet endpoint, and the right package names.
-          </p>
-        </div>
-        <CopyCommand
-          client:load
-          command={AGENT_PROMPT}
-          variant="dark"
-          prompt={null}
-          multiline
-          label="the agent bootstrap prompt"
-        />
-      </div>
-    </div>
-
-    <div class="col-span-5 flex flex-col gap-2 max-md:col-span-12">
-      <MonoLabel size="xs" tone="dark">Machine-readable docs</MonoLabel>
-      <ul class="m-0 flex list-none flex-col p-0">
-        {
-          SURFACES.map((surface) => (
-            <LinkRow
-              label={surface.label}
-              description={surface.description}
-              href={surface.href}
-              mono
-              tone="dark"
+export function BuildWithAi() {
+  return (
+    <Panel
+      id="ai"
+      eyebrow="03"
+      title="Build with AI"
+      hint="Agents read these docs more than people do"
+      tone="dark"
+    >
+      <div className="grid grid-cols-12 gap-x-6 gap-y-5">
+        <div className="col-span-7 flex flex-col gap-4 max-md:col-span-12">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-baseline gap-2.5">
+              <MonoLabel size="xs" tone="dark">
+                Bootstrap prompt
+              </MonoLabel>
+              <p className="m-0 text-[12.5px] leading-[1.45] text-zinc-400">
+                Docs index, testnet endpoint, and the right package names.
+              </p>
+            </div>
+            <CopyCommand
+              command={AGENT_PROMPT}
+              variant="dark"
+              prompt={null}
+              multiline
+              label="the agent bootstrap prompt"
             />
-          ))
-        }
-      </ul>
-      <div class="mt-1">
-        <GhostLink href={DOCS.useWithAi} external>Use Docs with AI</GhostLink>
+          </div>
+        </div>
+
+        <div className="col-span-5 flex flex-col gap-2 max-md:col-span-12">
+          <MonoLabel size="xs" tone="dark">
+            Machine-readable docs
+          </MonoLabel>
+          <ul className="m-0 flex list-none flex-col p-0">
+            {SURFACES.map((surface) => (
+              <LinkRow
+                key={surface.label}
+                label={surface.label}
+                description={surface.description}
+                href={surface.href}
+                mono
+                tone="dark"
+              />
+            ))}
+          </ul>
+          <div className="mt-1">
+            <GhostLink href={DOCS.useWithAi} external>
+              Use Docs with AI
+            </GhostLink>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</Panel>
+    </Panel>
+  );
+}

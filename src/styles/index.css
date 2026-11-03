@@ -1,338 +1,27 @@
-@import "tailwindcss" source(none);
-@import "../vendor/quip-design/styles/base.css";
-
-@source "../**/*.{astro,ts,tsx,js,jsx}";
-
 /*
- * Never leave a single word alone on the last line. The panels are narrow and
- * the notes are short, so orphans are common and conspicuous; `pretty` reflows
- * the last two lines to prevent them. Headings use `balance` at the call site.
- * Both degrade to normal wrapping where unsupported.
+ * The home page's own styles. Everything is scoped under .quip-home, because once this
+ * sheet has loaded it stays loaded: following a client-side link from / to /docs must
+ * not change the docs. Tailwind's utilities and the design tokens come from
+ * src/app/global.css, which scans all of src/, so there is no second Tailwind build here.
  */
-p,
-li,
-dd {
-  text-wrap: pretty;
-}
 
-@layer components {
-  .docs-shell {
-    min-height: 100vh;
-    background: var(--color-bg);
-    color: var(--color-foreground);
-  }
-  .docs-header {
-    position: sticky;
-    top: 0;
-    z-index: 40;
-    display: flex;
-    min-height: 4.5rem;
-    align-items: center;
-    gap: 2rem;
-    border-bottom: 1px solid var(--color-border);
-    background: var(--color-bg);
-    padding: 1.25rem clamp(20px, 5.44601vw - 0.422535px, 78px);
-  }
-  .docs-header img {
-    height: 2rem;
-    width: auto;
-  }
-  .docs-title {
-    border-left: 1px solid var(--color-border);
-    padding-left: 1.5rem;
-    font-family: var(--font-mono);
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 0.4px;
-    text-transform: uppercase;
-    color: var(--color-muted);
-  }
-  .docs-header > a:last-child {
-    margin-left: auto;
-    font-size: 14px;
-    line-height: 1.35;
-    text-decoration: none;
-    color: var(--color-text-subtle);
-    transition: color 150ms;
-  }
-  .docs-grid {
-    display: grid;
-    grid-template-columns: 220px minmax(0, 760px) 190px;
-    justify-content: center;
-    gap: clamp(2rem, 4vw, 4rem);
-    max-width: 1440px;
-    margin: 0 auto;
-    padding: 3.75rem clamp(20px, 5.44601vw - 0.422535px, 78px) 6rem;
-  }
-  .docs-sidebar,
-  .docs-outline {
-    position: sticky;
-    top: 6rem;
-    align-self: start;
-    max-height: calc(100vh - 7.5rem);
-    overflow-y: auto;
-  }
-  .docs-home {
-    display: block;
-    margin-bottom: 2rem;
-    font-family: var(--font-heading);
-    font-size: 24px;
-    line-height: 1.1;
-    letter-spacing: -0.4px;
-    color: var(--color-foreground);
-    text-decoration: none;
-  }
-  .docs-sidebar section {
-    margin-bottom: 1.75rem;
-  }
-  .docs-sidebar h2,
-  .docs-outline p {
-    margin-bottom: 0.6rem;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.4px;
-    text-transform: uppercase;
-    color: var(--color-muted);
-  }
-  .docs-sidebar nav,
-  .docs-outline {
-    display: flex;
-    flex-direction: column;
-    gap: 0.15rem;
-  }
-  .docs-sidebar nav a,
-  .docs-outline a {
-    border-left: 1px solid var(--color-border);
-    padding: 0.4rem 0.75rem;
-    font-size: 13px;
-    line-height: 1.35;
-    color: var(--color-text-subtle);
-    text-decoration: none;
-    transition:
-      border-color 150ms,
-      background-color 150ms,
-      color 150ms;
-  }
-  .docs-sidebar nav a:hover,
-  .docs-outline a:hover,
-  .docs-header > a:last-child:hover {
-    color: var(--color-accent-text);
-  }
-  .docs-sidebar nav a[aria-current="page"] {
-    border-left-color: var(--color-coral);
-    background: var(--color-surface-1);
-    color: var(--color-foreground);
-    font-weight: 500;
-  }
-  .docs-outline a {
-    padding-block: 0.3rem;
-    font-size: 12px;
-  }
-  .docs-outline a.nested {
-    padding-left: 1.5rem;
-  }
-  .docs-article {
-    min-width: 0;
-  }
-  .docs-article article {
-    font-size: 16px;
-    line-height: 1.6;
-  }
-  .docs-article article > :first-child {
-    margin-top: 0;
-  }
-  .docs-article h1,
-  .docs-article h2,
-  .docs-article h3 {
-    font-family: var(--font-heading);
-    font-weight: 500;
-    text-wrap: balance;
-  }
-  .docs-article h1 {
-    margin-bottom: 2rem;
-    font-size: clamp(2.5rem, 4vw, 3.5rem);
-    line-height: 1.05;
-    letter-spacing: -1px;
-  }
-  .docs-article h2 {
-    margin: 3.75rem 0 1.25rem;
-    border-top: 1px solid var(--color-border);
-    padding-top: 1.5rem;
-    font-size: clamp(1.75rem, 2.5vw, 2.5rem);
-    line-height: 1.1;
-    letter-spacing: -0.8px;
-  }
-  .docs-article h3 {
-    margin: 2.25rem 0 0.75rem;
-    font-size: 1.5rem;
-    line-height: 1.15;
-    letter-spacing: -0.4px;
-  }
-  .docs-article p,
-  .docs-article ul,
-  .docs-article ol,
-  .docs-article table,
-  .docs-article pre,
-  .docs-article figure,
-  .docs-article blockquote {
-    margin: 1.25rem 0;
-  }
-  .docs-article ul,
-  .docs-article ol {
-    padding-left: 1.4rem;
-  }
-  .docs-article ul {
-    list-style: disc;
-  }
-  .docs-article ol {
-    list-style: decimal;
-  }
-  .docs-article a {
-    color: var(--color-accent-text);
-    text-decoration: underline;
-    text-underline-offset: 3px;
-  }
-  .docs-article blockquote {
-    border-left: 3px solid var(--color-coral);
-    background: var(--color-surface-1);
-    padding: 0.75rem 1rem;
-  }
-  .docs-article pre {
-    overflow-x: auto;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-small);
-    background: var(--color-zinc-950);
-    padding: 1.25rem;
-    color: var(--color-zinc-50);
-    font: 13px/1.55 var(--font-mono);
-  }
-  .docs-article :not(pre) > code {
-    border-radius: var(--radius-small);
-    background: var(--color-surface-1);
-    padding: 0.15em 0.35em;
-    font: 0.85em var(--font-mono);
-  }
-  .docs-article table {
-    display: block;
-    width: 100%;
-    overflow-x: auto;
-    border-collapse: collapse;
-    font-size: 14px;
-  }
-  .docs-article th,
-  .docs-article td {
-    border: 1px solid var(--color-border);
-    padding: 0.7rem 0.8rem;
-    text-align: left;
-    vertical-align: top;
-  }
-  .docs-article th {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 0.3px;
-    text-transform: uppercase;
-  }
-  .docs-article img {
-    max-width: 100%;
-    height: auto;
-  }
-  .docs-article figcaption {
-    margin-top: 0.5rem;
-    font-size: 12px;
-    color: var(--color-muted);
-  }
-  .docs-article footer {
-    display: flex;
-    gap: 1.5rem;
-    margin-top: 5rem;
-    border-top: 1px solid var(--color-border);
-    padding-top: 1.25rem;
-    font-size: 14px;
-  }
-  .docs-breadcrumbs {
-    margin-bottom: 1.5rem;
-    font-size: 13px;
-    color: var(--color-muted);
-  }
-  .docs-article .docs-breadcrumbs ol {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-  .docs-breadcrumbs li {
-    display: flex;
-    gap: 0.5rem;
-  }
-  @media (max-width: 1050px) {
-    .docs-grid {
-      grid-template-columns: 220px minmax(0, 760px);
-      gap: 2rem;
-    }
-    .docs-outline {
-      display: none;
-    }
-  }
-  @media (max-width: 720px) {
-    .docs-header {
-      min-height: 4rem;
-      padding-block: 1rem;
-    }
-    .docs-header img {
-      height: 1.75rem;
-    }
-    .docs-title {
-      display: none;
-    }
-    .docs-grid {
-      display: block;
-      padding-block: 2rem 4rem;
-    }
-    .docs-sidebar {
-      position: static;
-      max-height: none;
-      margin-bottom: 2.5rem;
-      border-bottom: 1px solid var(--color-border);
-      padding-bottom: 1.5rem;
-    }
-    .docs-sidebar section {
-      display: none;
-    }
-    .docs-home {
-      margin-bottom: 1rem;
-    }
-  }
-}
+.quip-home {
+  /* global.css sets "tnum" 0 on body for the docs, which would defeat tabular-nums here. */
+  font-feature-settings: normal;
 
-/*
- * Two corrections to the shared tokens, scoped to this app.
- *
- * 1. Canonical coral. quip-design v1.0.0 sets coral to #ff6c78 and marks
- *    #ff6467 as `--coral-legacy`, "the value code shipped for the site's first
- *    year". packages/shared/base.css still ships the legacy value, so main,
- *    hello, and agls all render it. Overriding here puts this app on the
- *    canonical value without changing the other three, which is a brand-wide
- *    change and needs design sign-off. Align base.css and this block can go.
- *
- * 2. An accent for small text. Raw coral fails AA against light surfaces below
- *    roughly 24px, and every hover state on this page is 13px to 15px link
- *    text. The design system's answer is a darkened coral reserved for text and
- *    small glyphs; raw coral stays for focus rings, rules, and hovers on dark
- *    surfaces, where it passes comfortably.
- */
-@theme {
-  --color-coral: #ff6c78;
+  /*
+   * An accent for small text. Raw coral fails AA against light surfaces below roughly
+   * 24px, and every hover state on this page is 13px to 15px link text. The design
+   * system's answer is a darkened coral reserved for text and small glyphs; raw coral
+   * stays for focus rings, rules, and hovers on dark surfaces, where it passes.
+   */
   --color-accent-text: #c93a3f;
 
   /*
-   * Audience tints from quip-design/tokens/audiences.json. The brand system
-   * keeps these opt-in and zinc is still the default rendering, so they are
-   * used in exactly one place: the glyph chip on each path profile. That gives
-   * each audience an identity without adding a second interactive accent.
+   * Audience tints from quip-design/tokens/audiences.json. The brand system keeps these
+   * opt-in and zinc is still the default rendering, so they are used in exactly one
+   * place: the glyph chip on each path profile. That gives each audience an identity
+   * without adding a second interactive accent.
    */
   --color-aud-dev-tint: #ffe2da;
   --color-aud-dev-ink: #8b2a30;
@@ -340,4 +29,146 @@ dd {
   --color-aud-ops-ink: #0a832e;
   --color-aud-eval-tint: #c2f8fd;
   --color-aud-eval-ink: #0b5560;
+}
+
+/*
+ * Never leave a single word alone on the last line. The panels are narrow and the notes
+ * are short, so orphans are common and conspicuous; `pretty` reflows the last two lines
+ * to prevent them. Headings use `balance` at the call site. Both degrade to normal
+ * wrapping where unsupported.
+ */
+.quip-home :is(p, li, dd) {
+  text-wrap: pretty;
+}
+
+.quip-home .sidenav-link[data-active="true"] {
+  background-color: var(--color-zinc-900);
+  color: var(--color-zinc-50);
+}
+
+/*
+ * Tabs without JavaScript: a radio group drives the panels, so the section works before
+ * hydration and with scripting off entirely. A radio group is also arrow-key navigable
+ * for free.
+ *
+ * Each radio sits immediately before the label it controls, so the active tab needs only
+ * one adjacent-sibling rule. Panels are not siblings of the radios, so they match through
+ * `:has()` on the wrapper: one rule per panel, and a fourth path means a fourth selector.
+ */
+.quip-home .qs-radio {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.quip-home .qs-panel {
+  display: none;
+}
+
+.quip-home .qs:has(#qs-0:checked) .qs-panel[data-panel="0"],
+.quip-home .qs:has(#qs-1:checked) .qs-panel[data-panel="1"],
+.quip-home .qs:has(#qs-2:checked) .qs-panel[data-panel="2"] {
+  display: grid;
+}
+
+.quip-home .qs-radio:checked + label {
+  background-color: var(--color-zinc-900);
+  border-color: var(--color-zinc-900);
+  color: var(--color-zinc-50);
+}
+
+/* The radio itself is visually hidden, so move its focus ring to the label. */
+.quip-home .qs-radio:focus-visible + label {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/*
+ * Dark theme. The markup hard-codes zinc utilities written for a light page, and each
+ * utility reads its colour from a --color-zinc-* token, so mirroring the scale here turns
+ * the whole page over without touching a class: text-zinc-950 becomes near-white,
+ * bg-zinc-900 buttons become light. The aliases have to be restated because custom
+ * properties resolve where they are declared, and base.css declares them on :root.
+ *
+ * Every value is a step of the brand's zinc scale. Muted and subtle sit one step brighter
+ * than a strict mirror, since zinc-500 on zinc-950 fails AA.
+ */
+.dark .quip-home {
+  --color-zinc-950: #fafafa;
+  --color-zinc-900: #f4f4f5;
+  --color-zinc-850: #e4e4e7;
+  --color-zinc-800: #dbdbde;
+  --color-zinc-750: #d4d4d8;
+  --color-zinc-700: #c9c9cb;
+  --color-zinc-600: #c9c9cb;
+  --color-zinc-550: #c9c9cb;
+  --color-zinc-500: #9f9fa9;
+  --color-zinc-400: #71717b;
+  --color-zinc-300: #52525c;
+  --color-zinc-250: #3f3f46;
+  --color-zinc-200: #343436;
+  --color-zinc-150: #27272a;
+  --color-zinc-100: #18181b;
+  --color-zinc-50: #09090b;
+
+  --color-bg: var(--color-zinc-50);
+  --color-surface-1: var(--color-zinc-100);
+  --color-surface-2: var(--color-zinc-150);
+  --color-surface-3: var(--color-zinc-200);
+  --color-border: var(--color-zinc-250);
+  --color-border-strong: var(--color-zinc-300);
+  --color-muted: var(--color-zinc-500);
+  --color-text-subtle: var(--color-zinc-600);
+  --color-text: var(--color-zinc-800);
+  --color-foreground: var(--color-zinc-950);
+
+  /* Raw coral passes AA on dark, so small coral text uses it directly. */
+  --color-accent-text: var(--color-accent);
+
+  /* The brand's own audience pairs, swapped: the ink becomes the ground. */
+  --color-aud-dev-tint: #8b2a30;
+  --color-aud-dev-ink: #ffe2da;
+  --color-aud-ops-tint: #0a832e;
+  --color-aud-ops-ink: #eefdca;
+  --color-aud-eval-tint: #0b5560;
+  --color-aud-eval-ink: #c2f8fd;
+}
+
+/* Surfaces that are dark in both themes (two panels, the map tooltip) keep the real scale. */
+.dark .quip-home [data-tone="dark"] {
+  --color-zinc-950: #09090b;
+  --color-zinc-900: #18181b;
+  --color-zinc-850: #212124;
+  --color-zinc-800: #27272a;
+  --color-zinc-750: #343436;
+  --color-zinc-700: #3f3f46;
+  --color-zinc-600: #52525c;
+  --color-zinc-550: #56565c;
+  --color-zinc-500: #71717b;
+  --color-zinc-400: #9f9fa9;
+  --color-zinc-300: #c9c9cb;
+  --color-zinc-250: #d4d4d8;
+  --color-zinc-200: #dbdbde;
+  --color-zinc-150: #e4e4e7;
+  --color-zinc-100: #f4f4f5;
+  --color-zinc-50: #fafafa;
+}
+
+/* PrimaryLink's hover fill is a literal #09090b in the vendored button, not a token. */
+.dark .quip-home a[class*="linear-gradient(#09090b"] {
+  background-image: linear-gradient(
+    var(--color-zinc-950),
+    var(--color-zinc-950)
+  );
+}
+
+/* Coral stays the selection colour, so its text must stay dark rather than flip. */
+.dark .quip-home ::selection {
+  color: #09090b;
 }

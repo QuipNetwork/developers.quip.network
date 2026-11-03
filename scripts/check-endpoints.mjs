@@ -4,7 +4,7 @@
  * inside the Netlify build: a reintroduced dead endpoint fails the deploy
  * instead of shipping to a live developer portal.
  *
- * Why this exists. src/sections/BuildWithAi.astro carried a comment claiming
+ * Why this exists. src/sections/BuildWithAi carried a comment claiming
  * its agent prompt was built from shared constants "so it cannot drift from the
  * facts shown in the Network panel" — three lines above a hard-coded explorer
  * URL. The URL outlived the chain it pointed at, and the portal served it to
