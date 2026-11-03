@@ -1,4 +1,3 @@
-import type { APIRoute } from "astro";
 import {
   DOCS,
   AI,
@@ -7,8 +6,8 @@ import {
   REGISTRIES,
   SITE,
   SOCIAL,
-} from "../data/links";
-import { EVM, CHAIN, FAUCET, EXPLORER, SUBSCAN, PORTAL } from "../data/testnet";
+} from "@/data/links";
+import { EVM, CHAIN, FAUCET, EXPLORER, SUBSCAN, PORTAL } from "@/data/testnet";
 
 /*
  * The portal's own llms.txt, in the llmstxt.org shape: an H1, a blockquote
@@ -93,10 +92,11 @@ const body = `# Quip Network for developers
 - [Quip Account](${NETWORK.account}): Browser interface for generating quantum-resistant keys.
 `;
 
-export const GET: APIRoute = () =>
-  new Response(body, {
-    headers: {
-      // Caching is handled by netlify.toml now that this is prerendered.
-      "Content-Type": "text/plain; charset=utf-8",
-    },
+// Built once per build, like the Astro page it replaces.
+export const dynamic = "force-static";
+
+export function GET() {
+  return new Response(body, {
+    headers: { "Content-Type": "text/plain; charset=utf-8" },
   });
+}

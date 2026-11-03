@@ -3,7 +3,9 @@ import path from "node:path";
 
 const projectRoot = path.resolve(import.meta.dirname, "..");
 const sourceRoot = path.join(projectRoot, "docs");
-const contentRoot = path.join(projectRoot, "src/content/docs");
+// Fumadocs reads MDX from content/docs. Generated, never edited by hand: docs/ stays the
+// source until the cutover, so edits merged to main carry over with a rebase.
+const contentRoot = path.join(projectRoot, "content/docs");
 const publicRoot = path.join(projectRoot, "public/docs");
 const rootMirror = path.join(projectRoot, "public/docs.md");
 const slugify = (value) => value.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -73,12 +75,6 @@ const splitFrontmatter = (markdown) => {
 };
 
 function normalizeBody(markdown, sourcePath) {
-  const sourceDir = path.posix.dirname(sourcePath);
-  const resolveLink = (target, hash = "") => {
-    const resolved = path.posix.normalize(path.posix.join(sourceDir, target));
-    const route = routeBySource.get(resolved);
-    return route === undefined ? undefined : `/docs${route ? `/${route}` : ""}${hash}`;
-  };
   const normalized = [];
   let hint = null;
   for (const line of markdown.replaceAll("&#x20;", "").split("\n")) {
@@ -100,7 +96,19 @@ function normalizeBody(markdown, sourcePath) {
     if (/^\{% (?:tabs|endtabs|endtab) %\}$/.test(line)) continue;
     normalized.push(hint ? `> ${line}` : line);
   }
-  return normalized.join("\n")
+  return rewriteLinks(normalized.join("\n"), sourcePath);
+}
+
+// The link and asset rewrites shared by the Markdown twins and the MDX pages. Kept
+// byte-for-byte as they were so the twins do not change.
+function rewriteLinks(text, sourcePath) {
+  const sourceDir = path.posix.dirname(sourcePath);
+  const resolveLink = (target, hash = "") => {
+    const resolved = path.posix.normalize(path.posix.join(sourceDir, target));
+    const route = routeBySource.get(resolved);
+    return route === undefined ? undefined : `/docs${route ? `/${route}` : ""}${hash}`;
+  };
+  return text
     .replaceAll("https://quip.gitbook.io/docs/llms.txt", "https://developers.quip.network/docs/llms.txt")
     .replaceAll("https://quip.gitbook.io/docs/llms-full.txt", "https://developers.quip.network/docs/llms-full.txt")
     .replace(/(?:\.\.\/)?\.gitbook\/assets\/([^"')\s]+)/g, "/docs/assets/$1")
@@ -114,59 +122,164 @@ function normalizeBody(markdown, sourcePath) {
     });
 }
 
+// ---------- MDX for Fumadocs ----------
+//
+// The twins above stay plain Markdown, exactly as agents read them today. The pages
+// Fumadocs renders get real components instead of the blockquote and heading stand-ins:
+// GitBook hints become <Callout>, tabs become <Tabs>, the card table becomes <Cards>.
+// Everything else is made safe for MDX: braces, comments, void tags and stray "<".
+
+const CALLOUT_TYPE = { info: "info", warning: "warn", danger: "error", success: "success" };
+const CALLOUT_TITLE = { info: "Note", warning: "Warning", danger: "Warning", success: "Success" };
+const KNOWN_TAGS = new Set(
+  "a b br code div em figcaption figure i img kbd mark p picture source span strong sub sup table tbody td th thead tr u details summary"
+    .split(" "),
+);
+
+function escapeLine(line) {
+  // Inline code is left alone; everything between code spans is made MDX-safe.
+  return line
+    .split(/(`+[^`]*`+)/)
+    .map((part, index) => {
+      if (index % 2 === 1) return part;
+      return part
+        .replace(/<(https?:\/\/[^>\s]+)>/g, "[$1]($1)")
+        .replace(/\{(?!%)/g, "\\{")
+        .replace(/(?<!%)\}/g, "\\}")
+        .replace(/<!--([\s\S]*?)-->/g, "{/*$1*/}")
+        .replace(/<\/?([A-Za-z][\w-]*)/g, (match, tag) => (KNOWN_TAGS.has(tag.toLowerCase()) ? match : match.replace("<", "&lt;")))
+        .replace(/<(br|img|source)\b([^>]*?)\s*\/?>/gi, (_, tag, attrs) => `<${tag}${attrs} />`)
+        .replace(/\sclass=/g, " className=")
+        .replace(/\ssrcset=/g, " srcSet=");
+    })
+    .join("");
+}
+
+function escapeOutsideFences(markdown) {
+  let fence = null;
+  return markdown
+    .split("\n")
+    .map((line) => {
+      const marker = line.match(/^\s*(`{3,}|~{3,})/);
+      if (marker) {
+        if (!fence) fence = marker[1];
+        else if (marker[1].startsWith(fence[0]) && marker[1].length >= fence.length) fence = null;
+        return line;
+      }
+      return fence ? line : escapeLine(line);
+    })
+    .join("\n");
+}
+
+const stripTags = (html) => html.replace(/<[^>]+>/g, "").trim();
+const jsxString = (value) => `{${JSON.stringify(value)}}`;
+
+function cardsToMdx(table) {
+  const body = table.match(/<tbody>([\s\S]*?)<\/tbody>/)?.[1] ?? "";
+  const cards = [...body.matchAll(/<tr>([\s\S]*?)<\/tr>/g)].map(([, row]) => {
+    const cells = [...row.matchAll(/<td>([\s\S]*?)<\/td>/g)].map((cell) => cell[1]);
+    const href = row.match(/<a href="([^"]+)"/)?.[1];
+    const title = stripTags(cells[0] ?? "");
+    const description = stripTags(cells[1] ?? "");
+    return `<Card title=${jsxString(title)} description=${jsxString(description)}${href ? ` href="${href}"` : ""} />`;
+  });
+  return `<Cards>\n${cards.join("\n")}\n</Cards>`;
+}
+
+function toMdx(markdown, sourcePath) {
+  let text = escapeOutsideFences(markdown.replaceAll("&#x20;", ""));
+  text = text.replace(/^\{% tabs %\}\n([\s\S]*?)^\{% endtabs %\}$/gm, (_, inner) => {
+    const tabs = [...inner.matchAll(/^\{% tab title="([^"]+)" %\}\n([\s\S]*?)^\{% endtab %\}$/gm)];
+    const items = tabs.map(([, title]) => title);
+    const panels = tabs.map(([, title, content]) => `<Tab value=${jsxString(title)}>\n\n${content.trim()}\n\n</Tab>`);
+    return `<Tabs items=${jsxString(items)}>\n\n${panels.join("\n\n")}\n\n</Tabs>`;
+  });
+  text = text.replace(/^\{% hint style="([^"]+)" %\}\n([\s\S]*?)^\{% endhint %\}$/gm, (_, style, content) => {
+    const type = CALLOUT_TYPE[style] ?? "info";
+    const title = CALLOUT_TITLE[style] ?? "Note";
+    return `<Callout type="${type}" title="${title}">\n\n${content.trim()}\n\n</Callout>`;
+  });
+  text = text.replace(/<table data-view="cards">[\s\S]*?<\/table>/g, cardsToMdx);
+  const leftover = text.match(/\{%[^%]*%\}/);
+  if (leftover) throw new Error(`${sourcePath}: unconverted GitBook tag ${leftover[0]}`);
+  return rewriteLinks(text, sourcePath);
+}
+
+function descriptionOf(frontmatter) {
+  const folded = frontmatter.match(/^description:\s*>-?\n((?:[ \t]+.*\n?)+)/m);
+  if (folded) return folded[1].split("\n").map((line) => line.trim()).filter(Boolean).join(" ");
+  return frontmatter.match(/^description:\s*(.+)$/m)?.[1].trim().replace(/^["']|["']$/g, "");
+}
+
+// ---------- write ----------
+
 await rm(contentRoot, { recursive: true, force: true });
-await rm(publicRoot, { recursive: true, force: true });
+// public/docs/xquad is the XQuad book, written by scripts/fetch-book.mjs; keep it.
+for (const entry of await readdir(publicRoot).catch(() => [])) {
+  if (entry !== "xquad") await rm(path.join(publicRoot, entry), { recursive: true, force: true });
+}
 await rm(rootMirror, { force: true });
 await mkdir(contentRoot, { recursive: true });
 await mkdir(publicRoot, { recursive: true });
 const full = [];
 const index = ["# Quip Network documentation", "", "> Technical documentation for Quip Network.", ""];
+// Sidebar order: one meta.json per folder, and the root one lists groups as separators.
+const folderPages = new Map();
+const rootPages = [];
+let lastGroup = null;
 
 for (const page of pages) {
   const raw = await readFile(path.join(sourceRoot, page.sourcePath), "utf8");
   const { frontmatter, body } = splitFrontmatter(raw);
   const normalized = `${normalizeBody(body, page.sourcePath).trim()}\n`;
+  const description = descriptionOf(frontmatter);
   const metadata = [
-    frontmatter.replace(/^cover:.*\n?/gm, "").trim(),
     `title: ${JSON.stringify(page.title)}`,
-    `group: ${JSON.stringify(page.group)}`,
-    `order: ${page.order}`,
-    `route: ${JSON.stringify(page.route)}`,
+    description ? `description: ${JSON.stringify(description)}` : "",
     `source_path: ${JSON.stringify(page.sourcePath)}`,
   ].filter(Boolean).join("\n");
-  const relativeOutput = page.route ? `${page.route}.md` : "index.md";
+  const relativeOutput = page.route ? `${page.route}.mdx` : "index.mdx";
   const contentPath = path.join(contentRoot, relativeOutput);
-  const mirrorPath = page.route ? path.join(publicRoot, relativeOutput) : rootMirror;
+  const mirrorPath = page.route ? path.join(publicRoot, `${page.route}.md`) : rootMirror;
   await mkdir(path.dirname(contentPath), { recursive: true });
   await mkdir(path.dirname(mirrorPath), { recursive: true });
-  await writeFile(contentPath, `---\n${metadata}\n---\n\n${normalized}`);
+  await writeFile(contentPath, `---\n${metadata}\n---\n\n${toMdx(body, page.sourcePath).trim()}\n`);
   await writeFile(mirrorPath, normalized);
   const url = `https://developers.quip.network/docs${page.route ? `/${page.route}` : ""}.md`;
   index.push(`- [${page.title}](${url}): ${page.group}.`);
   full.push(normalized);
+
+  const [folder, file] = page.route.includes("/") ? page.route.split("/") : [null, page.route || "index"];
+  if (page.group !== lastGroup && page.group !== "Overview") {
+    rootPages.push(`---${page.group}---`);
+    lastGroup = page.group;
+  }
+  if (folder) {
+    if (!folderPages.has(folder)) {
+      folderPages.set(folder, { title: page.group, pages: [] });
+      rootPages.push(`...${folder}`);
+    }
+    folderPages.get(folder).pages.push(file);
+  } else {
+    rootPages.push(file);
+  }
 }
 
-// Nav-only entries are collection entries with an href and no body, so the sidebar
-// keeps one source of truth for grouping and ordering. They render no page, so they
-// stay out of getStaticPaths, out of the sitemap, and out of llms.txt, which lists
-// Markdown twins that a link like this does not have.
+// Nav-only links (the XQuad book) go into the sidebar after their group's pages.
 for (const link of links) {
-  const metadata = [
-    `title: ${JSON.stringify(link.title)}`,
-    `group: ${JSON.stringify(link.group)}`,
-    `order: ${link.order}`,
-    `href: ${JSON.stringify(link.href)}`,
-  ].join("\n");
-  const contentPath = path.join(contentRoot, "links", `${slugify(`${link.group} ${link.title}`)}.md`);
-  await mkdir(path.dirname(contentPath), { recursive: true });
-  await writeFile(contentPath, `---\n${metadata}\n---\n`);
+  if (link.group !== lastGroup) rootPages.push(`---${link.group}---`);
+  rootPages.push(`[${link.title}](${link.href})`);
 }
+
+for (const [folder, meta] of folderPages) {
+  await writeFile(path.join(contentRoot, folder, "meta.json"), `${JSON.stringify(meta, null, 2)}\n`);
+}
+await writeFile(
+  path.join(contentRoot, "meta.json"),
+  `${JSON.stringify({ title: "Quip Network docs", root: true, pages: rootPages }, null, 2)}\n`,
+);
 
 await cp(path.join(sourceRoot, ".gitbook/assets"), path.join(publicRoot, "assets"), { recursive: true });
 await writeFile(path.join(publicRoot, "llms.txt"), `${index.join("\n")}\n`);
 await writeFile(path.join(publicRoot, "llms-full.txt"), full.join("\n---\n\n"));
-const files = await readdir(contentRoot, { recursive: true });
-console.log(
-  `Synced ${pages.length} pages and ${links.length} nav links, ` +
-    `${files.filter((file) => file.endsWith(".md")).length} entries from ${sourceRoot}.`,
-);
+console.log(`Synced ${pages.length} pages and ${links.length} nav links from ${sourceRoot}.`);

@@ -1,0 +1,244 @@
+@import "tailwindcss";
+@import "fumadocs-ui/css/neutral.css";
+@import "fumadocs-ui/css/preset.css";
+/* Fonts and the zinc scale come from the vendored design system, as on the home page. */
+@import "../vendor/quip-design/styles/base.css";
+
+@source "../../node_modules/fumadocs-ui/dist/**/*.js";
+
+/*
+ * Quip theme for Fumadocs. Every --color-fd-* variable maps to a Quip token, per the
+ * design brief's token mapping. Light values are the brand's; dark values are the
+ * proposal from the brief, pending sign-off by the design-system owner.
+ */
+@theme {
+  --font-sans: var(--font-body);
+  /* Marketing tier: square corners. Flattens Fumadocs' own rounded classes. */
+  --radius-xs: 0;
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
+  --radius-2xl: 0;
+  --radius-3xl: 0;
+  --color-coral: #ff6c78;
+  --color-accent: #ff6c78;
+}
+
+:root {
+  --quip-coral: #ff6c78;
+  /* AA variant for coral text and small glyphs on light surfaces. */
+  --quip-coral-text: #c93a3f;
+  --quip-warning: #d97706;
+  --quip-positive: #059669;
+  --shadow-float: 0 12px 32px -8px rgb(9 9 11 / 0.18), 0 2px 6px rgb(9 9 11 / 0.08);
+
+  --color-fd-background: #fafafa;
+  --color-fd-foreground: #09090b;
+  --color-fd-muted: #f4f4f5;
+  --color-fd-muted-foreground: #71717b;
+  --color-fd-card: #f4f4f5;
+  --color-fd-card-foreground: #09090b;
+  --color-fd-popover: #ffffff;
+  --color-fd-popover-foreground: #09090b;
+  --color-fd-border: #d4d4d8;
+  --color-fd-secondary: #e4e4e7;
+  --color-fd-secondary-foreground: #27272a;
+  --color-fd-accent: #f4f4f5;
+  --color-fd-accent-foreground: #09090b;
+  --color-fd-primary: var(--quip-coral);
+  --color-fd-primary-foreground: #09090b;
+  --color-fd-ring: var(--quip-coral);
+  --quip-link: var(--quip-coral-text);
+  --quip-current-bg: #18181b;
+  --quip-current-fg: #fafafa;
+  --fd-nav-height: 56px;
+}
+
+.dark {
+  --color-fd-background: #09090b;
+  --color-fd-foreground: #fafafa;
+  --color-fd-muted: #18181b;
+  --color-fd-muted-foreground: #9f9fa9;
+  --color-fd-card: #18181b;
+  --color-fd-card-foreground: #fafafa;
+  --color-fd-popover: #18181b;
+  --color-fd-popover-foreground: #fafafa;
+  --color-fd-border: #3f3f46;
+  --color-fd-secondary: #27272a;
+  --color-fd-secondary-foreground: #f4f4f5;
+  --color-fd-accent: #212124;
+  --color-fd-accent-foreground: #fafafa;
+  /* Raw coral passes AA on dark, so links use it directly. */
+  --quip-link: var(--quip-coral);
+  --quip-current-bg: #f4f4f5;
+  --quip-current-fg: #09090b;
+  --shadow-float: 0 12px 32px -8px rgb(0 0 0 / 0.6), 0 2px 6px rgb(0 0 0 / 0.4);
+}
+
+html {
+  scrollbar-gutter: stable;
+}
+
+html > body[data-scroll-locked] {
+  margin-right: 0px !important;
+  --removed-body-scroll-bar-size: 0px !important;
+}
+
+body {
+  font-family: var(--font-body);
+  font-feature-settings: "tnum" 0;
+}
+
+/* ---------- Reading scale (design brief starting proposal) ---------- */
+
+.prose {
+  --tw-prose-body: var(--color-fd-foreground);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.prose :where(h1, h2) {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.prose :where(h2) {
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+.prose :where(h3) {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 17px;
+}
+
+.prose :where(a):not(:where([data-card], .not-prose a)) {
+  color: var(--quip-link);
+  text-decoration: none;
+  font-weight: inherit;
+}
+
+.prose :where(a):not(:where([data-card], .not-prose a)):hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.prose :where(code):not(:where(pre code)) {
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.prose :where(table) {
+  font-size: 13.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.prose :where(figure img) {
+  margin-inline: auto;
+}
+
+.prose :where(figcaption) {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-align: center;
+  color: var(--color-fd-muted-foreground);
+}
+
+/* Page title: Gaisyr, per the reading scale. */
+#nd-page h1,
+.quip-page-title {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  font-size: 34px;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+}
+
+/* Code: Favorit Mono, 13 px. */
+pre,
+code,
+kbd {
+  font-family: var(--font-mono);
+}
+
+/* ---------- Sidebar: portal rail style ---------- */
+
+/* Group labels: Favorit Mono Medium, 11 px, uppercase, 0.4 px tracking. */
+#nd-sidebar p:not([class*="text-sm"]) {
+  font-family: var(--font-mono);
+}
+
+.quip-eyebrow,
+#nd-sidebar [data-separator],
+#nd-sidebar p.inline-flex {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--color-fd-muted-foreground);
+}
+
+/* Current page: a solid block, not Fumadocs' tinted primary. */
+#nd-sidebar a[data-active="true"] {
+  background: var(--quip-current-bg);
+  color: var(--quip-current-fg);
+}
+
+/* ---------- Floating surfaces: the three allowed shadows ---------- */
+
+[role="dialog"],
+[data-radix-popper-content-wrapper] > *,
+[data-side][role="menu"] {
+  box-shadow: var(--shadow-float);
+}
+
+/* ---------- Callouts: left bar, mono label, no icon ---------- */
+
+.quip-callout {
+  border-left: 3px solid var(--quip-callout-bar, var(--quip-coral));
+  background: var(--color-fd-card);
+  padding: 12px 16px;
+  margin-block: 1.25em;
+  font-size: 14.5px;
+}
+
+.quip-callout > .quip-callout-label {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--color-fd-muted-foreground);
+  margin-bottom: 4px;
+}
+
+.quip-callout > div > :first-child {
+  margin-top: 0;
+}
+
+.quip-callout > div > :last-child {
+  margin-bottom: 0;
+}
+
+.quip-callout[data-type="warn"] {
+  --quip-callout-bar: var(--quip-warning);
+}
+
+.quip-callout[data-type="error"] {
+  --quip-callout-bar: #dc2626;
+}
+
+.quip-callout[data-type="success"] {
+  --quip-callout-bar: var(--quip-positive);
+}
+
+/* ---------- Focus ring: coral, 2 px, offset 2 px ---------- */
+
+:where(a, button, input, [tabindex]):focus-visible {
+  outline: 2px solid var(--quip-coral);
+  outline-offset: 2px;
+}

@@ -13,9 +13,9 @@
  * No token: xquad is a public project with public jobs, so every endpoint used here is
  * readable unauthenticated. Nothing secret belongs in this build.
  *
- * Runs as `postbuild`, writing into dist/ rather than public/, because
- * scripts/sync-docs.mjs does `rm -rf public/docs` and would delete the book on the
- * next docs:sync.
+ * Runs in `prebuild`, writing into public/docs/xquad, which scripts/sync-docs.mjs leaves
+ * in place. The Next.js server then serves it as static files (see src/proxy.ts for how
+ * folder URLs reach their index.html).
  *
  * Fails closed on a missing, truncated, broken or unreleased artifact: shipping a
  * docs section that silently 404s, or one built from a branch or a prerelease, is worse
@@ -35,7 +35,7 @@ const JOB = "docs:build";
 const RELEASE_TAG = /^v\d+\.\d+\.\d+$/;
 /* The artifact preserves the xquad build path; this is the directory inside it. */
 const ARTIFACT_PREFIX = "docs/book/build";
-const DESTINATION = path.resolve(import.meta.dirname, "../dist/docs/xquad");
+const DESTINATION = path.resolve(import.meta.dirname, "../public/docs/xquad");
 
 /* The book has 90 HTML files today. A floor well below that catches a truncated or
  * wrong artifact without going red every time a page is added or removed. */
@@ -210,7 +210,7 @@ try {
   await cp(book, DESTINATION, { recursive: true });
   console.log(
     `fetch-book: unpacked ${files.length} files (${pages.length} pages) from ${artifact.source} ` +
-      `into dist/docs/xquad/.`,
+      `into public/docs/xquad/.`,
   );
 } finally {
   await rm(staging, { recursive: true, force: true });

@@ -21,7 +21,7 @@
  *    merge, so the pipeline could never go green on the MR that introduces it.
  */
 
-const SITE_ORIGIN = import.meta.env.SITE ?? "https://developers.quip.network";
+const SITE_ORIGIN = "https://developers.quip.network";
 
 export const DOCS_BASE = new URL("/docs", SITE_ORIGIN).href;
 
@@ -124,4 +124,5 @@ export const PENDING = [
   "explorer.quip.network",
 ] as const;
 
-export const LAST_UPDATED = import.meta.env.PUBLIC_BUILD_DATE;
+// Set once per build in next.config.mjs.
+export const LAST_UPDATED = process.env.NEXT_PUBLIC_BUILD_DATE ?? "";
