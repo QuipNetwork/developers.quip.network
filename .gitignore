@@ -30,3 +30,5 @@ content/docs/(docs)/
 content/docs/meta.json
 # The XQuad book is converted from its release tag at build by scripts/sync-xquad.mjs.
 content/docs/xquad/
+# Written by next dev.
+AGENTS.md
