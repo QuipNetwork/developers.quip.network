@@ -173,13 +173,40 @@ body {
   margin-bottom: 0.5em;
 }
 
+/* Never uppercase here: an h4 is often an identifier, and case is part of its name. */
 .prose :where(h4) {
-  font-family: var(--font-mono);
-  font-size: 12px;
+  font-family: var(--font-body);
+  font-size: 15px;
   font-weight: 500;
-  letter-spacing: 0.4px;
-  text-transform: uppercase;
-  color: var(--color-fd-muted-foreground);
+  line-height: 1.35;
+  margin-top: 1.6em;
+  margin-bottom: 0.4em;
+}
+
+/* Code in a heading is the heading: no tint, and long names may wrap rather than overflow. */
+.prose :is(h1, h2, h3, h4) code {
+  background: transparent;
+  padding: 0;
+  font-size: 0.92em;
+}
+
+.prose :is(h1, h2, h3, h4) .quip-nowrap-wide {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* Uppercase table headers must not change an identifier's case. */
+.prose th code {
+  text-transform: none;
+  letter-spacing: 0;
+  background: transparent;
+  padding: 0;
+}
+
+/* Reference type tables: names and types without tint blocks. */
+.prose .not-prose code {
+  background: transparent;
+  padding: 0;
 }
 
 /* Anchor glyph on headings: quiet until hovered. */
@@ -561,9 +588,10 @@ body {
    Top bar, as on quip.network: logo, quiet links, nothing competing.
    ========================================================================== */
 
+/* Solid, so page text never shows through as it scrolls under. */
 #nd-subnav {
-  background: color-mix(in srgb, var(--color-fd-background) 92%, transparent);
-  backdrop-filter: blur(10px);
+  background: var(--color-fd-background);
+  backdrop-filter: none;
   border-color: var(--color-fd-border);
 }
 
@@ -684,7 +712,8 @@ kbd {
 }
 
 #nd-toc div.relative > div.absolute,
-#nd-toc a::before {
+#nd-toc a::before,
+#nd-toc a > :is(div, svg) {
   display: none;
 }
 
