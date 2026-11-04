@@ -3,6 +3,7 @@ import { Tab, Tabs } from "fumadocs-ui/components/tabs";
 import type { MDXComponents } from "mdx/types";
 import type { ComponentProps, ReactNode } from "react";
 import { Mermaid } from "./mermaid";
+import { ParticipantStack } from "./diagrams/participant-stack";
 
 type CalloutType = "info" | "warn" | "error" | "success";
 const LABEL: Record<CalloutType, string> = { info: "Note", warn: "Warning", error: "Warning", success: "Success" };
@@ -75,6 +76,7 @@ export function getMDXComponents(components?: MDXComponents) {
     Tab,
     Tabs,
     Mermaid,
+    ParticipantStack,
     ...components,
   } satisfies MDXComponents;
 }

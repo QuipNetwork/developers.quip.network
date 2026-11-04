@@ -12,6 +12,7 @@ import { quipCodeTheme } from "./code-theme.mjs";
 import { rehypeReadable } from "./rehype-readable.mjs";
 import { createReferenceGenerator, typeTableOptions } from "./reference-tables.mjs";
 import { docsRoute } from "./shared";
+import { remarkBespokeFigures } from "../components/diagrams/remark-bespoke-figures.mjs";
 
 const docs = defineDocs({
   dir: "content/docs",
@@ -29,6 +30,7 @@ const docs = defineDocs({
         [remarkAutoTypeTable, { generator: createReferenceGenerator(), options: typeTableOptions }],
         ...defaults,
         remarkMdxMermaid,
+        remarkBespokeFigures,
         [remarkMath, { singleDollarTextMath: false }],
         // Curly quotes, en and em dashes, ellipses: both old renderers did this (Astro by
         // default, mdBook's smart-punctuation). Code and math are left alone.

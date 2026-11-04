@@ -16,6 +16,7 @@
     "check:parity": "node scripts/check-parity.mjs",
     "check:links": "node scripts/check-links.mjs",
     "check:xquad-urls": "node scripts/check-xquad-urls.mjs",
+    "check:diagrams": "node scripts/check-diagrams.mjs",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\""
   },
   "dependencies": {
