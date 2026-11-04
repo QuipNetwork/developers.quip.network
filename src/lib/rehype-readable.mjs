@@ -33,7 +33,18 @@ function lastTextNode(node) {
   return null;
 }
 
+/** Ends in inline code: tie that code to the word before it, when the code is short. */
+function joinBeforeTrailingCode(node) {
+  const children = (node.children ?? []).filter((c) => !(c.type === "text" && !c.value.trim()));
+  const last = children[children.length - 1];
+  const before = children[children.length - 2];
+  if (!last || last.type !== "element" || last.tagName !== "code") return;
+  if (textOf(last).length > MAX_LAST_WORD + 6) return;
+  if (before?.type === "text" && /[ \t\n]+$/.test(before.value)) before.value = before.value.replace(/[ \t\n]+$/, NBSP);
+}
+
 function joinLastWords(node) {
+  joinBeforeTrailingCode(node);
   const text = lastTextNode(node);
   if (!text) return;
   const match = text.value.match(/^([\s\S]*\S)?[ \t\n]+(\S+)(\s*)$/);
