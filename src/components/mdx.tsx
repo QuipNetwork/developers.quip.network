@@ -56,10 +56,21 @@ function groupWords(text: string) {
   );
 }
 
+/** A comparison table may scroll inside its own box, so that box must be reachable by keyboard. */
+function Table(props: ComponentProps<"table"> & { "data-layout"?: string }) {
+  const scrolls = props["data-layout"] === "compare";
+  return (
+    <div className="quip-table" {...(scrolls ? { tabIndex: 0, role: "region", "aria-label": "Comparison table" } : {})}>
+      <table {...props} />
+    </div>
+  );
+}
+
 export function getMDXComponents(components?: MDXComponents) {
   return {
     ...defaultMdxComponents,
     code: InlineCode,
+    table: Table,
     Callout,
     Tab,
     Tabs,

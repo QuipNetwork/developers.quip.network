@@ -4,8 +4,9 @@
  * 1. No stranded last word. In paragraphs, list items, table cells and captions, the last two
  *    words are joined with a no-break space, so a line can never end up holding one short word.
  *    Text is otherwise unchanged, and the Markdown twins do not pass through here.
- * 2. Tables can stack. Each cell records its column's header in data-label, so on small screens
- *    a row reads as label and value (see global.css) rather than scrolling sideways.
+ * 2. Tables have a layout. Each cell records its column's header in data-label, and each table is
+ *    marked as records or a comparison, so on small screens a record reads as label and value
+ *    while a comparison keeps its columns (see global.css).
  */
 const NBSP = " ";
 const JOIN = new Set(["p", "li", "td", "th", "figcaption", "dt", "dd"]);
@@ -82,7 +83,7 @@ function labelTable(table) {
 
 /*
  * Tables holding long values in two or more columns, such as contract addresses, cannot fit
- * side by side at any width. They read as label and value everywhere.
+ * side by side at any width. They read as label and value everywhere (records-wide).
  */
 const LONG_VALUE = 30;
 
@@ -106,11 +107,40 @@ function needsStacking(table) {
   return columns.size >= 2;
 }
 
+/*
+ * A table of short values, usually numbers, is for comparing across rows: it keeps its columns
+ * and scrolls if it must. Stacking it would destroy the comparison. Everything else is records,
+ * which read better as label and value on a narrow screen.
+ */
+const SHORT_VALUE = 16;
+
+function isComparison(table) {
+  let cells = 0;
+  let short = 0;
+  let columns = 0;
+  const scan = (node) => {
+    for (const child of node.children ?? []) {
+      if (child.type !== "element") continue;
+      if (child.tagName === "tr") {
+        const tds = child.children.filter((c) => c.type === "element" && c.tagName === "td");
+        columns = Math.max(columns, tds.length);
+        for (const td of tds) {
+          cells += 1;
+          if (textOf(td).trim().length <= SHORT_VALUE) short += 1;
+        }
+      } else scan(child);
+    }
+  };
+  scan(table);
+  return columns >= 3 && cells > 0 && short / cells >= 0.75;
+}
+
 function walk(node) {
   if (node.type === "element") {
     if (node.tagName === "table") {
       labelTable(node);
-      if (needsStacking(node)) node.properties = { ...node.properties, "data-stack": "true" };
+      const layout = needsStacking(node) ? "records-wide" : isComparison(node) ? "compare" : "records";
+      node.properties = { ...node.properties, "data-layout": layout };
     }
     if (JOIN.has(node.tagName)) joinLastWords(node);
   }

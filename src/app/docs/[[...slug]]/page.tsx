@@ -88,15 +88,15 @@ export default async function Page({ params }: Props) {
         ) : (
           <span />
         )}
-        <div className="flex flex-row items-center gap-2">
+        <div className="quip-page-actions flex flex-row items-center gap-2">
           <MarkdownCopyButton markdownUrl={markdownUrl} />
           <ViewOptionsPopover markdownUrl={markdownUrl} githubUrl={editUrl} />
         </div>
       </div>
-      <DocsBody>
+      <DocsBody data-tree={tree.name.toLowerCase()} data-page={page.slugs.join("/")}>
         <MDX components={getMDXComponents({ a: linkFor(createRelativeLink(source, page), !inBook) })} />
       </DocsBody>
-      <footer className="quip-eyebrow mt-10 flex gap-4 border-t border-fd-border pt-4">
+      <footer className="quip-page-footer quip-eyebrow mt-10 flex flex-wrap gap-x-4 gap-y-2 border-t border-fd-border pt-4">
         <a href={markdownUrl}>View as Markdown</a>
         <a href={tree.llms}>llms.txt</a>
         {editUrl ? <a href={editUrl}>Edit on GitLab</a> : null}

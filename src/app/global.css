@@ -36,6 +36,7 @@
 
   --color-fd-background: #fafafa;
   --color-fd-foreground: #09090b;
+  --quip-body: #27272a;
   --color-fd-muted: #f4f4f5;
   --color-fd-muted-foreground: #71717b;
   --color-fd-card: #f4f4f5;
@@ -59,6 +60,7 @@
 .dark {
   --color-fd-background: #09090b;
   --color-fd-foreground: #fafafa;
+  --quip-body: #fafafa;
   --color-fd-muted: #18181b;
   --color-fd-muted-foreground: #9f9fa9;
   --color-fd-card: #18181b;
@@ -117,10 +119,15 @@ body {
    ========================================================================== */
 
 .prose {
-  --tw-prose-body: var(--color-fd-foreground);
+  --tw-prose-body: var(--quip-body);
   --tw-prose-headings: var(--color-fd-foreground);
   font-size: 16px;
   line-height: 1.65;
+}
+
+/* Line length: text stops at 736 px; tables and code may use the full column. */
+.prose > :is(p, ul, ol, blockquote) {
+  max-width: 736px;
 }
 
 .prose :where(p, li, td, figcaption, blockquote) {
@@ -180,17 +187,19 @@ body {
   color: var(--color-fd-muted-foreground);
 }
 
-.prose :where(a):not(:where([data-card], .not-prose a)) {
+/* Links are coral with a quiet underline, so they do not rely on colour alone. */
+.prose :where(p, li, td, figcaption) a:not([data-card]) {
   color: var(--quip-link);
-  text-decoration: none;
   font-weight: inherit;
-  transition: color 150ms;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  text-decoration-color: color-mix(in srgb, var(--quip-link) 40%, transparent);
+  transition: text-decoration-color 150ms;
 }
 
-.prose :where(a):not(:where([data-card], .not-prose a)):hover {
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  text-decoration-thickness: 1px;
+.prose :where(p, li, td, figcaption) a:not([data-card]):hover {
+  text-decoration-color: currentColor;
 }
 
 .prose :where(ul ul) {
@@ -293,9 +302,10 @@ body {
   padding: 0;
 }
 
-.prose tbody tr,
+.prose table,
+.prose table :is(thead, tbody, tr, th, td),
 .prose tbody tr:nth-child(2n),
-.prose tbody td {
+.prose .quip-table {
   background: transparent;
 }
 
@@ -303,38 +313,36 @@ body {
   border-bottom: 0;
 }
 
-/* Stacked tables: each row a block of label and value. Below 1024 px the column is too narrow
-   for most tables; a table of long values stacks at every width. */
+/* Records stack below 1024 px: each row a block of label and value. */
 @media (max-width: 1023px) {
-  .prose table,
-  .prose tbody,
-  .prose tr,
-  .prose td {
+  .prose table[data-layout="records"],
+  .prose table[data-layout="records"] tbody,
+  .prose table[data-layout="records"] tr,
+  .prose table[data-layout="records"] td {
     display: block;
     width: 100%;
   }
 
-  .prose thead {
+  .prose table[data-layout="records"] thead {
     display: none;
   }
 
-  .prose tbody tr {
+  .prose table[data-layout="records"] tbody tr {
     border-bottom: 1px solid var(--color-fd-border);
     padding-block: 12px;
   }
 
-  .prose tbody tr:first-child {
+  .prose table[data-layout="records"] tbody tr:first-child {
     border-top: 1px solid var(--color-fd-foreground);
   }
 
-  .prose tbody td,
-  .prose tbody td:last-child {
+  .prose table[data-layout="records"] tbody td {
     border: 0;
     padding: 3px 0;
     min-width: 0;
   }
 
-  .prose td[data-label]:not([data-label=""])::before {
+  .prose table[data-layout="records"] td[data-label]:not([data-label=""])::before {
     content: attr(data-label);
     display: block;
     font-family: var(--font-mono);
@@ -347,43 +355,75 @@ body {
   }
 }
 
-.prose table[data-stack],
-.prose table[data-stack] tbody,
-.prose table[data-stack] tr,
-.prose table[data-stack] td {
+/* Comparisons keep their columns, and scroll inside their own box if they must. */
+.quip-table {
+  max-width: 100%;
+  overflow-x: auto;
+  margin-block: 1.5em;
+}
+
+.quip-table > table {
+  margin-block: 0;
+}
+
+.quip-table:has(> table[data-layout="compare"]) > table {
+  min-width: 100%;
+  width: max-content;
+}
+
+/* Long values, such as contract addresses: label on the left, value on the right, in full. */
+.prose table[data-layout="records-wide"],
+.prose table[data-layout="records-wide"] tbody {
   display: block;
   width: 100%;
 }
 
-.prose table[data-stack] thead {
+.prose table[data-layout="records-wide"] thead {
   display: none;
 }
 
-.prose table[data-stack] tbody tr {
+.prose table[data-layout="records-wide"] tr {
+  display: block;
   border-bottom: 1px solid var(--color-fd-border);
-  padding-block: 12px;
+  padding-block: 14px;
 }
 
-.prose table[data-stack] tbody tr:first-child {
+.prose table[data-layout="records-wide"] tbody tr:first-child {
   border-top: 1px solid var(--color-fd-foreground);
 }
 
-.prose table[data-stack] tbody td,
-.prose table[data-stack] tbody td:last-child {
+.prose table[data-layout="records-wide"] td {
+  display: grid;
+  grid-template-columns: 148px minmax(0, 1fr);
+  column-gap: 16px;
+  align-items: baseline;
   border: 0;
-  padding: 3px 0;
+  padding: 2px 0;
 }
 
-.prose table[data-stack] td[data-label]:not([data-label=""])::before {
+.prose table[data-layout="records-wide"] td::before {
   content: attr(data-label);
-  display: block;
   font-family: var(--font-mono);
   font-size: 10.5px;
   font-weight: 500;
   letter-spacing: 0.4px;
   text-transform: uppercase;
   color: var(--color-fd-muted-foreground);
-  margin-bottom: 1px;
+}
+
+/* The first cell names the record. */
+.prose table[data-layout="records-wide"] td:first-child {
+  font-weight: 500;
+}
+
+@media (max-width: 767px) {
+  .prose table[data-layout="records-wide"] td {
+    display: block;
+  }
+
+  .prose table[data-layout="records-wide"] td::before {
+    display: block;
+  }
 }
 
 /* ==========================================================================
@@ -411,9 +451,28 @@ body {
 
 .prose figure.shiki :where(pre, code) {
   font-family: var(--font-mono);
-  font-size: 13px;
-  line-height: 1.65;
+  font-size: 14px;
+  line-height: 1.6;
+  tab-size: 2;
   background: transparent;
+}
+
+/* Copy control: always visible, and a real target. */
+.prose figure.shiki button {
+  min-width: 32px;
+  min-height: 32px;
+  opacity: 1;
+  color: #f4f4f5;
+  background: #27272a;
+  border: 1px solid #3f3f46;
+  border-radius: 0;
+}
+
+@media (pointer: coarse) {
+  .prose figure.shiki button {
+    min-width: 44px;
+    min-height: 44px;
+  }
 }
 
 /* Blocks show in full; Fumadocs caps them at 600 px with an inner scrollbar. */
@@ -585,9 +644,10 @@ kbd {
   display: none;
 }
 
-#nd-sidebar a[data-active="true"] {
+#nd-sidebar a[data-active="true"],
+#nd-sidebar a[data-active="true"]:hover {
   color: var(--color-fd-foreground);
-  background: var(--color-fd-muted);
+  background: var(--color-fd-secondary);
   font-weight: 500;
 }
 
@@ -607,13 +667,20 @@ kbd {
    ========================================================================== */
 
 #nd-toc a {
+  display: block;
   font-size: 13px;
   line-height: 1.35;
+  padding-block: 4px;
   transition: color 120ms;
+}
+
+#nd-toc :is(a, ul, li, div) {
+  border-inline-start: 0;
 }
 
 #nd-toc a[data-active="true"] {
   color: var(--quip-link);
+  font-weight: 500;
 }
 
 #nd-toc div.relative > div.absolute,
@@ -679,6 +746,98 @@ kbd {
   border-radius: 0;
 }
 
+.quip-page-actions > * {
+  min-height: 32px;
+  padding-inline: 12px;
+  font-size: 12px;
+  color: var(--color-fd-foreground);
+  background: transparent;
+  border: 1px solid var(--color-fd-border);
+  transition: background-color 120ms;
+}
+
+.quip-page-actions > *:hover {
+  background: var(--color-fd-muted);
+}
+
+@media (pointer: coarse) {
+  .quip-page-actions > * {
+    min-height: 44px;
+  }
+}
+
+/* The agent links: Markdown, llms.txt, source. */
+.quip-page-footer {
+  font-size: 12px;
+  color: var(--color-fd-foreground);
+}
+
+.quip-page-footer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--color-fd-border);
+  transition: text-decoration-color 120ms;
+}
+
+.quip-page-footer a:hover {
+  text-decoration-color: currentColor;
+}
+
+@media (pointer: coarse) {
+  .quip-page-footer a {
+    min-height: 44px;
+  }
+}
+
+/* Reference: each symbol group is a clear section, and tables lose their grey slabs. */
+[data-tree="reference"] h3 {
+  border-top: 1px solid var(--color-fd-border);
+  padding-top: 24px;
+  margin-top: 40px;
+}
+
+[data-tree="reference"] [class*="bg-fd-card"] {
+  background: transparent;
+}
+
+/* A lookup page, so it runs tighter than a tutorial. */
+[data-page="xquad/xqvm/opcodes"] h2 {
+  margin-top: 32px;
+  margin-bottom: 16px;
+}
+
+[data-page="xquad/xqvm/opcodes"] hr {
+  margin-block: 24px;
+}
+
+[data-page="xquad/xqvm/opcodes"] .quip-table {
+  margin-block: 16px;
+}
+
+[data-page="xquad/xqvm/opcodes"] td {
+  padding-block: 8px;
+}
+
+/* Phones: desktop heading gaps add up on a long single column. */
+@media (max-width: 767px) {
+  .prose h2 {
+    margin-top: 40px;
+    margin-bottom: 16px;
+  }
+
+  .prose h3 {
+    margin-top: 32px;
+    margin-bottom: 12px;
+  }
+
+  .prose :is(.quip-table, figure.shiki) {
+    margin-block: 24px;
+  }
+}
+
 /* ==========================================================================
    Cards: flat tiles with hairlines, as the audience row on quip.network.
    ========================================================================== */
@@ -686,7 +845,8 @@ kbd {
 /* Fumadocs also marks heading anchors data-card, so headings are excluded. */
 #nd-page a[data-card]:not(:is(h1, h2, h3, h4, h5, h6) > a) {
   display: block;
-  padding: 18px 20px;
+  padding: 20px;
+  min-height: 0;
   border-radius: 0;
   border: 1px solid var(--color-fd-border);
   background: transparent;
@@ -698,7 +858,17 @@ kbd {
   background: var(--color-fd-muted);
 }
 
+/* No empty icon slot above the title. */
+#nd-page a[data-card] > div:empty {
+  display: none;
+}
+
+#nd-page a[data-card] p {
+  margin: 0;
+}
+
 #nd-page a[data-card] h3 {
+  margin: 0 0 6px;
   font-family: var(--font-heading);
   font-size: 19px;
   font-weight: 500;
