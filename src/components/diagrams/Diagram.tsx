@@ -11,7 +11,7 @@ import {
 } from "./metrics";
 import type { DiagramData, DiagramEdge, DiagramLayout, DiagramLayouts, DiagramNode, Point } from "./types";
 
-const NODE_INSET = 12;
+export const NODE_TEXT_INSET = 12;
 /** From the middle of a text block's line box to its first baseline. */
 const CAP_OFFSET = 4.5;
 
@@ -37,7 +37,7 @@ function pullBack(tip: Point, from: Point, by: number): Point {
   return [round(tip[0] - (dx / d) * by), round(tip[1] - (dy / d) * by)];
 }
 
-function Edge({ edge, layout }: { edge: DiagramEdge; layout: DiagramLayout }) {
+export function Edge({ edge, layout }: { edge: DiagramEdge; layout: DiagramLayout }) {
   const route = layout.edges[edge.id];
   const points = [...route.points];
   const last = points.length - 1;
@@ -77,14 +77,44 @@ function Edge({ edge, layout }: { edge: DiagramEdge; layout: DiagramLayout }) {
   );
 }
 
+/** A node's lines, centred in its box unless `top` is set. */
+export function TextBlock({
+  box,
+  lines,
+  nameLines,
+  x,
+  anchor,
+  mono,
+}: {
+  box: { y: number; h: number; top?: boolean };
+  lines: string[];
+  nameLines: number;
+  x: number;
+  anchor?: "middle";
+  mono?: boolean;
+}) {
+  const blockHeight = nameLines * NAME_LINE + (lines.length - nameLines) * DETAIL_LINE;
+  let y = (box.top ? box.y + NODE_TEXT_INSET : box.y + (box.h - blockHeight) / 2) + NAME_LINE / 2 + CAP_OFFSET;
+  return (
+    <text x={x} textAnchor={anchor}>
+      {lines.map((line, i) => {
+        const isName = i < nameLines;
+        const lineY = y;
+        y += isName ? NAME_LINE : DETAIL_LINE;
+        return (
+          <tspan key={i} x={x} y={lineY} className={mono ? "qd-mono-node" : isName ? "qd-name" : "qd-detail"}>
+            {line}
+          </tspan>
+        );
+      })}
+    </text>
+  );
+}
+
 function Node({ node, layout }: { node: DiagramNode; layout: DiagramLayout }) {
   const box = layout.nodes[node.id];
   const lines = box.lines ?? node.lines;
   const nameLines = box.lines ? (box.nameLines ?? lines.length) : (node.nameLines ?? lines.length);
-  const blockHeight = nameLines * NAME_LINE + (lines.length - nameLines) * DETAIL_LINE;
-  const centred = node.mono;
-  const x = centred ? box.x + box.w / 2 : box.x + NODE_INSET;
-  let y = (box.top ? box.y + NODE_INSET : box.y + (box.h - blockHeight) / 2) + NAME_LINE / 2 + CAP_OFFSET;
 
   return (
     <g data-kind="node" data-id={node.id}>
@@ -96,18 +126,14 @@ function Node({ node, layout }: { node: DiagramNode; layout: DiagramLayout }) {
         height={box.h}
         data-emphasis={node.emphasis ? "" : undefined}
       />
-      <text x={x} textAnchor={centred ? "middle" : undefined}>
-        {lines.map((line, i) => {
-          const isName = i < nameLines;
-          const lineY = y;
-          y += isName ? NAME_LINE : DETAIL_LINE;
-          return (
-            <tspan key={i} x={x} y={lineY} className={node.mono ? "qd-mono-node" : isName ? "qd-name" : "qd-detail"}>
-              {line}
-            </tspan>
-          );
-        })}
-      </text>
+      <TextBlock
+        box={box}
+        lines={lines}
+        nameLines={nameLines}
+        x={node.mono ? box.x + box.w / 2 : box.x + NODE_TEXT_INSET}
+        anchor={node.mono ? "middle" : undefined}
+        mono={node.mono}
+      />
     </g>
   );
 }

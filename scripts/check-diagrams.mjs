@@ -15,11 +15,16 @@
  * It also fails on any mermaid fence in docs/ or content/docs/ with no drawing, so a new
  * diagram gets noticed even though the site handles it by falling back.
  *
+ * A drawing of an image (`kind: "figure"`) has no chart to parse: its data was transcribed by eye.
+ * Instead it checks the image's hash, so a replaced image fails, and that each page still names the
+ * image with the same alt text and caption, then runs steps 3 and 4 the same way.
+ *
  * Usage: node scripts/check-diagrams.mjs [--base http://localhost:3000] [--static]
  * --static skips step 4, which needs `next dev` or `next start` running at --base.
  * Needs Node 22.18+ (it imports the .data.ts files directly) and a synced content/docs:
  * npm run docs:sync && npm run xquad:sync
  */
+import { createHash } from "node:crypto";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -503,6 +508,149 @@ function checkRendered(data, layouts, html, fail) {
   }
 }
 
+/* ---------- Drawings of images ---------- */
+
+function altIn(file, image) {
+  const img = readFileSync(file, "utf8").match(new RegExp(`<img\\b[^>]*${image}[^>]*>`))?.[0];
+  return img?.match(/\balt="([^"]*)"/)?.[1];
+}
+
+function checkFigure(data, layouts, fail) {
+  const imagePath = join(root, data.imageFile);
+  if (!existsSync(imagePath)) return fail(`source: ${data.imageFile} does not exist`);
+  const hash = createHash("sha256").update(readFileSync(imagePath)).digest("hex");
+  if (hash !== data.imageSha256) fail(`source: ${data.imageFile} has changed since it was transcribed; read it again`);
+
+  const image = data.imageFile
+    .split("/")
+    .at(-1)
+    .replace(/\.[a-z]+$/, "");
+  for (const use of data.uses) {
+    const file = join(root, use.sourceFile);
+    use.alt = existsSync(file) ? altIn(file, image) : undefined;
+    if (!use.alt) fail(`source: ${use.sourceFile} no longer shows ${image} with alt text`);
+    else if (!readFileSync(file, "utf8").includes(use.caption)) fail(`source: ${use.sourceFile} changed its caption`);
+  }
+
+  /* Internal sense: blocks join adjacent layers downward; every flow and tick names something real. */
+  const ids = data.layers.map((l) => l.id);
+  const known = new Set([...ids, data.liquidity.id, data.bus.id]);
+  for (const f of data.flows) {
+    if (!known.has(f.from) || !known.has(f.to)) fail(`flow ${f.id}: unknown end`);
+    if (f.style === "block" && ids.indexOf(f.to) !== ids.indexOf(f.from) + 1) {
+      fail(`flow ${f.id}: not the next layer down`);
+    }
+  }
+  const blocks = data.flows.filter((f) => f.style === "block");
+  if (blocks.length !== ids.length - 1) fail(`flows: ${blocks.length} block arrows for ${ids.length} layers`);
+
+  /* The shared geometry check, seeing the layers, Liquidity Providers and the bus as boxes. */
+  for (const [name, layout] of Object.entries(layouts)) {
+    const edges = data.flows.filter((f) => f.style === "thick");
+    const nodes = [data.liquidity.id, data.bus.id, ...ids].map((id) => ({ id, lines: [id] }));
+    const boxes = {
+      [data.liquidity.id]: layout.liquidity,
+      [data.bus.id]: layout.bus.attach,
+      ...Object.fromEntries(
+        ids.map((id, row) => [
+          id,
+          { x: layout.frame.x, y: layout.frame.y + row * layout.rowHeight, w: layout.frame.w, h: layout.rowHeight },
+        ]),
+      ),
+    };
+    checkLayout(
+      { nodes, edges, groups: [] },
+      { width: layout.width, height: layout.height, nodes: boxes, groups: {}, edges: layout.routes },
+      name,
+      fail,
+    );
+    diffMultiset(`layout ${name} ticks`, data.bus.layers, Object.keys(layout.bus.ticks), fail);
+    data.bus.layers.forEach((id) => {
+      const tick = layout.bus.ticks[id];
+      const box = boxes[id];
+      if (tick && (tick.to !== box.x || tick.y <= box.y || tick.y >= box.y + box.h)) {
+        fail(`layout ${name}: the bus tick for ${id} does not reach its layer`);
+      }
+    });
+  }
+}
+
+function checkFigureRendered(data, use, html, fail) {
+  const open = html.indexOf(`data-diagram="${data.id}"`);
+  if (open < 0) return fail(`rendered: ${use.page} does not show this drawing`);
+  const start = html.lastIndexOf("<div", open);
+  const end = html.indexOf("</figure>", open);
+  const block = html.slice(start, end);
+  const tag = block.slice(0, block.indexOf(">") + 1);
+
+  if (!/role="img"/.test(tag)) fail(`rendered ${use.page}: no role=img`);
+  if (use.alt && attr(tag, "aria-label") !== use.alt)
+    fail(`rendered ${use.page}: aria-label is not the page's alt text`);
+  const caption = block.match(/<figcaption[^>]*>(.*?)<\/figcaption>/s)?.[1] ?? "";
+  if (!decode(caption).includes(use.caption)) fail(`rendered ${use.page}: caption missing`);
+  const imageName = data.imageFile.split("/").at(-1);
+  if (new RegExp(`<img\\b[^>]*${imageName}`).test(html)) fail(`rendered ${use.page}: still shows the image`);
+
+  const svgs = [...block.matchAll(/<svg\b[^>]*data-layout="(\w+)"[^>]*>(.*?)<\/svg>/gs)];
+  diffMultiset(
+    `rendered ${use.page} drawings`,
+    ["wide", "narrow"],
+    svgs.map((m) => m[1]),
+    fail,
+  );
+
+  for (const [, name, body] of svgs) {
+    const say = (m) => `rendered ${use.page} ${name}: ${m}`;
+    const groups = (kind) =>
+      [...body.matchAll(new RegExp(`<g\\b([^>]*data-kind="${kind}"[^>]*)>(.*?)</g>`, "gs"))].map(([, t, inner]) => ({
+        t,
+        inner,
+        text: words(textOf(inner)),
+      }));
+
+    diffMultiset(
+      say("layer names"),
+      data.layers.map((l) => JSON.stringify([l.id, words(l.name)])),
+      groups("layer").map((g) => JSON.stringify([attr(g.t, "data-id"), g.text])),
+      fail,
+    );
+    diffMultiset(
+      say("items"),
+      data.layers.flatMap((l) => l.items.map((i) => JSON.stringify([i.label, i.shape, i.label]))),
+      groups("item").map((g) => JSON.stringify([attr(g.t, "data-id"), attr(g.t, "data-shape"), g.text])),
+      fail,
+    );
+    diffMultiset(
+      say("nodes"),
+      [JSON.stringify([data.liquidity.id, words(data.liquidity.lines)])],
+      groups("node").map((g) => JSON.stringify([attr(g.t, "data-id"), g.text])),
+      fail,
+    );
+    const key = (e) => JSON.stringify([e.from, e.to, e.style, e.label, e.heads]);
+    diffMultiset(
+      say("flows"),
+      data.flows.map((f) => key({ ...f, label: words(f.label), heads: 1 })),
+      groups("edge").map((g) =>
+        key({
+          from: attr(g.t, "data-from"),
+          to: attr(g.t, "data-to"),
+          style: attr(g.t, "data-style"),
+          label: g.text,
+          heads: (g.inner.match(/<polygon/g) ?? []).length,
+        }),
+      ),
+      fail,
+    );
+    const bus = groups("bus")[0]?.inner ?? "";
+    diffMultiset(
+      say("bus"),
+      data.bus.layers,
+      [...bus.matchAll(/data-to="([^"]*)"/g)].map((m) => m[1]),
+      fail,
+    );
+  }
+}
+
 /* ---------- Run ---------- */
 
 const dataFiles = readdirSync(diagramsDir)
@@ -540,6 +688,30 @@ for (const { data, layouts } of specs) {
   const faults = [];
   const fail = (m) => faults.push(m);
 
+  if (data.kind === "figure") {
+    checkFigure(data, layouts, fail);
+    let shown = staticOnly ? "skipped" : "matches";
+    if (!staticOnly) {
+      for (const use of data.uses) {
+        try {
+          checkFigureRendered(data, use, await fetchPage(use.page), fail);
+        } catch (e) {
+          fail(
+            `rendered: could not fetch ${base}${use.page}: ${e.cause?.code ?? e.message}. Start the site or pass --static.`,
+          );
+          shown = "failed";
+        }
+      }
+    }
+    const items = data.layers.reduce((n, l) => n + l.items.length, 0);
+    console.log(
+      `${faults.length ? "FAIL" : "ok  "} ${data.id}: ${data.layers.length} layers, ${items} items, ${data.flows.length} flows; transcribed by eye; drawings: wide + narrow; ${data.uses.length} pages; rendered: ${faults.length ? "see below" : shown}`,
+    );
+    for (const f of faults) console.log(`     - ${f}`);
+    failures += faults.length;
+    continue;
+  }
+
   const sourcePath = join(root, data.sourceFile);
   if (!existsSync(sourcePath))
     fail(`source: ${data.sourceFile} does not exist; run npm run docs:sync && npm run xquad:sync`);
@@ -576,7 +748,7 @@ for (const { data, layouts } of specs) {
   failures += faults.length;
 }
 
-const known = new Set(specs.map((s) => s.data.source.trim()));
+const known = new Set(specs.filter((s) => s.data.source).map((s) => s.data.source.trim()));
 const undrawn = [...allFences].filter(([chart]) => !known.has(chart));
 for (const [, files] of undrawn) {
   console.log(`FAIL no drawing for the mermaid fence in ${files.join(", ")}: the site shows Mermaid there`);
@@ -588,6 +760,6 @@ if (!allFences.size) {
 }
 
 console.log(
-  `\n${allFences.size} distinct mermaid fences in docs/ and content/docs/, ${specs.length} drawings, ${failures} fault(s).`,
+  `\n${allFences.size} distinct mermaid fences in docs/ and content/docs/, ${specs.length} drawings (${known.size} of charts), ${failures} fault(s).`,
 );
 process.exit(failures ? 1 : 0);
