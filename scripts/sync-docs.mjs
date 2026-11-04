@@ -130,7 +130,7 @@ function rewriteLinks(text, sourcePath) {
 //
 // The twins above stay plain Markdown, exactly as agents read them today. The pages
 // Fumadocs renders get real components instead of the blockquote and heading stand-ins:
-// GitBook hints become <Callout>, tabs become <Tabs>, the card table becomes <Cards>.
+// GitBook hints become <Callout>, tabs become headings, the card table becomes <Cards>.
 // Everything else is made safe for MDX: braces, comments, void tags and stray "<".
 
 const CALLOUT_TYPE = { info: "info", warning: "warn", danger: "error", success: "success" };
@@ -194,14 +194,13 @@ function toMdx(markdown, sourcePath) {
   // The page's own H1 stays in the body: it is often worded differently from the sidebar
   // title in SUMMARY.md, and the old site printed it.
   let text = escapeOutsideFences(markdown.replaceAll("&#x20;", ""));
-  text = text.replace(/^\{% tabs %\}\n([\s\S]*?)^\{% endtabs %\}$/gm, (_, inner) => {
-    const tabs = [...inner.matchAll(/^\{% tab title="([^"]+)" %\}\n([\s\S]*?)^\{% endtab %\}$/gm)];
-    const items = tabs.map(([, title]) => title);
-    // The id keeps the anchor these sections had as headings (/docs/network/participants#validators):
-    // following it opens that tab.
-    const panels = tabs.map(([, title, content]) => `<Tab id="${slugify(title)}" value=${jsxString(title)}>\n\n${content.trim()}\n\n</Tab>`);
-    return `<Tabs items=${jsxString(items)}>\n\n${panels.join("\n\n")}\n\n</Tabs>`;
-  });
+  // GitBook tabs become plain headings, as on the live site. Tabs would hide their content from
+  // browser find, crawlers and AI tools, and lose the published anchors such as #validators.
+  text = text.replace(/^\{% tabs %\}\n([\s\S]*?)^\{% endtabs %\}$/gm, (_, inner) =>
+    [...inner.matchAll(/^\{% tab title="([^"]+)" %\}\n([\s\S]*?)^\{% endtab %\}$/gm)]
+      .map(([, title, content]) => `### ${title}\n\n${content.trim()}`)
+      .join("\n\n"),
+  );
   text = text.replace(/^\{% hint style="([^"]+)" %\}\n([\s\S]*?)^\{% endhint %\}$/gm, (_, style, content) => {
     const type = CALLOUT_TYPE[style] ?? "info";
     const title = CALLOUT_TITLE[style] ?? "Note";
@@ -210,7 +209,8 @@ function toMdx(markdown, sourcePath) {
   text = text.replace(/<table data-view="cards">[\s\S]*?<\/table>/g, cardsToMdx);
   const leftover = text.match(/\{%[^%]*%\}/);
   if (leftover) throw new Error(`${sourcePath}: unconverted GitBook tag ${leftover[0]}`);
-  return rewriteLinks(text, sourcePath);
+  // Point straight at the book's page URLs, rather than through the old .html redirects.
+  return rewriteLinks(text, sourcePath).replace(/(\/docs\/xquad\/[^)"#\s]*)\.html/g, "$1");
 }
 
 function descriptionOf(frontmatter) {
