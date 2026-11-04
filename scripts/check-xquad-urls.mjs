@@ -75,7 +75,9 @@ if (bookIndex.status !== 200 || !(bookIndex.headers.get("content-type") ?? "").s
 const idsOf = (page) => new Set([...page.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]));
 let links = 0;
 for (const [url, page] of html) {
-  const article = page.slice(page.indexOf('<div class="prose'));
+  const start = page.search(/<div[^>]*\bclass="prose\b/);
+  if (start < 0) failures.push(`${url}: no article body found`);
+  const article = start < 0 ? "" : page.slice(start);
   for (const [, href] of article.matchAll(/href="((?:\/docs\/xquad[^"]*)|(?:#[^"]*))"/g)) {
     const [target, fragment] = href.split("#");
     if (target.endsWith(".md")) continue; // The page's own twin, in the footer; checked above.
@@ -89,5 +91,7 @@ for (const [url, page] of html) {
 }
 
 for (const failure of failures) console.log(`FAIL ${failure}`);
+// A run that follows no links has checked nothing, whatever it reports.
+if (links < 1000) failures.push(`only ${links} internal links found; the page structure may have changed`);
 console.log(`${published.length} published URLs, ${pages.length} pages, ${twins.length} twins, ${links} internal links checked: ${failures.length} failed.`);
 process.exit(failures.length ? 1 : 0);
