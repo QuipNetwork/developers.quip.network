@@ -41,30 +41,30 @@ workflow:
       when: never
     - when: on_success
 
+# Kaniko builds without a Docker daemon: this project's runners do not allow Docker-in-Docker.
 build-image:
   stage: image
-  image: docker:27
-  services: [docker:27-dind]
+  image:
+    name: gcr.io/kaniko-project/executor:v1.23.2-debug
+    entrypoint: [""]
   interruptible: true
-  timeout: 30m
-  variables:
-    DOCKER_TLS_CERTDIR: "/certs"
+  timeout: 45m
   rules:
     - if: $CI_PIPELINE_SOURCE == "push"
     - if: $CI_PIPELINE_SOURCE == "trigger"
   script:
-    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
     # The branch tag is what the server follows; the commit tag is what a rollback names.
     # NEXT_PUBLIC_UMAMI_* are public values, set as project CI variables.
     - >
-      docker build
+      /kaniko/executor
+      --context "$CI_PROJECT_DIR"
+      --dockerfile "$CI_PROJECT_DIR/Dockerfile"
       --build-arg NEXT_PUBLIC_UMAMI_SRC="${NEXT_PUBLIC_UMAMI_SRC:-https://cloud.umami.is/script.js}"
       --build-arg NEXT_PUBLIC_UMAMI_WEBSITE_ID="${NEXT_PUBLIC_UMAMI_WEBSITE_ID:-}"
-      -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
-      -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
-      .
-    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
-    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+      --destination "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
+      --destination "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
 
 link-health:
   extends: .checks-only
