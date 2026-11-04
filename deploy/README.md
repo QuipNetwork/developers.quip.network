@@ -1,86 +1,54 @@
 # Running developers.quip.network
 
-One Docker image: a Next.js standalone server on port 3000. It keeps no state and needs
-no database or disk, so every replica is identical and a rollback is a tag change.
+The site deploys on **Netlify**, from GitLab, like every other Quip site. Netlify builds each
+commit to `main` for production and each merge request as a deploy preview. CI never deploys.
 
-## What the host provides
+## How it runs on Netlify
 
-- **A way to run a container.** 1 vCPU and 1 GB of memory is plenty. A second replica is
-  optional. The root filesystem can be read-only if `/tmp` and `/app/.next/cache` are tmpfs:
+`netlify.toml` sets the build (`npm run build`, Node 22). Netlify detects Next.js and uses its
+Next.js runtime:
 
-      docker run -d --read-only --tmpfs /tmp --tmpfs /app/.next/cache -p 3000:3000 \
-        registry.gitlab.com/quip.network/developers.quip.network:main
+- Pages are prerendered and served from Netlify's CDN.
+- The server routes run as Netlify Functions: search (`/api/search`), the docs MCP server
+  (`/mcp`) and `/api/health`.
+- `src/proxy.ts` runs as an edge function. It handles trailing slashes, the XQuad book's old URLs,
+  and Markdown for AI tools that send `Accept: text/markdown`.
+- Headers and redirects live in `next.config.mjs`, not in `netlify.toml`.
 
-- **A reverse proxy** (Caddy, Traefik or nginx) with TLS, HTTP/2 and gzip or brotli. It must:
-  - forward `Host`, `X-Forwarded-For` and `X-Forwarded-Proto`;
-  - forward `Accept`, which serves Markdown to AI tools at the same URL;
-  - leave `/mcp` unbuffered and not cache it (the app sends `no-store`);
-  - not cache HTML. The app sets `Cache-Control` itself: `/_next/static/*` and `/fonts/*`
-    are immutable, and everything else revalidates.
+The build needs network access to gitlab.com (the XQuad book is fetched at its latest release
+tag) and to npm.
 
-- **Two hostnames.** Staging (suggested `developers-staging.quip.network`), and production,
-  `developers.quip.network`, which moves off Netlify at cutover.
+## Settings in the Netlify UI
 
-## Runtime settings
+- **Environment variables (optional):** `NEXT_PUBLIC_UMAMI_WEBSITE_ID`, and
+  `NEXT_PUBLIC_UMAMI_SRC` if Umami is self-hosted. They are public values. Without an id the
+  site ships without analytics; with one, Umami only reports from `developers.quip.network`.
+- **Build hook for XQuad:** xquad's CI already calls a Netlify build hook when it tags a release,
+  so the book stays current. Nothing changes here.
 
-| Variable | Where | Meaning |
-| --- | --- | --- |
-| `PORT` | optional | Listening port, default 3000 |
-| `ROBOTS_NOINDEX=1` | staging only | Adds `X-Robots-Tag: noindex` to every response |
+## Before merging to main
 
-Everything else is fixed at build time. Canonical URLs always name production, on staging
-too. The Umami values are public and are set as CI variables `NEXT_PUBLIC_UMAMI_SRC` and
-`NEXT_PUBLIC_UMAMI_WEBSITE_ID`. Analytics only report from `developers.quip.network`, so
-staging sends nothing. Leave the id empty to ship without analytics.
+1. Open the merge request and wait for its Netlify deploy preview.
+2. Run the checks against the preview URL:
 
-## Deploy path
+       node scripts/sync-docs.mjs
+       node scripts/check-parity.mjs <preview URL>
+       node scripts/check-xquad-urls.mjs <preview URL>
+       npm run check:diagrams -- --base <preview URL>
 
-CI builds and pushes; it never deploys (see the top of `.gitlab-ci.yml`).
+   `check-parity` compares every published URL with production. Deploy previews add
+   `X-Robots-Tag: noindex`, so expect that one difference on most URLs; anything else is real.
+3. Test the MCP server on the preview: `claude mcp add --transport http quip-docs <preview URL>/mcp`.
+4. Merge. Netlify publishes. Submit `/sitemap.xml` in Search Console.
 
-| Trigger | Image tags pushed | Runs on |
-| --- | --- | --- |
-| Push to `fumadocs` | `:fumadocs`, `:<short sha>` | Staging |
-| Push to `main` | `:main`, `:<short sha>` | Production |
+Rollback is Netlify's "Publish deploy" on the previous production deploy.
 
-**The registry must be private.** The image contains the Dinamo fonts, whose licence rules
-out a public registry, and this project is public. Under Settings, General, Visibility, set
-Container registry to "Only Project Members", and give the host a deploy token with
-`read_registry` to log in with.
+## Fallback: self-hosting
 
-The host pulls those tags on its own, with Watchtower, Nomad, Argo or a cron job. That must
-work unattended, because the data-refresh bot commits to `main` daily and each commit needs
-to reach production.
+The repo also builds a Docker image that runs the same site anywhere, as a Next.js standalone
+server on port 3000 (`Dockerfile`). It is not used in production. To try it:
 
-**The XQuad release hook has to move.** xquad's CI fires a Netlify build hook when it tags a
-release. Replace it with a GitLab pipeline trigger on this project (Settings, CI/CD, Pipeline
-trigger tokens) so a release rebuilds the image with the new book.
+    docker build -t devportal . && docker run --rm -p 3000:3000 devportal
 
-## Health and monitoring
-
-- `GET /api/health` returns 200 and `{"ok":true,"pages":N}`. The image has a Docker
-  `HEALTHCHECK` on it.
-- Put uptime checks on `/api/health` and `/docs/llms.txt`.
-- Logs go to stdout.
-
-## Rollback
-
-Keep the last 10 image tags and redeploy an older `:<short sha>`. For two weeks after the
-cutover, keep the Netlify site running, so going back is also a DNS change. Lower the DNS
-TTL on `developers.quip.network` to 300 a few days before.
-
-## Cutover checklist
-
-1. Staging runs `:fumadocs`. `node scripts/check-parity.mjs https://<staging host>` shows
-   only the differences the script lists as intended.
-2. Turn off Netlify's automatic builds, so the merge cannot publish a failed or stale site.
-3. Merge `fumadocs` to `main`, wait for `:main`, and confirm it on the production container
-   by its IP or a temporary hostname.
-4. Switch DNS. Run `node scripts/check-parity.mjs https://developers.quip.network <netlify URL>`.
-5. Submit `/sitemap.xml` in Search Console.
-6. After two quiet weeks, retire the Netlify site, `netlify.toml` and `netlify-cli`.
-
-## Optional: Umami
-
-To self-host analytics, run Umami (one container plus Postgres) at something like
-`analytics.quip.network` and set `NEXT_PUBLIC_UMAMI_SRC=https://analytics.quip.network/script.js`.
-Otherwise the default is Umami Cloud's script URL.
+`/api/health` returns 200 when the app is up. `ROBOTS_NOINDEX=1` adds `X-Robots-Tag: noindex` to
+every response, for a non-production copy.

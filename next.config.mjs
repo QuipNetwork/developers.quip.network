@@ -17,7 +17,9 @@ const moved = (source, destination) => ({ source, destination, statusCode: 301 }
 
 /** @type {import('next').NextConfig} */
 const config = {
-  output: "standalone",
+  // Netlify's runtime packages the app itself; the standalone server is for `npm start` and
+  // the Docker image, kept as a fallback for self-hosting.
+  output: process.env.NETLIFY ? undefined : "standalone",
   // Shown as "Updated" on the home page, as the Astro build did.
   env: { NEXT_PUBLIC_BUILD_DATE: new Date().toISOString().slice(0, 10) },
   reactStrictMode: true,

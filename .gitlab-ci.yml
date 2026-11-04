@@ -2,29 +2,31 @@
 #
 # This repo does NOT deploy from CI.
 #
-# CI builds the site's Docker image and pushes it to this project's registry. The
-# server pulls new tags on its own (deploy/README.md). There is exactly one path from
-# a commit to the site, and CI hands off at the registry.
+# Production deploys come from Netlify's own GitLab integration — a webhook and
+# a deploy key on this project — which is how every sibling site in the estate
+# works (agls, hello, main, blog, vault, account). Build configuration lives in
+# netlify.toml.
 #
-# NEVER ADD A DEPLOY JOB HERE. Two deploy paths pointed at one site is a race between
-# a stale artifact and a fresh one, and the loser is whichever finishes second.
+# NEVER ADD A DEPLOY JOB HERE. Two deploy paths pointed at one Netlify site is a
+# race between a stale artifact and a fresh one, and the loser is whichever
+# finishes second.
 #
-# refresh-data below COMMITS, which is not the same thing as deploying and does not
-# break that rule. It pushes regenerated data files to the default branch; the image
-# job then does what it does for any other commit.
+# refresh-data below COMMITS, which is not the same thing as deploying and does
+# not break that rule. It pushes regenerated data files to the default branch;
+# Netlify's webhook then does what it does for any other commit. There is still
+# exactly one path from a commit to the site, and CI is not on it.
 #
-# The checks run on a schedule, on a manual "Run pipeline", and on merge requests,
-# deliberately NOT on branch pushes, because a push must not go red because someone
-# else's CDN is having a bad afternoon. Pushes to main and to the fumadocs branch run
-# only build-image. A "trigger" pipeline (xquad's release hook) rebuilds the image so
-# the book stays current.
+# Jobs run on a schedule, on a manual "Run pipeline", and on merge requests —
+# deliberately NOT on branch pushes, because a push must not go red because
+# someone else's CDN is having a bad afternoon. That exclusion is also what stops
+# refresh-data's own commit from starting another pipeline.
 
 include:
   - project: quip.network/ci-templates
     ref: v1.2.0
     file: templates/dependency-gate.yml
 
-stages: [check, refresh, image]
+stages: [check, refresh]
 
 workflow:
   rules:
@@ -32,42 +34,8 @@ workflow:
     - if: $CI_PIPELINE_SOURCE == "schedule"
     - if: $CI_PIPELINE_SOURCE == "web"
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_PIPELINE_SOURCE == "trigger"
-    - if: $CI_PIPELINE_SOURCE == "push" && ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH == "fumadocs")
-
-.checks-only:
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "trigger"
-      when: never
-    - when: on_success
-
-# Kaniko builds without a Docker daemon: this project's runners do not allow Docker-in-Docker.
-build-image:
-  stage: image
-  image:
-    name: gcr.io/kaniko-project/executor:v1.23.2-debug
-    entrypoint: [""]
-  interruptible: true
-  timeout: 45m
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "push"
-    - if: $CI_PIPELINE_SOURCE == "trigger"
-  script:
-    - mkdir -p /kaniko/.docker
-    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
-    # The branch tag is what the server follows; the commit tag is what a rollback names.
-    # NEXT_PUBLIC_UMAMI_* are public values, set as project CI variables.
-    - >
-      /kaniko/executor
-      --context "$CI_PROJECT_DIR"
-      --dockerfile "$CI_PROJECT_DIR/Dockerfile"
-      --build-arg NEXT_PUBLIC_UMAMI_SRC="${NEXT_PUBLIC_UMAMI_SRC:-https://cloud.umami.is/script.js}"
-      --build-arg NEXT_PUBLIC_UMAMI_WEBSITE_ID="${NEXT_PUBLIC_UMAMI_WEBSITE_ID:-}"
-      --destination "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
-      --destination "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
 
 link-health:
-  extends: .checks-only
   stage: check
   # No install step: scripts/check-links.mjs has zero dependencies, on purpose.
   image: node:22-alpine
@@ -91,7 +59,6 @@ link-health:
 # people and different fixes, and reading a log to tell them apart is exactly
 # the friction that gets alerts muted.
 snapshot-drift:
-  extends: .checks-only
   stage: check
   image: node:22-alpine
   interruptible: true

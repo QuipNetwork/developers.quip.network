@@ -1,8 +1,7 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# The production image for developers.quip.network: a Next.js standalone server on port
-# 3000. Stateless, no volumes. The same image runs on staging and production; staging
-# sets ROBOTS_NOINDEX=1. See deploy/README.md.
+# A self-hosting fallback for developers.quip.network: a Next.js standalone server on port
+# 3000. Stateless, no volumes. Production runs on Netlify; see deploy/README.md.
 #
 # Building needs network access: the XQuad book's source is pulled from its GitLab release.
 
