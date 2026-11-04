@@ -549,18 +549,42 @@ body {
   margin-bottom: 0;
 }
 
-.quip-callout[data-type="warn"],
+/* The attention ladder, from DESIGN.md: note is neutral, warning is amber, danger is coral.
+   Tokens are the brand's status colours; the dark surfaces are a proposal pending sign-off. */
+.quip-callout[data-type="warn"] {
+  --chip-bg: #d97706;
+  --chip-fg: #09090b;
+  background: #fef3c7;
+}
+
+.dark .quip-callout[data-type="warn"] {
+  --chip-bg: #d97706;
+  --chip-fg: #09090b;
+  background: #2a2010;
+}
+
 .quip-callout[data-type="error"] {
   --chip-bg: var(--quip-coral);
   --chip-fg: #09090b;
   background: #ffedee;
 }
 
-.dark .quip-callout[data-type="warn"],
 .dark .quip-callout[data-type="error"] {
   --chip-bg: var(--quip-coral);
   --chip-fg: #09090b;
   background: #2a1a1c;
+}
+
+.quip-callout[data-type="success"] {
+  --chip-bg: #059669;
+  --chip-fg: #fafafa;
+  background: #d1fae5;
+}
+
+.dark .quip-callout[data-type="success"] {
+  --chip-bg: #059669;
+  --chip-fg: #fafafa;
+  background: #10261e;
 }
 
 /* Inline code sits on the panel's tint, so it steps up one surface. */
@@ -598,6 +622,22 @@ body {
 #nd-subnav a,
 #nd-subnav button {
   border-radius: 0;
+}
+
+/* Documentation, XQuad, Reference. A compact row: the coral underline sits on the rule, close
+   under the words. The word itself stays in the text colour, so coral marks only the place. */
+[data-header-tabs] {
+  height: 32px;
+}
+
+[data-header-tabs] a {
+  line-height: 1;
+  padding-bottom: 7px;
+}
+
+[data-header-tabs] a[data-active="true"],
+[data-header-tabs] a[class*="text-fd-primary"] {
+  color: var(--color-fd-foreground);
 }
 
 /* Search trigger: a real field, not a chip. */
@@ -691,7 +731,7 @@ kbd {
 }
 
 /* ==========================================================================
-   On this page: plain text, current section in coral. No rail.
+   On this page: plain text, current section in the text colour. No rail.
    ========================================================================== */
 
 #nd-toc a {
@@ -707,7 +747,7 @@ kbd {
 }
 
 #nd-toc a[data-active="true"] {
-  color: var(--quip-link);
+  color: var(--color-fd-foreground);
   font-weight: 500;
 }
 
