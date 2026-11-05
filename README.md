@@ -4,20 +4,22 @@ The developer portal for Quip Network. A single dense page that routes
 developers, node operators and evaluators to the right destination, plus live
 testnet state and machine-readable docs for coding agents.
 
-Live at <https://developers.quip.network>. Next.js 16 and Fumadocs 16, deployed by Netlify
-from GitLab; see [deploy/README.md](deploy/README.md).
+Live at <https://developers.quip.network>. Next.js 16 and Fumadocs 16, shipped as one
+Docker image; see [deploy/README.md](deploy/README.md).
 
 ## Run it
 
     npm install
     npm run dev        # http://localhost:3000
-    npm run build      # production build
-    npm start          # runs a standalone server from that build
+    npm run build      # standalone server in .next/standalone
+    npm start          # runs that build, as production does
     npm run check      # type check
     npm run check:parity  # compare every URL with production
+    npm run check:smoke -- <URL>  # is this running copy working?
 
-Node 22 or newer. A Docker image is also available as a self-hosting fallback; see
-[deploy/README.md](deploy/README.md).
+Node 22 or newer. To run exactly what production runs:
+
+    docker build -t devportal . && docker run --rm -p 3000:3000 devportal
 
 ## Editing the docs
 

@@ -17,8 +17,8 @@ const moved = (source, destination) => ({ source, destination, statusCode: 301 }
 
 /** @type {import('next').NextConfig} */
 const config = {
-  // Netlify's runtime packages the app itself; the standalone server is for `npm start` and
-  // the Docker image, kept as a fallback for self-hosting.
+  // The standalone server is what the Docker image runs. Netlify's runtime packages the app
+  // itself, which matters only while netlify.toml stays as the fallback.
   output: process.env.NETLIFY ? undefined : "standalone",
   // Shown as "Updated" on the home page, as the Astro build did.
   env: { NEXT_PUBLIC_BUILD_DATE: new Date().toISOString().slice(0, 10) },
@@ -28,7 +28,8 @@ const config = {
   skipTrailingSlashRedirect: true,
   async headers() {
     return [
-      { source: "/:path*", headers: [{ key: "Cache-Control", value: "public, max-age=0, must-revalidate" }] },
+      // Not /_next/static: those filenames are hashed, and Next marks them immutable.
+      { source: "/((?!_next/static/).*)", headers: [{ key: "Cache-Control", value: "public, max-age=0, must-revalidate" }] },
       { source: "/fonts/:path*", headers: [{ key: "Cache-Control", value: "public, max-age=604800, immutable" }] },
       { source: "/llms.txt", headers: [{ key: "Content-Type", value: "text/plain; charset=utf-8" }] },
       { source: "/docs/:path*.md", headers: markdown },

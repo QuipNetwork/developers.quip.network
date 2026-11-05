@@ -1,9 +1,5 @@
-# Netlify builds this site from GitLab, as it does every Quip site. CI never deploys.
-#
-# Next.js is detected automatically and runs on Netlify's Next.js runtime: pages are served
-# from the CDN, and the server routes (search, Markdown negotiation, the docs MCP server at
-# /mcp) run as functions. Headers and redirects live in next.config.mjs, so they behave the
-# same here, in `npm start`, and in the Docker image.
+# The fallback only. Production moves to the Docker image (deploy/README.md); this file goes
+# when the Netlify site is retired. Headers and redirects live in next.config.mjs.
 
 [build]
   command = "npm run build"

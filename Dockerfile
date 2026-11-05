@@ -1,7 +1,8 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# A self-hosting fallback for developers.quip.network: a Next.js standalone server on port
-# 3000. Stateless, no volumes. Production runs on Netlify; see deploy/README.md.
+# The production image for developers.quip.network: a Next.js standalone server on port
+# 3000. Stateless, no volumes. The same image runs on staging and production; staging
+# sets ROBOTS_NOINDEX=1. See deploy/README.md.
 #
 # Building needs network access: the XQuad book's source is pulled from its GitLab release.
 
@@ -32,6 +33,9 @@ COPY --from=build /app/.next/static ./.next/static
 COPY --from=build /app/public ./public
 # Next writes its response cache here at runtime; everything else can be read-only.
 RUN mkdir -p .next/cache && chown -R node:node .next/cache
+# Reported by /api/health, so monitoring can tell which commit is live.
+ARG GIT_COMMIT=unknown
+ENV GIT_COMMIT=$GIT_COMMIT
 USER node
 EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \

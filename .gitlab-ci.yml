@@ -2,31 +2,29 @@
 #
 # This repo does NOT deploy from CI.
 #
-# Production deploys come from Netlify's own GitLab integration — a webhook and
-# a deploy key on this project — which is how every sibling site in the estate
-# works (agls, hello, main, blog, vault, account). Build configuration lives in
-# netlify.toml.
+# CI builds the site's Docker image and pushes it to this project's registry. The
+# server pulls new tags on its own (deploy/README.md). There is exactly one path from
+# a commit to the site, and CI hands off at the registry.
 #
-# NEVER ADD A DEPLOY JOB HERE. Two deploy paths pointed at one Netlify site is a
-# race between a stale artifact and a fresh one, and the loser is whichever
-# finishes second.
+# NEVER ADD A DEPLOY JOB HERE. Two deploy paths pointed at one site is a race between
+# a stale artifact and a fresh one, and the loser is whichever finishes second.
 #
-# refresh-data below COMMITS, which is not the same thing as deploying and does
-# not break that rule. It pushes regenerated data files to the default branch;
-# Netlify's webhook then does what it does for any other commit. There is still
-# exactly one path from a commit to the site, and CI is not on it.
+# refresh-data below COMMITS, which is not the same thing as deploying and does not
+# break that rule. It pushes regenerated data files to the default branch; the image
+# job then does what it does for any other commit.
 #
-# Jobs run on a schedule, on a manual "Run pipeline", and on merge requests —
-# deliberately NOT on branch pushes, because a push must not go red because
-# someone else's CDN is having a bad afternoon. That exclusion is also what stops
-# refresh-data's own commit from starting another pipeline.
+# The checks run on a schedule, on a manual "Run pipeline", and on merge requests,
+# deliberately NOT on branch pushes, because a push must not go red because someone
+# else's CDN is having a bad afternoon. Pushes to main and to the fumadocs branch run
+# only the image jobs. A "trigger" pipeline (xquad's release hook) rebuilds the image so
+# the book stays current.
 
 include:
   - project: quip.network/ci-templates
     ref: v1.2.0
     file: templates/dependency-gate.yml
 
-stages: [check, refresh]
+stages: [check, refresh, image]
 
 workflow:
   rules:
@@ -34,8 +32,86 @@ workflow:
     - if: $CI_PIPELINE_SOURCE == "schedule"
     - if: $CI_PIPELINE_SOURCE == "web"
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_PIPELINE_SOURCE == "trigger"
+    - if: $CI_PIPELINE_SOURCE == "push" && ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH == "fumadocs")
+
+.checks-only:
+  rules:
+    - if: ($CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH) || $CI_PIPELINE_SOURCE == "trigger"
+      when: never
+    - when: on_success
+
+# Kaniko builds without a Docker daemon, which these runners do not allow. Google archived
+# kaniko, so this is the maintained fork the trustee's build uses, pinned the same way. The
+# GPU hosts mount NVIDIA firmware under /lib: --ignore-path=/lib stops kaniko replacing it,
+# and the symlink in before_script restores the path RUN steps load their libraries from.
+# Neither reaches the image.
+.image-job:
+  stage: image
+  tags: [linux, amd64, docker]
+  rules:
+    - if: ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "trigger") && ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH == "fumadocs")
+  variables:
+    # A rebuild of the same commit (an xquad release) must not overwrite the image a
+    # rollback would name, so every build gets its own tag.
+    BUILD_TAG: "$CI_COMMIT_SHORT_SHA-$CI_PIPELINE_ID"
+
+build-image:
+  extends: .image-job
+  image:
+    name: ghcr.io/osscontainertools/kaniko:v1.29.0-debug@sha256:350929376b8a69afb1d8b362086c809e4ef6799fa1bcb317c2806ae1447b3845
+    entrypoint: [""]
+  interruptible: true
+  timeout: 45m
+  before_script:
+    - mkdir -p /lib && ln -sfn /usr/lib/x86_64-linux-gnu /lib/x86_64-linux-gnu
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"${CI_REGISTRY}\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
+  script:
+    # NEXT_PUBLIC_UMAMI_* are public values, set as project CI variables when wanted.
+    - |
+      /kaniko/executor \
+        --context "$CI_PROJECT_DIR" \
+        --dockerfile "$CI_PROJECT_DIR/Dockerfile" \
+        --ignore-path=/lib \
+        --build-arg GIT_COMMIT="$CI_COMMIT_SHA" \
+        --build-arg NEXT_PUBLIC_UMAMI_SRC="${NEXT_PUBLIC_UMAMI_SRC:-https://cloud.umami.is/script.js}" \
+        --build-arg NEXT_PUBLIC_UMAMI_WEBSITE_ID="${NEXT_PUBLIC_UMAMI_WEBSITE_ID:-}" \
+        --destination "$CI_REGISTRY_IMAGE:$BUILD_TAG"
+
+# The job runs inside the image it is testing, so a bad build never gets the branch tag
+# the servers follow, and never restarts the site on every check.
+smoke-image:
+  extends: .image-job
+  needs: [build-image]
+  image:
+    name: $CI_REGISTRY_IMAGE:$BUILD_TAG
+    entrypoint: [""]
+  interruptible: true
+  timeout: 5m
+  variables:
+    GIT_DEPTH: "1"
+  script:
+    - (cd /app && exec node server.js) &
+    - EXPECT_COMMIT="$CI_COMMIT_SHA" node scripts/smoke.mjs http://127.0.0.1:3000
+
+# Moves the branch tag the servers follow. This is the release; the servers do the rest.
+promote-image:
+  extends: .image-job
+  needs: [smoke-image]
+  image:
+    name: gcr.io/go-containerregistry/crane/debug:v0.22.1@sha256:e78770b31258a3846f878036d9c1f63fbe4c871f9f56990bf77fd95c013e3c1b
+    entrypoint: [""]
+  interruptible: false
+  timeout: 5m
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - printf '%s' "$CI_REGISTRY_PASSWORD" | crane auth login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+    - crane tag "$CI_REGISTRY_IMAGE:$BUILD_TAG" "$CI_COMMIT_REF_SLUG"
 
 link-health:
+  extends: .checks-only
   stage: check
   # No install step: scripts/check-links.mjs has zero dependencies, on purpose.
   image: node:22-alpine
@@ -59,6 +135,7 @@ link-health:
 # people and different fixes, and reading a log to tell them apart is exactly
 # the friction that gets alerts muted.
 snapshot-drift:
+  extends: .checks-only
   stage: check
   image: node:22-alpine
   interruptible: true

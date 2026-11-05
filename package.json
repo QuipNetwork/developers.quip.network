@@ -17,6 +17,7 @@
     "check:links": "node scripts/check-links.mjs",
     "check:xquad-urls": "node scripts/check-xquad-urls.mjs",
     "check:diagrams": "node scripts/check-diagrams.mjs",
+    "check:smoke": "node scripts/smoke.mjs",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\""
   },
   "dependencies": {
