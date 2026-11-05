@@ -105,6 +105,10 @@ export default async function Page({ params }: Props) {
   );
 }
 
+// Every page is built ahead of time. Anything else is a 404 straight away, so a scan of
+// random URLs cannot write a cache entry for each one.
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   return source.generateParams();
 }

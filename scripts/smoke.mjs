@@ -85,7 +85,9 @@ const checks = {
     must(moved.status === 301 && moved.headers.get("location")?.endsWith("/docs/nodes/miners"), "old URL not redirected");
   },
   async "unknown page"() {
-    must((await at("/docs/no-such-page")).status === 404, "an unknown page must be a 404");
+    const response = await at("/docs/no-such-page");
+    must(response.status === 404, `answered ${response.status}`);
+    must((await response.text()).includes("This page does not exist"), "not the site's own 404 page");
   },
   async search() {
     const hits = await (await at("/api/search?query=quickstart")).json();
