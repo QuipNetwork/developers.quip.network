@@ -77,12 +77,17 @@ const checks = {
   async "Markdown by Accept header"() {
     const response = await at("/docs/getting-started/quickstart", { headers: { Accept: "text/markdown" } });
     must(response.headers.get("content-type")?.startsWith("text/markdown"), "HTML came back");
+    must(response.headers.get("vary")?.toLowerCase().includes("accept"), "Markdown does not declare Vary: Accept");
+    const html = await at("/docs/getting-started/quickstart");
+    must(/(^|,\s*)accept(,|$)/i.test(html.headers.get("vary") ?? ""), `HTML has Vary: ${html.headers.get("vary")}`);
   },
   async redirects() {
     const slash = await at("/docs/");
     must(slash.status === 301 && slash.headers.get("location")?.endsWith("/docs"), "trailing slash not stripped");
     const moved = await at("/docs/nodes/classical");
     must(moved.status === 301 && moved.headers.get("location")?.endsWith("/docs/nodes/miners"), "old URL not redirected");
+    const event = await at("/sg/");
+    must(event.status === 301 && new URL(event.headers.get("location"), base).pathname === "/", "/sg/ does not go home");
   },
   async "unknown page"() {
     const response = await at("/docs/no-such-page");
@@ -99,6 +104,14 @@ const checks = {
     const { result } = await mcp("tools/list", {}, 2);
     const tools = result.tools.map((tool) => tool.name).sort().join();
     must(tools === "get_page,list_pages,search_docs", `tools are ${tools}`);
+    const call = async (name, args, id) => {
+      const { result: output } = await mcp("tools/call", { name, arguments: args }, id);
+      must(!output.isError, `${name} failed: ${output.content[0].text}`);
+      return output.content[0].text;
+    };
+    must(JSON.parse(await call("search_docs", { query: "quickstart", limit: 2 }, 3)).length > 0, "search_docs found nothing");
+    must((await call("get_page", { path: "/docs/getting-started/quickstart" }, 4)).startsWith("# Quickstart"), "get_page is wrong");
+    must(JSON.parse(await call("list_pages", {}, 5)).length > 100, "list_pages is short");
   },
 };
 

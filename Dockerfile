@@ -36,6 +36,9 @@ RUN mkdir -p .next/cache && chown -R node:node .next/cache
 # Reported by /api/health, so monitoring can tell which commit is live.
 ARG GIT_COMMIT=unknown
 ENV GIT_COMMIT=$GIT_COMMIT
+# Read by promote-image, so an older build can never replace a newer one.
+ARG BUILD_PIPELINE=0
+LABEL build-pipeline=$BUILD_PIPELINE
 USER node
 EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \

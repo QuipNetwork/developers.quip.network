@@ -27,7 +27,7 @@ no database or disk, so every replica is identical and a rollback is a tag chang
 | Variable | Where | Meaning |
 | --- | --- | --- |
 | `PORT` | optional | Listening port, default 3000 |
-| `ROBOTS_NOINDEX=1` | staging only | Adds `X-Robots-Tag: noindex` to every response |
+| `ROBOTS_NOINDEX=1` | staging only | Adds `X-Robots-Tag: noindex` to pages; Caddy adds it to everything else |
 
 Everything else is fixed at build time. Canonical URLs always name production, on staging
 too. The Umami values are public and are set as CI variables `NEXT_PUBLIC_UMAMI_SRC` and
@@ -132,16 +132,14 @@ is already 60 seconds.
 
 ## Cutover checklist
 
-1. Staging runs `:fumadocs`. `node scripts/check-parity.mjs https://<staging host>` shows
-   only the differences the script lists as intended, and `node scripts/smoke.mjs
-   https://<staging host>` passes.
+1. Staging runs `:fumadocs`, and `npm run check:staging -- https://<staging host>` passes.
 2. Stop auto publishing on Netlify before the merge. The Next.js build has never passed
    there, and this keeps the current site live on Netlify as the fallback. That fallback is
    the old site: it stops getting updates once publishing is stopped.
 3. Merge `fumadocs` to `main`, wait for `:main`, and confirm it on the production container
    by its IP or a temporary hostname.
-4. Switch DNS. Run `node scripts/check-parity.mjs https://developers.quip.network <netlify URL>`
-   and `node scripts/smoke.mjs https://developers.quip.network`.
+4. Switch DNS. Run `npm run check:staging -- https://developers.quip.network --production
+   --reference <netlify URL>`.
 5. Swap the XQuad release hook.
 6. Submit `/sitemap.xml` in Search Console.
 7. After two quiet weeks, retire the Netlify site, `netlify.toml` and `netlify-cli`, and drop

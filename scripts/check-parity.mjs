@@ -4,15 +4,18 @@
  * Compares status, redirect target, content type, X-Robots-Tag and, for the agent files,
  * the exact bytes.
  *
- *   node scripts/check-parity.mjs [new origin] [reference origin]
+ *   node scripts/check-parity.mjs [new origin] [reference origin] [--staging]
+ *
+ * --staging accepts the noindex staging adds to every URL.
  *
  * Zero dependencies, like check-links.mjs. Exits non-zero on any difference.
  */
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
-const NEW = process.argv[2] ?? "http://localhost:3000";
-const OLD = process.argv[3] ?? "https://developers.quip.network";
+const args = process.argv.slice(2);
+const STAGING = args.includes("--staging");
+const [NEW = "http://localhost:3000", OLD = "https://developers.quip.network"] = args.filter((arg) => arg !== "--staging");
 const root = path.resolve(import.meta.dirname, "..");
 
 // The docs' own index lists every page; the redirects come from next.config.mjs.
@@ -27,6 +30,7 @@ const urls = [
   "/docs/llms.txt", "/docs/llms-full.txt",
   "/docs/", "/docs/getting-started/quickstart/",
   "/docs/xquad", "/docs/xquad/", "/docs/xquad/index.html",
+  "/sg", "/sg/", "/sg/index.html",
   "/fonts/ABCFavoritVariable.woff2", "/images/quip-logo-with-icon.svg",
   ...twins, ...pages, ...redirects,
 ];
@@ -38,6 +42,10 @@ const INTENDED = new Map([
   ["/docs/xquad", { status: 200, location: null }],
   ["/docs/xquad/", { status: 301, location: "/docs/xquad" }],
   ["/docs/xquad/index.html", { status: 301, location: "/docs/xquad" }],
+  // The Singapore guest pass is retired; old links land on the home page.
+  ["/sg", { status: 301, location: "/" }],
+  ["/sg/", { status: 301, location: "/" }],
+  ["/sg/index.html", { status: 301, location: "/" }],
 ]);
 const stripCharset = (type) => (type ?? "").split(";")[0].trim().toLowerCase();
 
@@ -70,7 +78,7 @@ for (const url of [...new Set(urls)]) {
   if (before.status !== after.status) problems.push(`status ${before.status} -> ${after.status}`);
   if (before.location !== after.location) problems.push(`location ${before.location} -> ${after.location}`);
   if (before.status === 200 && before.type !== after.type) problems.push(`type ${before.type} -> ${after.type}`);
-  if (before.robots !== after.robots) problems.push(`x-robots-tag ${before.robots} -> ${after.robots}`);
+  if (before.robots !== after.robots && !(STAGING && after.robots === "noindex")) problems.push(`x-robots-tag ${before.robots} -> ${after.robots}`);
   if (before.body !== null && before.status === 200 && before.body !== after.body) problems.push("body differs");
   if (problems.length) {
     failures += 1;

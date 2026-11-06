@@ -67,6 +67,9 @@ const config = {
       moved("/docs/basics/virtues", "/docs/quip-interlock-protocol/quip-the-quantum-unit-interlock-pathway"),
       moved("/docs/nodes/classical", "/docs/nodes/miners"),
       moved("/docs/nodes/quantum", "/docs/nodes/miners"),
+      // The Quantum Day Singapore guest pass; the event has passed.
+      moved("/sg", "/"),
+      moved("/sg/index.html", "/"),
       // Astro's sitemap lived at /sitemap-index.xml; Next serves /sitemap.xml.
       moved("/sitemap-index.xml", "/sitemap.xml"),
     ];

@@ -75,6 +75,7 @@ build-image:
         --dockerfile "$CI_PROJECT_DIR/Dockerfile" \
         --ignore-path=/lib \
         --build-arg GIT_COMMIT="$CI_COMMIT_SHA" \
+        --build-arg BUILD_PIPELINE="$CI_PIPELINE_ID" \
         --build-arg NEXT_PUBLIC_UMAMI_SRC="${NEXT_PUBLIC_UMAMI_SRC:-https://cloud.umami.is/script.js}" \
         --build-arg NEXT_PUBLIC_UMAMI_WEBSITE_ID="${NEXT_PUBLIC_UMAMI_WEBSITE_ID:-}" \
         --destination "$CI_REGISTRY_IMAGE:$BUILD_TAG"
@@ -96,6 +97,8 @@ smoke-image:
     - EXPECT_COMMIT="$CI_COMMIT_SHA" node scripts/smoke.mjs http://127.0.0.1:3000
 
 # Moves the branch tag the servers follow. This is the release; the servers do the rest.
+# One at a time per branch, and never backwards: pipeline ids only rise, so a build that
+# finishes late cannot replace a newer image. Going back on purpose is the host's portal-pin.
 promote-image:
   extends: .image-job
   needs: [smoke-image]
@@ -103,11 +106,18 @@ promote-image:
     name: gcr.io/go-containerregistry/crane/debug:v0.22.1@sha256:e78770b31258a3846f878036d9c1f63fbe4c871f9f56990bf77fd95c013e3c1b
     entrypoint: [""]
   interruptible: false
+  resource_group: promote-$CI_COMMIT_REF_SLUG
   timeout: 5m
   variables:
     GIT_STRATEGY: none
   script:
     - printf '%s' "$CI_REGISTRY_PASSWORD" | crane auth login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+    - |
+      live=$(crane config "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" 2>/dev/null | grep -o '"build-pipeline":"[0-9]*"' | grep -o '[0-9][0-9]*' | head -1)
+      if [ "${live:-0}" -gt "$CI_PIPELINE_ID" ]; then
+        echo "$CI_COMMIT_REF_SLUG is already on pipeline $live, newer than $CI_PIPELINE_ID; leaving it."
+        exit 0
+      fi
     - crane tag "$CI_REGISTRY_IMAGE:$BUILD_TAG" "$CI_COMMIT_REF_SLUG"
 
 link-health:

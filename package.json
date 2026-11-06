@@ -18,6 +18,7 @@
     "check:xquad-urls": "node scripts/check-xquad-urls.mjs",
     "check:diagrams": "node scripts/check-diagrams.mjs",
     "check:smoke": "node scripts/smoke.mjs",
+    "check:staging": "node scripts/check-staging.mjs",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\""
   },
   "dependencies": {
