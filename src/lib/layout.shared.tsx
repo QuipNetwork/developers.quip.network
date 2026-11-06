@@ -18,7 +18,7 @@ export function PortalTitle({ label }: { label: string }) {
   );
 }
 
-export function baseOptions(label = "Documentation"): BaseLayoutProps {
+export function baseOptions(label = "Developers"): BaseLayoutProps {
   return {
     nav: {
       title: <PortalTitle label={label} />,
