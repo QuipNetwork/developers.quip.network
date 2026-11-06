@@ -47,7 +47,7 @@ export function Help() {
             <MonoLabel
               size="xs"
               tone="inherit"
-              className="text-(--color-accent)"
+              className="text-zinc-400"
             >
               Report a problem
             </MonoLabel>

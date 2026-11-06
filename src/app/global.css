@@ -41,26 +41,34 @@
   --color-fd-muted-foreground: #71717b;
   --color-fd-card: #f4f4f5;
   --color-fd-card-foreground: #09090b;
-  --color-fd-popover: #ffffff;
+  --color-fd-popover: #fafafa;
   --color-fd-popover-foreground: #09090b;
   --color-fd-border: #d4d4d8;
   --color-fd-secondary: #e4e4e7;
   --color-fd-secondary-foreground: #27272a;
   --color-fd-accent: #f4f4f5;
   --color-fd-accent-foreground: #09090b;
-  --color-fd-primary: var(--quip-coral);
-  --color-fd-primary-foreground: #09090b;
+  /* Fumadocs' "primary" marks what is current or selected. On the portal that is ink. */
+  --color-fd-primary: #09090b;
+  --color-fd-primary-foreground: #fafafa;
   --color-fd-ring: var(--quip-coral);
-  --quip-link: var(--quip-coral-text);
+  --quip-link: #09090b;
+  --quip-link-rule: #a1a1aa;
+  --quip-subtle: #52525c;
+  --quip-table-rule: #09090b;
   --quip-current-bg: #18181b;
   --quip-current-fg: #fafafa;
+  --quip-current-hover: #343436;
   --fd-nav-height: 56px;
+  /* The padding of a page panel. A section strip reaches back out by the same amount. */
+  --quip-pad: 40px;
 }
 
 .dark {
   --color-fd-background: #09090b;
-  --color-fd-foreground: #fafafa;
-  --quip-body: #fafafa;
+  --color-fd-foreground: #f4f4f5;
+  /* Zinc 200, not white: long text at full contrast is what made dark mode harsh. */
+  --quip-body: #d4d4d8;
   --color-fd-muted: #18181b;
   --color-fd-muted-foreground: #9f9fa9;
   --color-fd-card: #18181b;
@@ -70,12 +78,17 @@
   --color-fd-border: #3f3f46;
   --color-fd-secondary: #27272a;
   --color-fd-secondary-foreground: #f4f4f5;
-  --color-fd-accent: #212124;
+  --color-fd-accent: #18181b;
   --color-fd-accent-foreground: #fafafa;
-  /* Raw coral passes AA on dark, so links use it directly. */
-  --quip-link: var(--quip-coral);
+  --color-fd-primary: #fafafa;
+  --color-fd-primary-foreground: #09090b;
+  --quip-link: #f4f4f5;
+  --quip-link-rule: #71717b;
+  --quip-subtle: #c9c9cb;
+  --quip-table-rule: #71717b;
   --quip-current-bg: #f4f4f5;
   --quip-current-fg: #09090b;
+  --quip-current-hover: #d4d4d8;
   --shadow-float: 0 12px 32px -8px rgb(0 0 0 / 0.6), 0 2px 6px rgb(0 0 0 / 0.4);
 }
 
@@ -89,21 +102,21 @@ html > body[data-scroll-locked] {
 }
 
 
-/* A column you can read: about 760 px of text between a 260 px sidebar and a 240 px outline. */
+/* The same width as the home page's rail and panels. */
 :root {
-  --fd-layout-width: 84rem;
+  --fd-layout-width: 1288px;
 }
 
 /* Only where those columns exist: Fumadocs sets them to 0 on smaller screens. */
 @media (min-width: 768px) {
   #nd-notebook-layout {
-    --fd-sidebar-width: 260px !important;
+    --fd-sidebar-width: 244px !important;
   }
 }
 
 @media (min-width: 1280px) {
   #nd-notebook-layout {
-    --fd-toc-width: 240px !important;
+    --fd-toc-width: 204px !important;
   }
 }
 
@@ -121,7 +134,7 @@ body {
 .prose {
   --tw-prose-body: var(--quip-body);
   --tw-prose-headings: var(--color-fd-foreground);
-  font-size: 16px;
+  font-size: 15.5px;
   line-height: 1.65;
 }
 
@@ -148,29 +161,38 @@ body {
 
 .prose :where(h1),
 .quip-page-title,
-#nd-page > h1 {
+.quip-doc-body > h1 {
   font-family: var(--font-heading);
-  font-size: clamp(32px, 2.4vw + 18px, 44px);
+  font-size: clamp(30px, 1.8vw + 18px, 40px);
   font-weight: 500;
-  line-height: 1.08;
-  letter-spacing: -0.025em;
-  margin: 0 0 0.6em;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--color-fd-foreground);
+  margin: 0 0 16px;
 }
 
+/* A section starts the way a panel does on the home page: a tinted strip between hairlines,
+   edge to edge, so a long page can be scanned by its strips alone. */
 .prose :where(h2) {
-  font-size: 28px;
-  line-height: 1.15;
-  margin-top: 2.2em;
-  margin-bottom: 0.6em;
+  font-size: 21px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  max-width: none;
+  margin: 36px calc(var(--quip-pad) * -1) 16px;
+  padding: 9px var(--quip-pad) 8px;
+  background: var(--color-fd-muted);
+  border-block: 1px solid var(--color-fd-border);
 }
 
+/* Gaisyr again, a size down: a subsection has to stand out from bold in running text. */
 .prose :where(h3) {
-  font-family: var(--font-body);
-  font-size: 18px;
+  font-family: var(--font-heading);
+  font-size: 19px;
   font-weight: 500;
-  line-height: 1.3;
-  margin-top: 1.9em;
-  margin-bottom: 0.5em;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  margin-top: 28px;
+  margin-bottom: 8px;
 }
 
 /* Never uppercase here: an h4 is often an identifier, and case is part of its name. */
@@ -179,8 +201,8 @@ body {
   font-size: 15px;
   font-weight: 500;
   line-height: 1.35;
-  margin-top: 1.6em;
-  margin-bottom: 0.4em;
+  margin-top: 24px;
+  margin-bottom: 6px;
 }
 
 /* Code in a heading is the heading: no tint, and long names may wrap rather than overflow. */
@@ -214,14 +236,14 @@ body {
   color: var(--color-fd-muted-foreground);
 }
 
-/* Links are coral with a quiet underline, so they do not rely on colour alone. */
+/* Links are ink with an underline: a step darker than the text, and never coral. */
 .prose :where(p, li, td, figcaption) a:not([data-card]) {
   color: var(--quip-link);
   font-weight: inherit;
   text-decoration-line: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
-  text-decoration-color: color-mix(in srgb, var(--quip-link) 40%, transparent);
+  text-decoration-color: var(--quip-link-rule);
   transition: text-decoration-color 150ms;
 }
 
@@ -247,10 +269,10 @@ body {
   font-family: var(--font-mono);
   font-size: 0.86em;
   font-weight: 400;
-  background: var(--color-fd-muted);
+  background: color-mix(in srgb, var(--color-fd-muted) 70%, transparent);
   border: 0;
   border-radius: 0;
-  padding: 0.12em 0.36em;
+  padding: 0.08em 0.3em;
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
   overflow-wrap: break-word;
@@ -306,7 +328,7 @@ body {
   color: var(--color-fd-muted-foreground);
   background: transparent;
   border: 0;
-  border-bottom: 1px solid var(--color-fd-foreground);
+  border-bottom: 1px solid var(--quip-table-rule);
   padding: 0 16px 8px 0;
 }
 
@@ -360,7 +382,7 @@ body {
   }
 
   .prose table[data-layout="records"] tbody tr:first-child {
-    border-top: 1px solid var(--color-fd-foreground);
+    border-top: 1px solid var(--quip-table-rule);
   }
 
   .prose table[data-layout="records"] tbody td {
@@ -393,9 +415,16 @@ body {
   margin-block: 0;
 }
 
+/* Text wraps first; the box scrolls only when the columns truly cannot fit. */
 .quip-table:has(> table[data-layout="compare"]) > table {
-  min-width: 100%;
-  width: max-content;
+  width: 100%;
+}
+
+@media (max-width: 767px) {
+  .quip-table:has(> table[data-layout="compare"]) > table {
+    width: max-content;
+    min-width: 100%;
+  }
 }
 
 /* Long values, such as contract addresses: label on the left, value on the right, in full. */
@@ -412,11 +441,11 @@ body {
 .prose table[data-layout="records-wide"] tr {
   display: block;
   border-bottom: 1px solid var(--color-fd-border);
-  padding-block: 14px;
+  padding-block: 18px;
 }
 
 .prose table[data-layout="records-wide"] tbody tr:first-child {
-  border-top: 1px solid var(--color-fd-foreground);
+  border-top: 1px solid var(--quip-table-rule);
 }
 
 .prose table[data-layout="records-wide"] td {
@@ -425,7 +454,7 @@ body {
   column-gap: 16px;
   align-items: baseline;
   border: 0;
-  padding: 2px 0;
+  padding: 3px 0;
 }
 
 .prose table[data-layout="records-wide"] td::before {
@@ -454,45 +483,65 @@ body {
 }
 
 /* ==========================================================================
-   Code blocks. Dark in both themes, like the dark panels on the portal home.
+   Code blocks. The home page's command box: the page's own ground, a hairline,
+   and a mono Copy cell. Dark in dark, light in light.
    ========================================================================== */
 
 .prose :where(figure.shiki),
 .prose figure.shiki {
-  background: #18181b;
-  color: #f4f4f5;
-  border: 0;
+  background: var(--color-fd-background);
+  color: var(--quip-body);
+  border: 1px solid var(--color-fd-border);
   border-radius: 0;
   box-shadow: none;
-  margin-block: 1.5em;
-  --color-fd-muted-foreground: #9f9fa9;
-  --color-fd-accent: #27272a;
-  --color-fd-accent-foreground: #fafafa;
-  --color-fd-border: #3f3f46;
-}
-
-.dark .prose figure.shiki {
-  background: #18181b;
-  outline: 1px solid #27272a;
+  margin-block: 20px;
 }
 
 .prose figure.shiki :where(pre, code) {
   font-family: var(--font-mono);
-  font-size: 14px;
+  font-size: 13.5px;
   line-height: 1.6;
   tab-size: 2;
   background: transparent;
 }
 
-/* Copy control: always visible, and a real target. */
+/* Copy: the home page's mono cell, in the corner of the block's own hairlines. */
 .prose figure.shiki button {
-  min-width: 32px;
-  min-height: 32px;
+  min-width: 56px;
+  min-height: 30px;
+  padding: 2px 10px 0;
   opacity: 1;
-  color: #f4f4f5;
-  background: #27272a;
-  border: 1px solid #3f3f46;
+  color: var(--quip-subtle);
+  background: var(--color-fd-background);
+  border: 0;
+  border-left: 1px solid var(--color-fd-border);
+  border-bottom: 1px solid var(--color-fd-border);
   border-radius: 0;
+  transition: color 150ms, background-color 150ms;
+}
+
+.prose figure.shiki button:hover {
+  color: var(--color-fd-foreground);
+  background: var(--color-fd-muted);
+}
+
+.prose figure.shiki button svg {
+  display: none;
+}
+
+.prose figure.shiki button::after {
+  content: "Copy";
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.prose figure.shiki button[data-checked]::after {
+  content: "Copied";
+  color: var(--color-fd-foreground);
 }
 
 @media (pointer: coarse) {
@@ -577,13 +626,13 @@ body {
 
 .quip-callout[data-type="success"] {
   --chip-bg: #059669;
-  --chip-fg: #fafafa;
+  --chip-fg: #09090b;
   background: #d1fae5;
 }
 
 .dark .quip-callout[data-type="success"] {
   --chip-bg: #059669;
-  --chip-fg: #fafafa;
+  --chip-fg: #09090b;
   background: #10261e;
 }
 
@@ -596,11 +645,6 @@ body {
   background: rgb(255 255 255 / 0.08) !important;
 }
 
-/* Coral as text uses the AA variant on light; raw coral stays for fills and rules. */
-.text-fd-primary,
-[data-active="true"][class*="text-fd-primary"] {
-  color: var(--quip-link);
-}
 
 /* Reference tables: names in the text colour, not all in coral. */
 #nd-page code.text-fd-primary {
@@ -609,11 +653,14 @@ body {
 }
 
 /* ==========================================================================
-   Top bar, as on quip.network: logo, quiet links, nothing competing.
+   Top bar. The home page's bar: edge to edge, logo and surface chip on the
+   left, mono uppercase links on the right, Feedback as the one black button.
    ========================================================================== */
 
-/* Solid, so page text never shows through as it scrolls under. */
 #nd-subnav {
+  grid-column: 1 / -1;
+  /* Spanning every column, it must not lend its width to the reading column. */
+  contain: inline-size;
   background: var(--color-fd-background);
   backdrop-filter: none;
   border-color: var(--color-fd-border);
@@ -624,30 +671,105 @@ body {
   border-radius: 0;
 }
 
-/* Documentation, XQuad, Reference. A compact row: the coral underline sits on the rule, close
-   under the words. The word itself stays in the text colour, so coral marks only the place. */
-[data-header-tabs] {
+[data-header-body] {
+  padding-inline: 16px;
+  border-color: var(--color-fd-border);
+}
+
+/* Links sit in one row with the theme switch, so Feedback can come last, as on the home page. */
+@media (min-width: 1024px) {
+  [data-header-body] > div:last-child > div:first-child {
+    display: contents;
+  }
+}
+
+[data-header-body] > div:last-child {
+  gap: 16px;
+}
+
+[data-header-body] > div:last-child a,
+.quip-nav-toggle {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  line-height: 1;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--quip-subtle);
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  transition: color 150ms;
+}
+
+[data-header-body] > div:last-child a:hover,
+.quip-nav-toggle:hover {
+  color: var(--color-fd-foreground);
+}
+
+.quip-nav-feedback {
+  order: 9;
+}
+
+[data-header-body] > div:last-child a.quip-nav-feedback {
+  display: inline-flex;
+  align-items: center;
   height: 32px;
+  padding: 2px 12px 0;
+  color: var(--quip-current-fg);
+  background: var(--quip-current-bg);
+  transition: background-color 150ms;
+}
+
+[data-header-body] > div:last-child a.quip-nav-feedback:hover {
+  color: var(--quip-current-fg);
+  background: var(--quip-current-hover);
+}
+
+/* Documentation, XQuad, Reference: the home page's mono tabs, the current one filled. */
+[data-header-tabs] {
+  align-items: center;
+  gap: 6px;
+  padding-inline: max(16px, calc((100% - 1288px) / 2));
+  border-color: var(--color-fd-border);
 }
 
 [data-header-tabs] a {
+  height: 26px;
+  padding: 2px 10px 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
   line-height: 1;
-  padding-bottom: 7px;
+  text-transform: uppercase;
+  color: var(--color-fd-foreground);
+  border: 1px solid var(--color-fd-border);
+  transition: border-color 150ms;
 }
 
-[data-header-tabs] a[data-active="true"],
-[data-header-tabs] a[class*="text-fd-primary"] {
+[data-header-tabs] a:hover {
   color: var(--color-fd-foreground);
+  border-color: var(--color-fd-muted-foreground);
+}
+
+[data-header-tabs] a[class*="border-fd-primary"] {
+  color: var(--quip-current-fg);
+  background: var(--quip-current-bg);
+  border-color: var(--quip-current-bg);
 }
 
 /* Search trigger: a real field, not a chip. */
 [data-search-full] {
-  height: 38px;
+  height: 34px;
   min-width: 280px;
   padding-inline: 12px 6px;
-  font-size: 14px;
+  font-size: 13px;
   background: var(--color-fd-muted);
   border-color: transparent;
+  border-radius: 0;
 }
 
 [data-search-full]:hover {
@@ -657,70 +779,66 @@ body {
 [data-search-full] kbd,
 kbd {
   font-family: var(--font-mono);
-  font-size: 11px;
-  border-radius: 0;
-}
-
-/* Theme switch: square, like everything else. */
-[data-theme-toggle] {
-  border-radius: 0;
-}
-
-[data-theme-toggle] * {
+  font-size: 10.5px;
   border-radius: 0;
 }
 
 /* ==========================================================================
-   Sidebar. Scan by section, then by page: section names carry the weight,
-   pages sit quietly under them, and the current page is a flat tint.
+   Sidebar. The home page's rail: section names as mono labels, pages quiet
+   under them, and the current page filled, in ink.
    ========================================================================== */
 
-#nd-sidebar {
-  font-size: 14px;
+:is(#nd-sidebar, #nd-sidebar-mobile) {
+  font-size: 13.5px;
 }
 
-#nd-sidebar a,
-#nd-sidebar button {
-  font-size: 14px;
+:is(#nd-sidebar, #nd-sidebar-mobile) a,
+:is(#nd-sidebar, #nd-sidebar-mobile) button {
+  font-size: 13.5px;
   line-height: 1.35;
   padding-block: 6px;
   border-radius: 0;
-  color: var(--color-fd-muted-foreground);
+  color: var(--quip-subtle);
   transition: color 120ms, background-color 120ms;
 }
 
-#nd-sidebar a:hover,
-#nd-sidebar button:hover {
+:is(#nd-sidebar, #nd-sidebar-mobile) a:hover,
+:is(#nd-sidebar, #nd-sidebar-mobile) button:hover {
   color: var(--color-fd-foreground);
   background: transparent;
 }
 
-/* Section names. */
-#nd-sidebar button {
-  color: var(--color-fd-foreground);
+/* Section names, and any link that opens a section. */
+:is(#nd-sidebar, #nd-sidebar-mobile) button,
+:is(#nd-sidebar, #nd-sidebar-mobile) a:has(> svg[data-icon]) {
+  font-family: var(--font-mono);
+  font-size: 11px;
   font-weight: 500;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--color-fd-foreground);
 }
 
 /* No indicator lines: nesting reads from the indent. */
-#nd-sidebar a::before,
-#nd-sidebar button::before,
-#nd-sidebar [data-active]::before {
+:is(#nd-sidebar, #nd-sidebar-mobile) a::before,
+:is(#nd-sidebar, #nd-sidebar-mobile) button::before,
+:is(#nd-sidebar, #nd-sidebar-mobile) [data-active]::before {
   display: none;
 }
 
-#nd-sidebar [class*="before:"]::before {
+:is(#nd-sidebar, #nd-sidebar-mobile) [class*="before:"]::before {
   display: none;
 }
 
-#nd-sidebar a[data-active="true"],
-#nd-sidebar a[data-active="true"]:hover {
-  color: var(--color-fd-foreground);
-  background: var(--color-fd-secondary);
-  font-weight: 500;
+:is(#nd-sidebar, #nd-sidebar-mobile) a[data-active="true"],
+:is(#nd-sidebar, #nd-sidebar-mobile) a[data-active="true"]:hover {
+  color: var(--quip-current-fg);
+  background: var(--quip-current-bg);
+  font-weight: 400;
 }
 
 /* Group labels that remain, like XQuad in Documentation. */
-#nd-sidebar p,
+:is(#nd-sidebar, #nd-sidebar-mobile) p,
 .quip-eyebrow {
   font-family: var(--font-mono);
   font-weight: 500;
@@ -736,7 +854,7 @@ kbd {
 
 #nd-toc a {
   display: block;
-  font-size: 13px;
+  font-size: 12.5px;
   line-height: 1.35;
   padding-block: 4px;
   transition: color 120ms;
@@ -807,26 +925,119 @@ kbd {
 }
 
 /* ==========================================================================
-   Buttons on the page: Copy Markdown and Open, quiet until needed.
+   The page panel: the home page's one structural primitive. A hairline box
+   with a tinted header strip, the article, and a tinted footer strip.
    ========================================================================== */
 
-#nd-page button,
-#nd-page [role="button"] {
-  border-radius: 0;
+#nd-page {
+  padding: 16px 0 40px 24px;
+  gap: 12px;
 }
 
+#nd-page > * {
+  max-width: none;
+}
+
+.quip-doc {
+  position: relative;
+  min-width: 0;
+  background: var(--color-fd-background);
+  border: 1px solid var(--color-fd-border);
+}
+
+.quip-doc-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  min-height: 44px;
+  padding: 6px 8px 6px var(--quip-pad);
+  background: var(--color-fd-muted);
+  border-bottom: 1px solid var(--color-fd-border);
+}
+
+.quip-doc-crumbs {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: var(--quip-subtle);
+}
+
+.quip-doc-crumbs a {
+  text-decoration: none;
+  color: inherit;
+  transition: color 150ms;
+}
+
+.quip-doc-crumbs a:hover {
+  color: var(--color-fd-foreground);
+}
+
+.quip-doc-crumbs [aria-current] {
+  color: var(--color-fd-foreground);
+}
+
+/* The section homes get the home page's lattice and its one line of colour. */
+.quip-doc-rainbow {
+  height: 3px;
+}
+
+.quip-doc-lattice {
+  position: absolute;
+  inset: 47px 0 auto auto;
+  width: 76%;
+  height: 128px;
+  /* The home page's coral stays on the home page; here the lattice is texture. */
+  filter: grayscale(1);
+  opacity: 0.7;
+  -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent);
+  mask-image: linear-gradient(to bottom, #000 55%, transparent);
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.quip-doc-body {
+  position: relative;
+  padding: 36px var(--quip-pad) 40px;
+  min-width: 0;
+}
+
+.quip-doc-body > .prose > :first-child {
+  margin-top: 0;
+}
+
+.quip-doc-body > .prose > :last-child {
+  margin-bottom: 0;
+}
+
+/* Copy Markdown and Open: quiet mono controls in the strip. */
 .quip-page-actions > * {
-  min-height: 32px;
-  padding-inline: 12px;
-  font-size: 12px;
+  min-height: 30px;
+  padding-inline: 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
   color: var(--color-fd-foreground);
   background: transparent;
   border: 1px solid var(--color-fd-border);
-  transition: background-color 120ms;
+  border-radius: 0;
+  transition: border-color 150ms, background-color 150ms;
 }
 
 .quip-page-actions > *:hover {
-  background: var(--color-fd-muted);
+  background: var(--color-fd-background);
+  border-color: var(--color-fd-muted-foreground);
+}
+
+.quip-page-actions svg {
+  width: 13px;
+  height: 13px;
 }
 
 @media (pointer: coarse) {
@@ -837,27 +1048,92 @@ kbd {
 
 /* The agent links: Markdown, llms.txt, source. */
 .quip-page-footer {
-  font-size: 12px;
-  color: var(--color-fd-foreground);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 20px;
+  padding: 6px var(--quip-pad);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--quip-subtle);
+  background: var(--color-fd-muted);
+  border-top: 1px solid var(--color-fd-border);
 }
 
 .quip-page-footer a {
   display: inline-flex;
   align-items: center;
   min-height: 32px;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  text-decoration-color: var(--color-fd-border);
-  transition: text-decoration-color 120ms;
+  text-decoration: none;
+  transition: color 150ms;
 }
 
 .quip-page-footer a:hover {
-  text-decoration-color: currentColor;
+  color: var(--color-fd-foreground);
 }
 
 @media (pointer: coarse) {
   .quip-page-footer a {
     min-height: 44px;
+  }
+}
+
+/* Previous and next: two tiles sharing a hairline, under the panel. */
+#nd-page > [class*="@container"] {
+  gap: 0;
+}
+
+#nd-page > [class*="@container"] > a {
+  gap: 4px;
+  padding: 14px 16px;
+  font-size: 14px;
+  border: 1px solid var(--color-fd-border);
+  border-radius: 0;
+  transition: background-color 150ms;
+}
+
+#nd-page > [class*="@container"] > a + a {
+  margin-left: -1px;
+}
+
+#nd-page > [class*="@container"] > a:hover {
+  color: inherit;
+  background: var(--color-fd-muted);
+}
+
+#nd-page > [class*="@container"] > a > p {
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--quip-subtle);
+}
+
+#nd-page > [class*="@container"] > a p {
+  margin: 0;
+}
+
+@media (max-width: 767px) {
+  :root {
+    --quip-pad: 16px;
+  }
+
+  #nd-page {
+    padding: 8px 8px 32px;
+  }
+
+  .quip-doc-head {
+    padding-right: 8px;
+  }
+
+  .quip-doc-lattice {
+    display: none;
+  }
+
+  /* One line of breadcrumb on a phone: the section and the page. */
+  .quip-doc-crumbs li:first-child,
+  .quip-doc-crumbs li:nth-child(2) > [aria-hidden] {
+    display: none;
   }
 }
 
@@ -893,13 +1169,14 @@ kbd {
 /* Phones: desktop heading gaps add up on a long single column. */
 @media (max-width: 767px) {
   .prose h2 {
-    margin-top: 40px;
+    margin-top: 36px;
     margin-bottom: 16px;
+    font-size: 19px;
   }
 
   .prose h3 {
-    margin-top: 32px;
-    margin-bottom: 12px;
+    margin-top: 28px;
+    margin-bottom: 8px;
   }
 
   .prose :is(.quip-table, figure.shiki) {
@@ -908,19 +1185,25 @@ kbd {
 }
 
 /* ==========================================================================
-   Cards: flat tiles with hairlines, as the audience row on quip.network.
+   Cards: tiles sharing their hairlines, like the path columns on the home page.
    ========================================================================== */
+
+#nd-page .prose div:has(> a[data-card]:not(:is(h1, h2, h3, h4, h5, h6) > a)) {
+  gap: 0;
+  margin-block: 20px;
+}
 
 /* Fumadocs also marks heading anchors data-card, so headings are excluded. */
 #nd-page a[data-card]:not(:is(h1, h2, h3, h4, h5, h6) > a) {
   display: block;
-  padding: 20px;
+  padding: 16px;
   min-height: 0;
+  margin: 0 -1px -1px 0;
   border-radius: 0;
   border: 1px solid var(--color-fd-border);
   background: transparent;
   box-shadow: none;
-  transition: background-color 120ms;
+  transition: background-color 150ms;
 }
 
 #nd-page a[data-card]:not(:is(h1, h2, h3, h4, h5, h6) > a):hover {
@@ -934,12 +1217,15 @@ kbd {
 
 #nd-page a[data-card] p {
   margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--quip-subtle);
 }
 
 #nd-page a[data-card] h3 {
-  margin: 0 0 6px;
+  margin: 0 0 4px;
   font-family: var(--font-heading);
-  font-size: 19px;
+  font-size: 17px;
   font-weight: 500;
   letter-spacing: -0.01em;
 }
@@ -985,4 +1271,253 @@ kbd {
 :where(a, button, [tabindex]):focus-visible {
   outline: 2px solid var(--quip-coral);
   outline-offset: 2px;
+}
+
+::selection {
+  background: var(--quip-current-bg);
+  color: var(--quip-current-fg);
+}
+
+/* The search dialog highlights by weight and ink, not colour. */
+[role="dialog"] mark,
+[role="dialog"] [class*="text-fd-primary"] {
+  color: var(--color-fd-foreground);
+  font-weight: 500;
+  background: transparent;
+}
+
+/* An eyebrow on a tinted strip needs one more step of contrast. */
+#nd-toc > h3 {
+  color: var(--quip-subtle);
+}
+
+/* Package names in the outline: plain mono text that wraps at its slashes. */
+#nd-toc code {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 0;
+  background: transparent;
+  overflow-wrap: anywhere;
+}
+
+/* The lede under a generated page's title. */
+.quip-doc-body > h1 + p {
+  font-size: 15.5px;
+  color: var(--quip-subtle);
+}
+
+/* The home page's text theme switch, in the docs bar. */
+.quip-nav-toggle {
+  min-height: 32px;
+}
+
+/* The rail starts level with the page panel. */
+:is(#nd-sidebar, #nd-sidebar-mobile) [class*="overscroll-contain"] {
+  padding: 16px 0 24px;
+}
+
+#nd-toc {
+  padding-top: 16px;
+  padding-left: 24px;
+}
+
+/* The outline lines up under its label; the page's sub-sections step in once. */
+#nd-toc a[style*="padding-inline-start"] {
+  padding-inline-start: 12px !important;
+}
+
+#nd-toc a[style*="padding-inline-start:20px"],
+#nd-toc a[style*="padding-inline-start: 20px"] {
+  padding-inline-start: 0 !important;
+}
+
+/* A row you are reading stays marked as your eye crosses the columns. */
+.prose tbody tr {
+  transition: background-color 120ms;
+}
+
+@media (hover: hover) {
+  .prose tbody tr:hover,
+  .prose tbody tr:hover td {
+    background: var(--color-fd-muted);
+  }
+}
+
+/* On a long page the current section's strip stays in view under the bar. */
+@media (min-width: 1024px) {
+  .prose h2 {
+    position: sticky;
+    top: var(--fd-docs-row-3, 96px);
+    z-index: 5;
+  }
+}
+
+/* A section strip already divides the page; a rule above it would be a second divider. */
+.prose hr:has(+ h2) {
+  display: none;
+}
+
+/* Copy sits flush in the corner, and code never runs under it. */
+.prose figure.shiki > div:first-child:not(.fd-scroll-container) {
+  top: -1px;
+  right: -1px;
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+  backdrop-filter: none;
+}
+
+.prose figure.shiki button {
+  border-top: 1px solid var(--color-fd-border);
+  border-right: 1px solid var(--color-fd-border);
+}
+
+/* Type tables: rows you can run down like a table, with one column of names and one of types.
+   Types are read, not decorated, so they stay in one quiet colour. */
+#nd-page div[class*="bg-fd-card"] {
+  padding: 0;
+  border: 1px solid var(--color-fd-border);
+  margin-block: 16px;
+}
+
+#nd-page div[class*="bg-fd-card"] > div:first-child:not([class*="scroll-m"]) {
+  padding: 8px 12px 7px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--quip-subtle);
+  background: var(--color-fd-muted);
+  border-bottom: 1px solid var(--color-fd-border);
+}
+
+#nd-page div[class*="bg-fd-card"] > div[class*="scroll-m"] {
+  border-width: 0 0 1px;
+  border-color: var(--color-fd-border);
+  border-radius: 0;
+}
+
+#nd-page div[class*="bg-fd-card"] > div[class*="scroll-m"]:last-child {
+  border-bottom: 0;
+}
+
+#nd-page div[class*="bg-fd-card"] button {
+  padding-block: 9px;
+  font-size: 13px;
+}
+
+#nd-page div[class*="bg-fd-card"] button:hover {
+  background: var(--color-fd-muted);
+}
+
+#nd-page div[class*="bg-fd-card"] > div:first-child > p:first-child,
+#nd-page div[class*="bg-fd-card"] button > :first-child {
+  width: 38%;
+  padding-right: 16px;
+}
+
+#nd-page div[class*="bg-fd-card"] code span[style] {
+  color: var(--quip-subtle) !important;
+}
+
+/* An empty slot above the rail on the desktop, where the tabs live in the bar. */
+@media (min-width: 1024px) {
+  :is(#nd-sidebar, #nd-sidebar-mobile) > div:first-child:not([role]) {
+    display: none;
+  }
+}
+
+/* Rhythm. A paragraph is 16 px from its neighbour, a heading sits close to what it heads, and a
+   list's items are far enough apart to pick out, closer than the paragraphs around them. */
+.prose p {
+  margin-block: 0 16px;
+}
+
+.prose :is(ul, ol) {
+  padding-inline-start: 20px;
+  margin-block: 12px 20px;
+}
+
+.prose li {
+  padding-inline-start: 4px;
+  margin-block: 8px;
+}
+
+.prose li > p {
+  margin-block: 0 8px;
+}
+
+.prose li > p:last-child {
+  margin-bottom: 0;
+}
+
+.prose :is(h2, h3, h4) + :is(p, ul, ol, .quip-table, figure) {
+  margin-top: 0;
+}
+
+#nd-toc > h3 {
+  margin: 0 0 10px;
+}
+
+#nd-toc a {
+  padding-block: 5px;
+}
+
+@media (max-width: 767px) {
+  .quip-doc-body {
+    padding-top: 24px;
+    padding-bottom: 28px;
+  }
+
+  .prose h1,
+  .quip-doc-body > h1 {
+    font-size: 30px;
+    line-height: 1.12;
+    margin-bottom: 12px;
+  }
+
+  .prose h2 {
+    margin-top: 28px;
+    margin-bottom: 14px;
+  }
+}
+
+/* A quotation is a quiet panel: no italics, no bar, no printed quote marks. */
+.prose blockquote {
+  margin-block: 20px;
+  padding: 14px 20px;
+  font-style: normal;
+  font-weight: 400;
+  color: var(--quip-body);
+  background: var(--color-fd-muted);
+  border: 0;
+}
+
+.prose blockquote p::before,
+.prose blockquote p::after {
+  content: none;
+}
+
+.prose blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* Without the wide layout's margins, nothing may touch the screen's edge. */
+@media (max-width: 1339px) {
+  :is(#nd-sidebar, #nd-sidebar-mobile) [class*="overscroll-contain"] {
+    padding-inline: 12px;
+  }
+}
+
+@media (max-width: 1279px) {
+  #nd-page {
+    padding-right: 16px;
+  }
+}
+
+/* In the side menu, Feedback is one more link. */
+:is(#nd-sidebar, #nd-sidebar-mobile) a.quip-nav-feedback {
+  display: block;
+  padding: 6px 8px;
 }

@@ -147,7 +147,7 @@ export function Quickstart() {
                 />
                 {path.note && (
                   <div className="flex gap-2.5 bg-(--color-surface-1) px-3 py-2">
-                    <span className="shrink-0 [font-family:var(--font-mono)] font-features-['case'] text-[9.5px] leading-[18px] font-medium tracking-[0.4px] text-(--color-accent-text) uppercase">
+                    <span className="shrink-0 [font-family:var(--font-mono)] font-features-['case'] text-[9.5px] leading-[18px] font-medium tracking-[0.4px] text-zinc-950 uppercase">
                       Note
                     </span>
                     <p className="m-0 text-[12px] leading-[1.5] text-(--color-text-subtle)">

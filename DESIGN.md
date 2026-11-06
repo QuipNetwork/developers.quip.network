@@ -5,20 +5,26 @@ and wins any conflict: zinc greyscale, square corners, three typefaces, no emoji
 the decisions specific to the docs. Dark values and the status colours on a read-only surface are
 an extension of the brand, pending sign-off by the design-system owner.
 
+## The frame
+
+The docs use the home page's structure. The full guide is the Developer Portal brand guide.
+
+- Top bar: edge to edge, logo and surface chip, mono uppercase links, Feedback as the one black button.
+- Documentation, XQuad and Reference are mono tabs; the current one is filled.
+- Each page is a panel: a hairline box with a tinted strip above and below the article.
+- Each h2 is a strip across the panel, and stays in view under the bar as you scroll on a wide screen.
+- Section homes carry the lattice, in grey, and the gradient line.
+
 ## Coral
 
-Coral (`#FF6C78`) is the Developers colour and the brand's only interactive accent. It means "you
-can act here" or, on a callout, "danger". Nothing else may use it.
+Coral (`#FF6C78`) means "danger", and marks keyboard focus. On the docs it is nothing else: not links,
+not active states, not headings, not decoration, not syntax. What is current or selected is ink.
+Links are ink with an underline, a step darker than the text around them.
 
 | Use | Colour |
 | --- | --- |
-| Links in text | `#C93A3F` on light, `#FF6C78` on dark, with a quiet underline |
-| Current tab | Coral underline; the word stays in the text colour |
 | Keyboard focus | Coral ring, 2 px, offset 2 px |
 | Danger callout | Coral chip on a `#FFEDEE` panel |
-
-Do not use it for headings, decoration, emphasis, the current page in the sidebar, or the current
-section in the outline. Those use the text colour and weight.
 
 ## Getting attention
 
@@ -48,11 +54,11 @@ In MDX: `<Callout type="info|warn|error|success" title="Note">`. In `docs/`, unt
 
 | Element | Style |
 | --- | --- |
-| Page title | Gaisyr Medium, up to 44 px, tight tracking |
-| h2 | Gaisyr Medium, 28 px, with real space above |
-| h3 | Favorit Medium, 18 px |
+| Page title | Gaisyr Medium, up to 40 px, tight tracking |
+| h2 | Gaisyr Medium, 21 px, on a strip |
+| h3 | Gaisyr Medium, 19 px |
 | h4 | Favorit Medium, 15 px. Never uppercase: it is often an identifier |
-| Body | Favorit, 16 px / 1.65, text stops at 736 px |
+| Body | Favorit, 15.5 px / 1.65, text stops at 736 px. In dark, zinc 250, not white |
 | Code | Favorit Mono, 14 px in blocks, 0.86 em inline |
 | Eyebrows, table headers | Favorit Mono Medium, 11 px, uppercase |
 
@@ -80,14 +86,15 @@ Rules between rows only, no fill, no zebra stripes.
 
 ## Code
 
-Dark panel (`#18181B`) in both themes, with the palette in `src/lib/code-theme.mjs`. Blocks show in
-full, with no inner vertical scroll, and the copy button is always visible.
+The home page's command box: the page's own ground, a hairline, and a mono Copy cell in the corner. Two
+syntax palettes in `src/lib/code-theme.mjs`, with no coral. Blocks show in full, with no inner vertical
+scroll, and Copy is always visible.
 
 ## Navigation
 
 - Top row: logo, search, links, theme. Tabs below it for Documentation, XQuad and Reference.
-- Sidebar: collapsible sections; the current one opens itself. The current page is a grey tint in
-  the text colour.
+- Sidebar: mono section names over quiet pages; the current section opens itself. The current page is
+  filled, as on the home page rail.
 - Outline: h2 and h3 as plain text, with no rail.
 
 ## Diagrams

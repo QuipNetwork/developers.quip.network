@@ -8,7 +8,7 @@ import remarkMath from "remark-math";
 import remarkSmartypants from "remark-smartypants";
 import { remarkAutoTypeTable } from "fumadocs-typescript";
 import { z } from "zod";
-import { quipCodeTheme } from "./code-theme.mjs";
+import { quipCodeThemeDark, quipCodeThemeLight } from "./code-theme.mjs";
 import { rehypeReadable } from "./rehype-readable.mjs";
 import { createReferenceGenerator, typeTableOptions } from "./reference-tables.mjs";
 import { docsRoute } from "./shared";
@@ -22,8 +22,7 @@ const docs = defineDocs({
     schema: pageSchema.extend({ source_path: z.string().optional(), noindex: z.boolean().optional() }),
     // applyMdxPreset keeps Fumadocs' defaults (GFM, heading ids, code highlighting).
     mdxOptions: applyMdxPreset({
-      // One dark palette for code in both themes.
-      rehypeCodeOptions: { themes: { light: quipCodeTheme, dark: quipCodeTheme } },
+      rehypeCodeOptions: { themes: { light: quipCodeThemeLight, dark: quipCodeThemeDark } },
       // Type tables first, so the defaults index them for search. Only $$ opens math: the
       // Documentation pages print prices and $QUIP with a bare $.
       remarkPlugins: (defaults) => [

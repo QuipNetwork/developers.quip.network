@@ -15,15 +15,13 @@
   --qd-group-fill: var(--color-fd-card);
   --qd-raised-fill: #fff;
   --qd-raised-stroke: var(--qd-node-stroke);
-  /* --acc-coral-100 in the brand tokens; the source diagram's own fill. */
-  --qd-accent-fill: #ffedee;
-  --qd-accent-stroke: var(--quip-coral-text, #c93a3f);
+  /* The emphasised node is a step darker and drawn in ink. */
+  --qd-accent-fill: var(--color-fd-secondary);
+  --qd-accent-stroke: var(--color-fd-foreground);
 }
 
 .dark .quip-diagram {
   --qd-raised-fill: var(--color-fd-background);
-  --qd-accent-fill: color-mix(in srgb, var(--quip-coral) 16%, var(--color-fd-background));
-  --qd-accent-stroke: var(--quip-coral);
 }
 
 .quip-diagram svg {

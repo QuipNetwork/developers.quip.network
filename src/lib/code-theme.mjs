@@ -1,33 +1,46 @@
-// Syntax colours for code blocks, on the zinc-900 panel. Built from the brand's accent
-// families (tokens/accents.css), which the brand allows for categorical colour. Each passes
-// AA on #18181b. Comments use zinc-400.
-const c = {
-  fg: "#f4f4f5",
+// Syntax colours for code blocks. Both palettes use the brand's accent families, which the brand
+// allows for categorical colour, with no coral: code is read, not clicked. Dark uses the pale
+// tints, which are calm on zinc 950; light uses the audience inks. Each passes AA on its ground.
+const dark = {
+  fg: "#e4e4e7",
   muted: "#9f9fa9",
-  coral: "#ff6c78",
-  green: "#67e347",
-  yellow: "#ffde53",
-  cyan: "#4ce0ff",
-  pink: "#ff92d5",
-  lavender: "#e6d7ff",
+  keyword: "#e6d7ff",
+  string: "#eefdca",
+  number: "#fef278",
+  fn: "#c2f8fd",
+  tag: "#ffcde4",
 };
 
-/** @type {any} */
-export const quipCodeTheme = {
-  name: "quip",
-  type: "dark",
-  colors: { "editor.background": "#18181b", "editor.foreground": c.fg },
+const light = {
+  fg: "#27272a",
+  muted: "#71717b",
+  keyword: "#2a1a4d",
+  string: "#0a832e",
+  number: "#9a5b00",
+  fn: "#0b5560",
+  tag: "#8b2a30",
+};
+
+const theme = (name, type, c, background) => ({
+  name,
+  type,
+  colors: { "editor.background": background, "editor.foreground": c.fg },
   tokenColors: [
     { scope: ["comment", "punctuation.definition.comment"], settings: { foreground: c.muted } },
-    { scope: ["keyword", "storage", "storage.type", "storage.modifier", "keyword.operator.new", "keyword.control"], settings: { foreground: c.coral } },
-    { scope: ["string", "string.quoted", "punctuation.definition.string", "markup.inline.raw"], settings: { foreground: c.green } },
-    { scope: ["constant.numeric", "constant.language", "constant.character", "constant.other", "support.constant"], settings: { foreground: c.yellow } },
-    { scope: ["entity.name.function", "support.function", "meta.function-call", "entity.name.command"], settings: { foreground: c.cyan } },
-    { scope: ["entity.name.type", "entity.name.class", "support.type", "support.class", "entity.other.inherited-class"], settings: { foreground: c.lavender } },
-    { scope: ["entity.name.tag", "meta.preprocessor", "keyword.other.special-method"], settings: { foreground: c.pink } },
-    { scope: ["entity.other.attribute-name", "support.type.property-name", "variable.other.property", "meta.object-literal.key"], settings: { foreground: c.lavender } },
+    { scope: ["keyword", "storage", "storage.type", "storage.modifier", "keyword.operator.new", "keyword.control"], settings: { foreground: c.keyword } },
+    { scope: ["string", "string.quoted", "punctuation.definition.string", "markup.inline.raw"], settings: { foreground: c.string } },
+    { scope: ["constant.numeric", "constant.language", "constant.character", "constant.other", "support.constant"], settings: { foreground: c.number } },
+    { scope: ["entity.name.function", "support.function", "meta.function-call", "entity.name.command"], settings: { foreground: c.fn } },
+    { scope: ["entity.name.type", "entity.name.class", "support.type", "support.class", "entity.other.inherited-class"], settings: { foreground: c.keyword } },
+    { scope: ["entity.name.tag", "meta.preprocessor", "keyword.other.special-method"], settings: { foreground: c.tag } },
+    { scope: ["entity.other.attribute-name", "support.type.property-name", "variable.other.property", "meta.object-literal.key"], settings: { foreground: c.fn } },
     { scope: ["variable", "variable.other", "variable.parameter", "punctuation", "meta.brace", "keyword.operator"], settings: { foreground: c.fg } },
-    { scope: ["markup.deleted"], settings: { foreground: c.coral } },
-    { scope: ["markup.inserted"], settings: { foreground: c.green } },
+    { scope: ["markup.deleted"], settings: { foreground: c.tag } },
+    { scope: ["markup.inserted"], settings: { foreground: c.string } },
   ],
-};
+});
+
+/** @type {any} */
+export const quipCodeThemeDark = theme("quip-dark", "dark", dark, "#09090b");
+/** @type {any} */
+export const quipCodeThemeLight = theme("quip-light", "light", light, "#fafafa");

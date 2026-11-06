@@ -50,7 +50,7 @@ const topLinkClass =
 
 export default function Home() {
   return (
-    <div className="quip-home bg-(--color-bg) font-(family-name:--font-body) text-[14px] leading-[1.35] text-zinc-950 antialiased selection:bg-(--color-accent) selection:text-zinc-950">
+    <div className="quip-home bg-(--color-bg) font-(family-name:--font-body) text-[14px] leading-[1.35] text-zinc-950 antialiased selection:bg-zinc-900 selection:text-zinc-50">
       <div className="overflow-x-clip">
         <div className="flex min-h-screen flex-col bg-(--color-bg) text-zinc-950">
           {/* Slim application chrome. Deliberately not the marketing SiteHeader:

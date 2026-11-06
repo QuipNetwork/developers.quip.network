@@ -1,6 +1,7 @@
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
 import { CODE, NETWORK, SITE } from "@/data/links";
 import { EXPLORER } from "@/data/testnet";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 /**
  * The portal-style bar, shared by the docs: logo lockup and a mono surface label, as on
@@ -26,8 +27,16 @@ export function baseOptions(label = "Documentation"): BaseLayoutProps {
     links: [
       { text: "Explorer", url: EXPLORER.url, external: true },
       { text: "GitLab", url: CODE.gitlabGroup, external: true },
-      { text: "Feedback", url: NETWORK.feedback, external: true },
       { text: "quip.network ↗", url: SITE.home, external: true },
+      {
+        type: "custom",
+        children: (
+          <a href={NETWORK.feedback} target="_blank" rel="noopener noreferrer" className="quip-nav-feedback">
+            Feedback
+          </a>
+        ),
+      },
     ],
+    themeSwitch: { component: <ThemeToggle className="quip-nav-toggle" /> },
   };
 }

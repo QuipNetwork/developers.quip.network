@@ -4,6 +4,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { AnchorHTMLAttributes, FC } from "react";
 import { getMDXComponents } from "@/components/mdx";
+import { MastheadGraphic } from "@/components/MastheadGraphic";
+import { BRAND_GRADIENT } from "@design/components/pageLayout";
 import { SITE_URL, SOCIAL_IMAGE, markdownUrlOf, sourceUrlOf } from "@/lib/shared";
 import { source } from "@/lib/source";
 
@@ -61,7 +63,8 @@ export default async function Page({ params }: Props) {
   const hasOwnHeading = page.data.toc.some((item) => item.depth === 1);
   const toc = page.data.toc.filter((item) => item.depth === 2 || item.depth === 3);
   const inBook = page.slugs[0] === "xquad";
-  const inDocs = tree.href === "/docs";
+  // Documentation, XQuad and Reference each open with the home page's lattice.
+  const sectionHome = page.url === tree.href;
 
   return (
     <DocsPage toc={toc} full={page.data.full} breadcrumb={{ enabled: false }}>
@@ -69,15 +72,9 @@ export default async function Page({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema).replaceAll("<", "\\u003c") }}
       />
-      {hasOwnHeading ? null : (
-        <>
-          <DocsTitle>{page.data.title}</DocsTitle>
-          <DocsDescription className="mb-0">{page.data.description}</DocsDescription>
-        </>
-      )}
-      <div className="flex flex-row flex-wrap items-center justify-between gap-2">
-        {inDocs ? (
-          <nav aria-label="Breadcrumb" className="text-[13px] text-fd-muted-foreground">
+      <section className="quip-doc">
+        <header className="quip-doc-head">
+          <nav aria-label="Breadcrumb" className="quip-doc-crumbs">
             <ol className="flex flex-wrap gap-2">
               {breadcrumbs.map((crumb, index) => (
                 <li key={crumb.href} className="flex gap-2">
@@ -87,22 +84,34 @@ export default async function Page({ params }: Props) {
               ))}
             </ol>
           </nav>
-        ) : (
-          <span />
-        )}
-        <div className="quip-page-actions flex flex-row items-center gap-2">
-          <MarkdownCopyButton markdownUrl={markdownUrl} />
-          <ViewOptionsPopover markdownUrl={markdownUrl} githubUrl={editUrl} />
+          <div className="quip-page-actions flex flex-row items-center gap-2">
+            <MarkdownCopyButton markdownUrl={markdownUrl} />
+            <ViewOptionsPopover markdownUrl={markdownUrl} githubUrl={editUrl} />
+          </div>
+        </header>
+        {sectionHome ? <div className="quip-doc-rainbow" style={{ background: BRAND_GRADIENT }} /> : null}
+        {sectionHome ? (
+          <div className="quip-home quip-doc-lattice" aria-hidden="true">
+            <MastheadGraphic />
+          </div>
+        ) : null}
+        <div className="quip-doc-body">
+          {hasOwnHeading ? null : (
+            <>
+              <DocsTitle>{page.data.title}</DocsTitle>
+              <DocsDescription className="mb-0">{page.data.description}</DocsDescription>
+            </>
+          )}
+          <DocsBody data-tree={tree.name.toLowerCase()} data-page={page.slugs.join("/")}>
+            <MDX components={getMDXComponents({ a: linkFor(createRelativeLink(source, page), !inBook) })} />
+          </DocsBody>
         </div>
-      </div>
-      <DocsBody data-tree={tree.name.toLowerCase()} data-page={page.slugs.join("/")}>
-        <MDX components={getMDXComponents({ a: linkFor(createRelativeLink(source, page), !inBook) })} />
-      </DocsBody>
-      <footer className="quip-page-footer quip-eyebrow mt-10 flex flex-wrap gap-x-4 gap-y-2 border-t border-fd-border pt-4">
-        <a href={markdownUrl}>View as Markdown</a>
-        <a href={tree.llms}>llms.txt</a>
-        {editUrl ? <a href={editUrl}>Edit on GitLab</a> : null}
-      </footer>
+        <footer className="quip-page-footer">
+          <a href={markdownUrl}>View as Markdown</a>
+          <a href={tree.llms}>llms.txt</a>
+          {editUrl ? <a href={editUrl}>Edit on GitLab</a> : null}
+        </footer>
+      </section>
     </DocsPage>
   );
 }
