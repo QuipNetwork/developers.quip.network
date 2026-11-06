@@ -74,11 +74,61 @@ release. The change is in the xquad repo, so its maintainers review it.
 - Put uptime checks on `/api/health` and `/docs/llms.txt`.
 - Logs go to stdout.
 
+## The host
+
+One DigitalOcean droplet runs both sites: Debian 13, rootless Podman under the `portal`
+user, Caddy in front. The files are in `deploy/host/`.
+
+| File | What it does |
+| --- | --- |
+| `setup.sh` | One-time setup as root: Podman, Caddy, fail2ban, nightly security updates, the `portal` user |
+| `portal-staging.container` | Quadlet unit following `:fumadocs` on `127.0.0.1:3001`, with `ROBOTS_NOINDEX=1` |
+| `portal-production.container` | The same for `:main` on `127.0.0.1:3002`, installed at cutover |
+| `Caddyfile` | TLS, compression, and `noindex` on every staging response |
+| `podman-auto-update.timer.d/` | Checks the registry every 5 minutes instead of daily |
+| `portal-prune.*` | Removes images nothing has used for three days |
+| `portal-pin` | Runs a site on an older tag, or puts it back |
+
+First setup, after `sh deploy/host/setup.sh` as root:
+
+```bash
+# As portal. The deploy token (read_registry) is typed, not pasted into a file.
+podman login --authfile ~/.config/containers/auth.json -u <token user> --password-stdin registry.gitlab.com
+chmod 600 ~/.config/containers/auth.json
+install -m 0644 /usr/local/share/portal/portal-staging.container ~/.config/containers/systemd/
+systemctl --user daemon-reload
+systemctl --user start portal-staging
+systemctl --user enable --now podman-auto-update.timer portal-prune.timer
+```
+
+At cutover, install `/usr/local/share/portal/portal-production.container` the same way and uncomment the production
+block in `/etc/caddy/Caddyfile`.
+
+Updates need nobody: within 5 minutes of `promote-image`, `podman auto-update` pulls the new
+image and restarts the site, and Caddy holds requests through the restart. If the new
+container never turns healthy, it puts the previous image back. That rollback is quiet, so
+`podman auto-update --dry-run` showing `pending` after a release means the host refused it.
+
+```bash
+journalctl --user -u podman-auto-update -n 20   # what the last runs did
+journalctl -t portal-staging -n 50              # the site's logs
+podman auto-update --dry-run                    # anything waiting
+systemctl --user start podman-auto-update.service   # apply now; not `podman auto-update`, which can race the timer
+```
+
 ## Rollback
 
-Keep the last 10 image tags and redeploy an older `:<short sha>`. For two weeks after the
-cutover, keep the Netlify site running, so going back is also a DNS change. Lower the DNS
-TTL on `developers.quip.network` to 300 a few days before.
+On the host, as `portal`:
+
+```bash
+portal-pin staging <short sha>-<pipeline id>    # or production; any tag still in the registry
+portal-pin staging --unpin                      # back on the branch tag
+```
+
+A pinned site stays put until it is unpinned, even when new images arrive. The registry keeps
+the last 10 tags and everything under 14 days old. For two weeks after the cutover, keep the
+Netlify site running, so going back is also a DNS change. The TTL on `developers.quip.network`
+is already 60 seconds.
 
 ## Cutover checklist
 
