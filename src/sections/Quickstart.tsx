@@ -3,7 +3,7 @@ import { Panel } from "../components/Panel";
 import { LinkRow } from "../components/LinkRow";
 import { MonoLabel } from "@design/components/Headings";
 import { CopyCommand } from "../components/CopyCommand";
-import { DOCS, CODE } from "../data/links";
+import { DOCS_HREF as DOCS, CODE } from "../data/links";
 
 interface Path {
   tab: string;

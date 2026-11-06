@@ -54,6 +54,16 @@ export const AI = {
   llmsFullTxt: `${DOCS_BASE}/llms-full.txt`,
 };
 
+/*
+ * For links on a page: the same URLs without the origin, so a visitor stays on the host they
+ * came to, staging included. DOCS and AI stay absolute for llms.txt and text agents copy.
+ */
+const onThisHost = <T extends Record<string, string>>(links: T) =>
+  Object.fromEntries(Object.entries(links).map(([key, url]) => [key, url.slice(SITE_ORIGIN.length)])) as T;
+
+export const DOCS_HREF = onThisHost(DOCS);
+export const AI_HREF = onThisHost(AI);
+
 /** GitLab is canonical. GitHub is a mirror, and is labelled as one. */
 export const CODE = {
   gitlabGroup: "https://gitlab.com/quip.network",

@@ -23,7 +23,9 @@ function treeOf(slugs: string[]) {
 function linkFor(Base: FC<AnchorHTMLAttributes<HTMLAnchorElement>>, newTab: boolean) {
   return function Anchor(props: AnchorHTMLAttributes<HTMLAnchorElement>) {
     const href = props.href ?? "";
-    if (/^mailto:/.test(href) || href.startsWith(SITE_URL)) return <a {...props} />;
+    if (/^mailto:/.test(href)) return <a {...props} />;
+    // Links back to this site stay on the host the visitor is on.
+    if (href.startsWith(SITE_URL)) return <a {...props} href={href.slice(SITE_URL.length) || "/"} />;
     if (/^https?:\/\//.test(href)) return newTab ? <a {...props} target="_blank" rel="noopener noreferrer" /> : <a {...props} />;
     return <Base {...props} />;
   };

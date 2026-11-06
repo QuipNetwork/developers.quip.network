@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { SideNav } from "@/components/SideNav";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { CODE, DOCS, NETWORK, SITE } from "@/data/links";
+import { CODE, DOCS_HREF as DOCS, NETWORK, SITE } from "@/data/links";
 import { EXPLORER } from "@/data/testnet";
 import { BuildWithAi } from "@/sections/BuildWithAi";
 import { Code } from "@/sections/Code";

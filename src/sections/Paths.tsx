@@ -4,7 +4,7 @@ import { LinkRow } from "../components/LinkRow";
 import { MonoLabel } from "@design/components/Headings";
 import { PrimaryLink } from "@design/components/Buttons";
 import { PersonaIcon, type PersonaShape } from "@design/components/PersonaIcon";
-import { DOCS, CODE, SITE } from "../data/links";
+import { DOCS_HREF as DOCS, CODE, SITE } from "../data/links";
 import { EXPLORER } from "../data/testnet";
 
 /*

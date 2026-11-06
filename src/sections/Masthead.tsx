@@ -3,7 +3,7 @@ import { BlackButton, GreyButton } from "@design/components/Buttons";
 import { PersonaIcon } from "@design/components/PersonaIcon";
 import { MastheadGraphic } from "../components/MastheadGraphic";
 import { NetworkPulse } from "../components/NetworkStatus";
-import { DOCS, SOCIAL, LAST_UPDATED } from "../data/links";
+import { DOCS_HREF as DOCS, SOCIAL, LAST_UPDATED } from "../data/links";
 import { EVM } from "../data/testnet";
 import { BRAND_GRADIENT } from "@design/components/pageLayout";
 

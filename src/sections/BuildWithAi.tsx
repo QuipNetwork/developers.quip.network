@@ -3,7 +3,7 @@ import { LinkRow } from "../components/LinkRow";
 import { MonoLabel } from "@design/components/Headings";
 import { GhostLink } from "@design/components/Buttons";
 import { CopyCommand } from "../components/CopyCommand";
-import { AI, DOCS } from "../data/links";
+import { AI, AI_HREF, DOCS_HREF } from "../data/links";
 import { CHAIN, EVM, EXPLORER } from "../data/testnet";
 
 // Everything an agent needs to start work, in one paste.
@@ -28,17 +28,17 @@ const SURFACES = [
   {
     label: "llms.txt",
     description: "Annotated page index",
-    href: AI.llmsTxt,
+    href: AI_HREF.llmsTxt,
   },
   {
     label: "llms-full.txt",
     description: "Whole docs, one file",
-    href: AI.llmsFullTxt,
+    href: AI_HREF.llmsFullTxt,
   },
   {
     label: "Markdown mirrors",
     description: "Append .md to any page",
-    href: DOCS.useWithAi,
+    href: DOCS_HREF.useWithAi,
   },
   {
     label: "This portal's llms.txt",
@@ -94,7 +94,7 @@ export function BuildWithAi() {
             ))}
           </ul>
           <div className="mt-1">
-            <GhostLink href={DOCS.useWithAi} external>
+            <GhostLink href={DOCS_HREF.useWithAi} external>
               Use Docs with AI
             </GhostLink>
           </div>

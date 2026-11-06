@@ -149,6 +149,7 @@ await group("search engines", async (bad) => {
     const robots = page.headers.get("x-robots-tag");
     if (PRODUCTION ? robots : robots !== "noindex") bad(`${location} has X-Robots-Tag: ${robots}`);
     if (/umami/i.test(html)) bad(`${location} loads analytics`);
+    if (/<a [^>]*href="https:\/\/developers\.quip\.network/.test(html)) bad(`${location} links away from this host`);
   });
   if (!PRODUCTION) {
     for (const path of ["/api/health", "/fonts/ABCFavoritVariable.woff2", "/docs/", "/docs/llms.txt"]) {
