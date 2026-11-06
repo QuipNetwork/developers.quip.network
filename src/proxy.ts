@@ -49,7 +49,7 @@ function route(request: NextRequest, pathname: string) {
   if (pathname.length > 1 && pathname.endsWith("/")) return redirect(request, pathname.replace(/\/+$/, ""));
 
   // An agent that asks for Markdown gets the page's twin at the page's own URL.
-  if ((pathname === "/docs" || pathname.startsWith("/docs/")) && !/\.[a-z0-9]+$/i.test(pathname) && isMarkdownPreferred(request)) {
+  if ((pathname === "/docs" || pathname.startsWith("/docs/")) && !/\.[a-z][a-z0-9]*$/i.test(pathname) && isMarkdownPreferred(request)) {
     return NextResponse.rewrite(at(request, `${pathname}.md`), {
       headers: { Vary: "Accept", "Content-Type": "text/markdown; charset=utf-8", "X-Robots-Tag": "noindex" },
     });

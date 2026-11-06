@@ -10,6 +10,8 @@
  * search engine signals, not-found pages, caching and redirects. Needs a synced content/docs.
  */
 import { spawnSync } from "node:child_process";
+import { get as getHttp } from "node:http";
+import { get as getHttps } from "node:https";
 
 const args = process.argv.slice(2);
 const PRODUCTION = args.includes("--production");
@@ -180,7 +182,15 @@ await group("caching and compression", async (bad) => {
   const page = await at("/docs", { headers: { "Accept-Encoding": "gzip" } });
   if (page.headers.get("content-encoding") !== "gzip") bad("pages are not compressed");
   const etag = page.headers.get("etag");
-  if (etag && (await at("/docs", { headers: { "Accept-Encoding": "gzip", "If-None-Match": etag } })).status !== 304) bad("no 304 for an unchanged page");
+  // Not fetch: it adds no-cache to a conditional request, which makes the server send the page.
+  const conditional = await new Promise((resolve, reject) => {
+    const get = base.startsWith("https:") ? getHttps : getHttp;
+    get(`${base}/docs`, { headers: { "Accept-Encoding": "gzip", "If-None-Match": etag } }, (response) => {
+      response.resume();
+      resolve(response.statusCode);
+    }).on("error", reject);
+  });
+  if (etag && conditional !== 304) bad(`an unchanged page answered ${conditional}, not 304`);
   if (PRODUCTION && !page.headers.get("strict-transport-security")) bad("no HSTS");
   if (/(localhost|127\.0\.0\.1|:300[0-9])/.test(JSON.stringify([...page.headers]))) bad("a header leaks an internal address");
 });
