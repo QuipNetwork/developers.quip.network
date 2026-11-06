@@ -76,6 +76,7 @@ const pages = JSON.parse((await tool("list_pages", {})).content[0].text);
 const twins = new Map();
 
 await group(`Markdown for all ${pages.length} pages`, async (bad) => {
+  let noVary = 0;
   await each(pages, async (page) => {
     const twinPath = pathOf(page.markdown_url);
     const twin = await at(twinPath);
@@ -88,8 +89,9 @@ await group(`Markdown for all ${pages.length} pages`, async (bad) => {
     if (!negotiated.headers.get("vary")?.toLowerCase().includes("accept")) bad(`${page.url}: Markdown without Vary: Accept`);
     const html = await at(pathOf(page.url), { headers: { Accept: "text/html" } });
     if (!html.headers.get("content-type")?.startsWith("text/html")) bad(`${page.url}: HTML was not preferred`);
-    if (!/(^|,\s*)accept(,|$)/i.test(html.headers.get("vary") ?? "")) bad(`${page.url}: HTML without Vary: Accept`);
+    if (!/(^|,\s*)accept(,|$)/i.test(html.headers.get("vary") ?? "")) noVary += 1;
   });
+  if (noVary) bad(`${noVary} pages of HTML lack Vary: Accept, which Caddy adds (deploy/host/Caddyfile)`);
 });
 
 await group("MCP tools", async (bad) => {
@@ -178,7 +180,7 @@ await group("caching and compression", async (bad) => {
   const page = await at("/docs", { headers: { "Accept-Encoding": "gzip" } });
   if (page.headers.get("content-encoding") !== "gzip") bad("pages are not compressed");
   const etag = page.headers.get("etag");
-  if (etag && (await at("/docs", { headers: { "If-None-Match": etag } })).status !== 304) bad("no 304 for an unchanged page");
+  if (etag && (await at("/docs", { headers: { "Accept-Encoding": "gzip", "If-None-Match": etag } })).status !== 304) bad("no 304 for an unchanged page");
   if (PRODUCTION && !page.headers.get("strict-transport-security")) bad("no HSTS");
   if (/(localhost|127\.0\.0\.1|:300[0-9])/.test(JSON.stringify([...page.headers]))) bad("a header leaks an internal address");
 });
