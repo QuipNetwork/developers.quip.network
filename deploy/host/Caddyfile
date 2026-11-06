@@ -3,6 +3,8 @@
 # seconds a container takes to restart on an update.
 
 developers-staging.quip.network {
+	# Docs URLs answer with HTML or Markdown. Next overwrites Vary on HTML, so it is added here.
+	header /docs* +Vary "Accept"
 	@compress not path /mcp /mcp/*
 	encode @compress zstd gzip
 	reverse_proxy 127.0.0.1:3001 {
@@ -16,6 +18,7 @@ developers-staging.quip.network {
 # Production, enabled at cutover:
 # developers.quip.network {
 # 	header Strict-Transport-Security "max-age=31536000"
+# 	header /docs* +Vary "Accept"
 # 	@compress not path /mcp /mcp/*
 # 	encode @compress zstd gzip
 # 	reverse_proxy 127.0.0.1:3002 {

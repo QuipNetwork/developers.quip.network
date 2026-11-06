@@ -78,8 +78,6 @@ const checks = {
     const response = await at("/docs/getting-started/quickstart", { headers: { Accept: "text/markdown" } });
     must(response.headers.get("content-type")?.startsWith("text/markdown"), "HTML came back");
     must(response.headers.get("vary")?.toLowerCase().includes("accept"), "Markdown does not declare Vary: Accept");
-    const html = await at("/docs/getting-started/quickstart");
-    must(/(^|,\s*)accept(,|$)/i.test(html.headers.get("vary") ?? ""), `HTML has Vary: ${html.headers.get("vary")}`);
   },
   async redirects() {
     const slash = await at("/docs/");
