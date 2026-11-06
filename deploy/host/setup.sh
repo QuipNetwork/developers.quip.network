@@ -31,6 +31,11 @@ CONF
 printf 'net.mptcp.enabled = 0\n' >/etc/sysctl.d/90-no-mptcp.conf
 sysctl -q -p /etc/sysctl.d/90-no-mptcp.conf || echo "sysctl not applied now; it applies at boot"
 
+# The cloud image's resolver answers LLMNR and mDNS on every interface. Nothing here needs them.
+install -d /etc/systemd/resolved.conf.d
+printf '[Resolve]\nLLMNR=no\nMulticastDNS=no\n' >/etc/systemd/resolved.conf.d/90-portal.conf
+if systemctl is-active -q systemd-resolved; then systemctl restart systemd-resolved; fi
+
 # Debian's sshd logs only to the journal, as ssh.service, which upstream's filter does not match.
 cat >/etc/fail2ban/jail.d/sshd.local <<'CONF'
 [sshd]
