@@ -65,6 +65,9 @@ const SKIP = [
   "https://schema.org", // JSON-LD vocabulary, not a link
   "quip.network/#organization", // JSON-LD @id anchors
   "quip.network/#website",
+  // LinkedIn answers 403 to every non-browser client, so a probe can't tell this
+  // page dead from blocked.
+  "linkedin.com/company/postquant-labs",
 ];
 
 /*
