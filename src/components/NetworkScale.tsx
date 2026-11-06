@@ -26,10 +26,10 @@ function Figure({
 }) {
   return (
     <div className="flex flex-col gap-1">
-      <span className="[font-family:var(--font-mono)] font-features-['case'] text-[10px] leading-none font-medium tracking-[0.4px] text-(--color-muted) uppercase">
+      <span className="[font-family:var(--font-mono)] font-features-['case'] text-[11px] leading-none font-medium tracking-[0.4px] text-(--color-muted) uppercase">
         {label}
       </span>
-      <span className="[font-family:var(--font-heading)] text-[22px] leading-[1.05] font-medium tracking-[-0.02em] text-zinc-950 tabular-nums">
+      <span className="[font-family:var(--font-heading)] text-[21px] leading-[1.05] font-medium tracking-[-0.02em] text-zinc-950 tabular-nums">
         {value}
       </span>
       {note && (
@@ -45,13 +45,13 @@ export function NetworkScale() {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-baseline gap-2.5">
-        <span className="[font-family:var(--font-mono)] font-features-['case'] text-[10px] leading-none font-medium tracking-[0.4px] text-(--color-muted) uppercase">
+        <span className="[font-family:var(--font-mono)] font-features-['case'] text-[11px] leading-none font-medium tracking-[0.4px] text-(--color-muted) uppercase">
           Network scale
         </span>
-        <span className="border border-(--color-border) bg-(--color-surface-1) px-1.5 py-0.5 [font-family:var(--font-mono)] font-features-['case'] text-[9.5px] leading-none font-medium tracking-[0.4px] text-(--color-text-subtle) uppercase">
+        <span className="border border-(--color-border) bg-(--color-surface-1) px-1.5 py-0.5 [font-family:var(--font-mono)] font-features-['case'] text-[11px] leading-none font-medium tracking-[0.4px] text-(--color-text-subtle) uppercase">
           {S.chain} · {S.takenOn}
         </span>
-        <span className="text-[10.5px] leading-none text-(--color-muted) tabular-nums">
+        <span className="text-[11px] leading-none text-(--color-muted) tabular-nums">
           block {S.atBlock.toLocaleString("en-US")}
         </span>
       </div>
@@ -75,10 +75,10 @@ export function NetworkScale() {
       {/* Reported, not interpreted — see the note at the top of this file. */}
       <div className="flex flex-col gap-1.5 border-t border-(--color-border) pt-2.5">
         <div className="flex items-baseline justify-between gap-3">
-          <span className="[font-family:var(--font-mono)] font-features-['case'] text-[10px] leading-none font-medium tracking-[0.4px] text-(--color-muted) uppercase">
+          <span className="[font-family:var(--font-mono)] font-features-['case'] text-[11px] leading-none font-medium tracking-[0.4px] text-(--color-muted) uppercase">
             Share of miners that have won
           </span>
-          <span className="[font-family:var(--font-mono)] text-[11.5px] leading-none font-medium text-(--color-accent-text) tabular-nums">
+          <span className="[font-family:var(--font-mono)] text-[12px] leading-none font-medium text-(--color-accent-text) tabular-nums">
             {(won * 100).toFixed(1)}%
           </span>
         </div>

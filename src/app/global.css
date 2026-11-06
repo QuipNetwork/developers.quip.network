@@ -1560,3 +1560,26 @@ kbd {
     font-size: 11px;
   }
 }
+
+/* Named after everything above, so nothing in the rail can undercut the scale. */
+#nd-sidebar button,
+#nd-sidebar-mobile button,
+#nd-sidebar a:has(> svg[data-icon]),
+#nd-sidebar-mobile a:has(> svg[data-icon]) {
+  font-size: 12px !important;
+}
+
+/* Code lands on the scale wherever it sits, rather than on a fraction of its parent. */
+.prose code,
+.quip-callout code,
+#nd-page div[class*="bg-fd-card"] code {
+  font-size: 13px;
+}
+
+.prose :is(h1, h2, h3, h4) code {
+  font-size: inherit;
+}
+
+#nd-toc code {
+  font-size: 11px;
+}

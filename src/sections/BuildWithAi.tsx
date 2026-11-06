@@ -63,7 +63,7 @@ export function BuildWithAi() {
               <MonoLabel size="xs" tone="dark">
                 Bootstrap prompt
               </MonoLabel>
-              <p className="m-0 text-[12.5px] leading-[1.45] text-zinc-400">
+              <p className="m-0 text-[13px] leading-[1.45] text-zinc-400">
                 Docs index, testnet endpoint, and the right package names.
               </p>
             </div>

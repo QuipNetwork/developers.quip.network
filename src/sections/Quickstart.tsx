@@ -90,7 +90,7 @@ const PATHS: Path[] = [
 ];
 
 const tabClass =
-  "inline-flex cursor-pointer items-center border border-(--color-border) bg-(--color-zinc-50) px-2.5 pt-1.5 pb-1 [font-family:var(--font-mono)] font-features-['case'] text-[10.5px] leading-[1.2] font-medium tracking-[0.4px] text-zinc-600 uppercase transition-colors duration-150 select-none hover:bg-(--color-surface-2) hover:text-zinc-950";
+  "inline-flex cursor-pointer items-center border border-(--color-border) bg-(--color-zinc-50) px-2.5 pt-1.5 pb-1 [font-family:var(--font-mono)] font-features-['case'] text-[11px] leading-[1.2] font-medium tracking-[0.4px] text-zinc-600 uppercase transition-colors duration-150 select-none hover:bg-(--color-surface-2) hover:text-zinc-950";
 
 /*
  * Tabs without JavaScript: a radio group drives the panels, so the section works
@@ -138,7 +138,7 @@ export function Quickstart() {
                     {path.title}
                   </h3>
                 </div>
-                <p className="m-0 text-[12.5px] leading-[1.5] text-(--color-text-subtle)">
+                <p className="m-0 text-[13px] leading-[1.5] text-(--color-text-subtle)">
                   {path.body}
                 </p>
                 <CopyCommand
@@ -147,7 +147,7 @@ export function Quickstart() {
                 />
                 {path.note && (
                   <div className="flex gap-2.5 bg-(--color-surface-1) px-3 py-2">
-                    <span className="shrink-0 [font-family:var(--font-mono)] font-features-['case'] text-[9.5px] leading-[18px] font-medium tracking-[0.4px] text-zinc-950 uppercase">
+                    <span className="shrink-0 [font-family:var(--font-mono)] font-features-['case'] text-[11px] leading-[18px] font-medium tracking-[0.4px] text-zinc-950 uppercase">
                       Note
                     </span>
                     <p className="m-0 text-[12px] leading-[1.5] text-(--color-text-subtle)">

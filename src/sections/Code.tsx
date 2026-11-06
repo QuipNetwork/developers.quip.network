@@ -102,7 +102,7 @@ export function Code() {
             <MonoLabel size="xs">Packages</MonoLabel>
             <span className="text-[12px] text-(--color-muted)">
               {"Always the "}
-              <code className="[font-family:var(--font-mono)] text-[11.5px]">
+              <code className="[font-family:var(--font-mono)] text-[12px]">
                 @quip.network
               </code>
               {" scope"}

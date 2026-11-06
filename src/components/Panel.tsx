@@ -59,7 +59,7 @@ export function Panel({
         </MonoLabel>
         <h2
           className={clsx(
-            "m-0 [font-family:var(--font-heading)] text-[17px] leading-[1.2] font-medium tracking-[-0.01em]",
+            "m-0 [font-family:var(--font-heading)] text-[18px] leading-[1.2] font-medium tracking-[-0.01em]",
             isDark ? "text-zinc-50" : "text-zinc-950",
           )}
         >

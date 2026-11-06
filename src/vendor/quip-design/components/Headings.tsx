@@ -55,7 +55,7 @@ export function SubsectionHeading({
 }
 
 const MONO_LABEL_SIZE = {
-  xs: "text-[10px]",
+  xs: "text-[11px]",
   sm: "text-[11px]",
   md: "text-[12px]",
   lg: "text-[14px]",

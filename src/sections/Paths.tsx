@@ -104,7 +104,7 @@ export function Paths() {
             <header className="flex flex-col gap-2">
               <div className="flex items-center">
                 <span
-                  className="inline-flex items-center gap-1.5 px-2 py-1 [font-family:var(--font-mono)] font-features-['case'] text-[10px] leading-none font-medium tracking-[0.4px] uppercase"
+                  className="inline-flex items-center gap-1.5 px-2 py-1 [font-family:var(--font-mono)] font-features-['case'] text-[11px] leading-none font-medium tracking-[0.4px] uppercase"
                   style={{ background: audience.tint, color: audience.ink }}
                 >
                   <PersonaIcon shape={audience.shape} />
@@ -135,7 +135,7 @@ export function Paths() {
                   <li
                     key={req}
                     className={clsx(
-                      "relative pl-3 [font-family:var(--font-mono)] text-[11.5px] leading-[1.5] before:absolute before:top-[6px] before:left-0 before:block before:h-1.25 before:w-1.75 before:bg-current before:content-[''] before:[clip-path:polygon(0%_0%,100%_50%,0%_100%)]",
+                      "relative pl-3 [font-family:var(--font-mono)] text-[12px] leading-[1.5] before:absolute before:top-[6px] before:left-0 before:block before:h-1.25 before:w-1.75 before:bg-current before:content-[''] before:[clip-path:polygon(0%_0%,100%_50%,0%_100%)]",
                       audience.requirements.length === 0
                         ? "text-(--color-muted)"
                         : "text-zinc-950",

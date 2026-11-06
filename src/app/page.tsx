@@ -71,7 +71,7 @@ export default function Home() {
                 className="h-[26px] w-auto dark:invert"
               />
             </a>
-            <span className="border border-(--color-border) px-1.5 pt-1 pb-0.5 [font-family:var(--font-mono)] font-features-['case'] text-[10px] leading-none font-medium tracking-[0.4px] text-(--color-muted) uppercase max-md:hidden">
+            <span className="border border-(--color-border) px-1.5 pt-1 pb-0.5 [font-family:var(--font-mono)] font-features-['case'] text-[11px] leading-none font-medium tracking-[0.4px] text-(--color-muted) uppercase max-md:hidden">
               Developers
             </span>
 
@@ -129,7 +129,7 @@ export default function Home() {
               <Code />
               <Help />
 
-              <footer className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 px-1 pt-1 pb-2 text-[11.5px] text-(--color-muted)">
+              <footer className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 px-1 pt-1 pb-2 text-[12px] text-(--color-muted)">
                 <span className="font-features-['case']">
                   © 2026 Quantum Unit Interlock Protocol
                 </span>

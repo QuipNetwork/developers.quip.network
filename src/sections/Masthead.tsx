@@ -52,7 +52,7 @@ export function Masthead() {
         <h1 className="m-0 max-w-[600px] [font-family:var(--font-heading)] text-[clamp(24px,2vw+16px,32px)] leading-[1.12] font-medium tracking-[-0.02em] [text-wrap:balance] text-zinc-950">
           Build on the worldwide quantum computer
         </h1>
-        <p className="m-0 max-w-[560px] text-[13.5px] leading-[1.5] text-(--color-text-subtle)">
+        <p className="m-0 max-w-[560px] text-[14px] leading-[1.5] text-(--color-text-subtle)">
           Post-quantum protection for assets on chains you already use, and
           optimization jobs that run on real quantum hardware. Pick a path below
           for the install command and the page that continues it.

@@ -106,7 +106,7 @@ function Diamond({
 }
 
 const LABEL =
-  "[font-family:var(--font-mono)] font-features-['case'] text-[9.5px] leading-none font-medium tracking-[0.4px] uppercase";
+  "[font-family:var(--font-mono)] font-features-['case'] text-[11px] leading-none font-medium tracking-[0.4px] uppercase";
 
 function Row({ k, v }: { k: string; v: string | number }) {
   return (
@@ -175,7 +175,7 @@ export function NodeMap() {
         className="relative overflow-hidden border border-(--color-border) bg-(--color-zinc-50)"
       >
         <div className="pointer-events-none absolute top-0 left-0 z-10 flex flex-wrap items-center gap-2 p-2.5">
-          <span className={`${LABEL} text-[10px] text-zinc-950`}>Node map</span>
+          <span className={`${LABEL} text-[11px] text-zinc-950`}>Node map</span>
           <span
             className={`${LABEL} border border-(--color-border) bg-(--color-bg) px-1.5 py-0.5 text-(--color-text-subtle)`}
           >
@@ -259,7 +259,7 @@ export function NodeMap() {
               >
                 <Diamond r={markerSize(n)} fill="var(--color-accent)" />
               </svg>
-              <span className="[font-family:var(--font-mono)] text-[9.5px] leading-none text-(--color-muted) tabular-nums">
+              <span className="[font-family:var(--font-mono)] text-[11px] leading-none text-(--color-muted) tabular-nums">
                 {n}
               </span>
             </span>
@@ -279,7 +279,7 @@ export function NodeMap() {
           >
             {cluster.nodes.length === 1 ? (
               <>
-                <div className="[font-family:var(--font-mono)] text-[11.5px] leading-tight font-medium">
+                <div className="[font-family:var(--font-mono)] text-[12px] leading-tight font-medium">
                   {detail.cities[0][0]}
                 </div>
                 <dl className="mt-2 flex flex-col gap-1 border-t border-zinc-700 pt-2">
@@ -296,7 +296,7 @@ export function NodeMap() {
                     nodes
                   </span>
                   {detail.cities.length > 1 && (
-                    <span className="ml-auto text-[10.5px] leading-none text-zinc-500">
+                    <span className="ml-auto text-[11px] leading-none text-zinc-500">
                       {detail.cities.length} locations
                     </span>
                   )}

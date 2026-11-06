@@ -53,7 +53,7 @@ export function LinkRow({
         {description && (
           <span
             className={clsx(
-              "ml-auto text-right text-[12.5px] leading-[1.45] max-md:text-left",
+              "ml-auto text-right text-[13px] leading-[1.45] max-md:text-left",
               isDark ? "text-zinc-400" : "text-(--color-muted)",
             )}
           >

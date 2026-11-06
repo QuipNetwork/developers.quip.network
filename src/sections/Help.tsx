@@ -61,7 +61,7 @@ export function Help() {
                 Open the feedback board
               </GreyButton>
             </div>
-            <p className="m-0 text-[11.5px] leading-[1.45] text-zinc-400">
+            <p className="m-0 text-[12px] leading-[1.45] text-zinc-400">
               One board for every Quip product, not developer-only. Say which
               surface you were on so it routes correctly. A dedicated developer
               channel does not exist yet.
