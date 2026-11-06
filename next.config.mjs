@@ -30,6 +30,8 @@ const config = {
     return [
       // Not /_next/static, whose hashed files Next marks immutable, or /mcp, which sends no-store.
       { source: "/((?!_next/static/|mcp$).*)", headers: [{ key: "Cache-Control", value: "public, max-age=0, must-revalidate" }] },
+      // The same URL answers with HTML or Markdown, so a cache has to keep the two apart.
+      { source: "/docs/:path*", headers: [{ key: "Vary", value: "Accept" }] },
       { source: "/fonts/:path*", headers: [{ key: "Cache-Control", value: "public, max-age=604800, immutable" }] },
       { source: "/llms.txt", headers: [{ key: "Content-Type", value: "text/plain; charset=utf-8" }] },
       { source: "/docs/:path*.md", headers: markdown },

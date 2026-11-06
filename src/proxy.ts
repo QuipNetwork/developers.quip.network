@@ -55,9 +55,6 @@ function route(request: NextRequest, pathname: string) {
     });
   }
 
-  // The same URL answers with HTML or Markdown, so a cache has to keep the two apart.
-  if (pathname === "/docs" || pathname.startsWith("/docs/")) return NextResponse.next({ headers: { Vary: "Accept" } });
-
   return NextResponse.next();
 }
 
