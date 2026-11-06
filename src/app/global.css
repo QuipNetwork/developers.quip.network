@@ -51,7 +51,7 @@
   /* Fumadocs' "primary" marks what is current or selected. On the portal that is ink. */
   --color-fd-primary: #09090b;
   --color-fd-primary-foreground: #fafafa;
-  --color-fd-ring: var(--quip-coral);
+  --color-fd-ring: #09090b;
   --quip-link: #09090b;
   --quip-link-rule: #a1a1aa;
   --quip-subtle: #52525c;
@@ -82,6 +82,7 @@
   --color-fd-accent-foreground: #fafafa;
   --color-fd-primary: #fafafa;
   --color-fd-primary-foreground: #09090b;
+  --color-fd-ring: #fafafa;
   --quip-link: #f4f4f5;
   --quip-link-rule: #71717b;
   --quip-subtle: #c9c9cb;
@@ -187,7 +188,7 @@ body {
 /* Gaisyr again, a size down: a subsection has to stand out from bold in running text. */
 .prose :where(h3) {
   font-family: var(--font-heading);
-  font-size: 19px;
+  font-size: 18px;
   font-weight: 500;
   line-height: 1.25;
   letter-spacing: -0.01em;
@@ -198,7 +199,7 @@ body {
 /* Never uppercase here: an h4 is often an identifier, and case is part of its name. */
 .prose :where(h4) {
   font-family: var(--font-body);
-  font-size: 15px;
+  font-size: 15.5px;
   font-weight: 500;
   line-height: 1.35;
   margin-top: 24px;
@@ -395,7 +396,7 @@ body {
     content: attr(data-label);
     display: block;
     font-family: var(--font-mono);
-    font-size: 10.5px;
+    font-size: 11px;
     font-weight: 500;
     letter-spacing: 0.4px;
     text-transform: uppercase;
@@ -460,7 +461,7 @@ body {
 .prose table[data-layout="records-wide"] td::before {
   content: attr(data-label);
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.4px;
   text-transform: uppercase;
@@ -499,7 +500,7 @@ body {
 
 .prose figure.shiki :where(pre, code) {
   font-family: var(--font-mono);
-  font-size: 13.5px;
+  font-size: 13px;
   line-height: 1.6;
   tab-size: 2;
   background: transparent;
@@ -532,7 +533,7 @@ body {
 .prose figure.shiki button::after {
   content: "Copy";
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.4px;
   line-height: 1;
@@ -567,7 +568,7 @@ body {
   background: var(--color-fd-muted);
   padding: 16px 20px 18px;
   margin-block: 1.75em;
-  font-size: 15px;
+  font-size: 15.5px;
   line-height: 1.6;
 }
 
@@ -580,7 +581,7 @@ body {
   display: inline-block;
   font-family: var(--font-mono);
   font-weight: 500;
-  font-size: 10.5px;
+  font-size: 11px;
   line-height: 1;
   letter-spacing: 0.4px;
   text-transform: uppercase;
@@ -779,7 +780,7 @@ body {
 [data-search-full] kbd,
 kbd {
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: 11px;
   border-radius: 0;
 }
 
@@ -789,12 +790,12 @@ kbd {
    ========================================================================== */
 
 :is(#nd-sidebar, #nd-sidebar-mobile) {
-  font-size: 13.5px;
+  font-size: 13px;
 }
 
 :is(#nd-sidebar, #nd-sidebar-mobile) a,
 :is(#nd-sidebar, #nd-sidebar-mobile) button {
-  font-size: 13.5px;
+  font-size: 13px;
   line-height: 1.35;
   padding-block: 6px;
   border-radius: 0;
@@ -854,7 +855,7 @@ kbd {
 
 #nd-toc a {
   display: block;
-  font-size: 12.5px;
+  font-size: 13px;
   line-height: 1.35;
   padding-block: 4px;
   transition: color 120ms;
@@ -903,7 +904,7 @@ kbd {
 }
 
 [role="dialog"] input {
-  font-size: 17px;
+  font-size: 15.5px;
   height: 36px;
 }
 
@@ -1088,7 +1089,7 @@ kbd {
 #nd-page > [class*="@container"] > a {
   gap: 4px;
   padding: 14px 16px;
-  font-size: 14px;
+  font-size: 15.5px;
   border: 1px solid var(--color-fd-border);
   border-radius: 0;
   transition: background-color 150ms;
@@ -1104,7 +1105,7 @@ kbd {
 }
 
 #nd-page > [class*="@container"] > a > p {
-  font-size: 12.5px;
+  font-size: 13px;
   line-height: 1.45;
   color: var(--quip-subtle);
 }
@@ -1171,7 +1172,7 @@ kbd {
   .prose h2 {
     margin-top: 36px;
     margin-bottom: 16px;
-    font-size: 19px;
+    font-size: 20px;
   }
 
   .prose h3 {
@@ -1225,7 +1226,7 @@ kbd {
 #nd-page a[data-card] h3 {
   margin: 0 0 4px;
   font-family: var(--font-heading);
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 500;
   letter-spacing: -0.01em;
 }
@@ -1250,7 +1251,7 @@ kbd {
 }
 
 .prose [role="tablist"] button {
-  font-size: 13.5px;
+  font-size: 13px;
   border-radius: 0;
 }
 
@@ -1267,10 +1268,15 @@ kbd {
   padding-block: 2px;
 }
 
-/* Focus: coral, 2 px, offset 2 px. */
+/* Focus: ink, 2 px, offset 2 px. Coral is 2.6:1 on the light ground, too faint for a focus ring. */
 :where(a, button, [tabindex]):focus-visible {
-  outline: 2px solid var(--quip-coral);
+  outline: 2px solid var(--color-fd-foreground);
   outline-offset: 2px;
+}
+
+/* In the rail a ring would be clipped by the scroller, so it sits inside the row. */
+:is(#nd-sidebar, #nd-sidebar-mobile) :where(a, button):focus-visible {
+  outline-offset: -2px;
 }
 
 ::selection {
@@ -1520,4 +1526,37 @@ kbd {
 :is(#nd-sidebar, #nd-sidebar-mobile) a.quip-nav-feedback {
   display: block;
   padding: 6px 8px;
+}
+
+/* The type scale, on every page.
+     40  page title         21  section strip      18  subsection, card title
+     15.5  reading text, callouts, h4              14  tables
+     13  rail pages, outline, inline code, code blocks, captions under a card
+     12  mono you can press: bar links, tabs, rail sections, page actions, Copy
+     11  mono labels: eyebrows, breadcrumbs, table headers, chips
+   Mono is wide and set in capitals, so a mono label a size down from its neighbour looks the
+   same size. Nothing sits between these steps. */
+[data-header-body] > div:last-child a,
+.quip-nav-toggle,
+[data-header-tabs] a,
+:is(#nd-sidebar, #nd-sidebar-mobile) button,
+:is(#nd-sidebar, #nd-sidebar-mobile) a:has(> svg[data-icon]),
+.quip-page-actions > *,
+.quip-page-footer {
+  font-size: 12px;
+}
+
+.prose figure.shiki button::after {
+  font-size: 12px;
+}
+
+.prose figure.shiki :where(pre, code) {
+  font-size: 13px;
+}
+
+/* On a phone the page actions step down a size, so they stay quieter than the title. */
+@media (max-width: 767px) {
+  .quip-page-actions > * {
+    font-size: 11px;
+  }
 }

@@ -71,7 +71,7 @@ export const layouts: DiagramLayouts = {
       "sc-a": { points: [[112, 72], [112, 212]] },
       "a-s": { points: [[128, 240], [212, 240]], label: { x: 170, y: 232 } },
       "s-sub": { points: [[348, 230], [488, 230]], label: { x: 418, y: 222 } },
-      "sub-s": { points: [[488, 250], [348, 250]], label: { x: 418, y: 266 } },
+      "sub-s": { points: [[488, 250], [348, 250]], label: { x: 418, y: 266, lines: ["returns the", "result"] } },
       "js-sub": { points: [[384, 72], [384, 100], [512, 100], [512, 164]], label: { x: 448, y: 94 } },
       "op-sub": { points: [[632, 72], [632, 164]], label: { x: 626, y: 112, anchor: "end" } },
     },

@@ -183,6 +183,9 @@ function Drawing({
       {data.edges.map((e) => (
         <Edge key={e.id} edge={e} layout={layout} />
       ))}
+      {layout.junctions?.map(([x, y]) => (
+        <circle key={`${x},${y}`} className="qd-junction" cx={x} cy={y} r={2.5} />
+      ))}
       {data.nodes.map((n) => (
         <Node key={n.id} node={n} layout={layout} />
       ))}

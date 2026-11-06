@@ -17,13 +17,12 @@ The docs use the home page's structure. The full guide is the Developer Portal b
 
 ## Coral
 
-Coral (`#FF6C78`) means "danger", and marks keyboard focus. On the docs it is nothing else: not links,
+Coral (`#FF6C78`) means "danger". On the docs it is nothing else: not the focus ring, which is ink, not links,
 not active states, not headings, not decoration, not syntax. What is current or selected is ink.
 Links are ink with an underline, a step darker than the text around them.
 
 | Use | Colour |
 | --- | --- |
-| Keyboard focus | Coral ring, 2 px, offset 2 px |
 | Danger callout | Coral chip on a `#FFEDEE` panel |
 
 ## Getting attention
@@ -52,16 +51,20 @@ In MDX: `<Callout type="info|warn|error|success" title="Note">`. In `docs/`, unt
 
 ## Type
 
-| Element | Style |
-| --- | --- |
-| Page title | Gaisyr Medium, up to 40 px, tight tracking |
-| h2 | Gaisyr Medium, 21 px, on a strip |
-| h3 | Gaisyr Medium, 19 px |
-| h4 | Favorit Medium, 15 px. Never uppercase: it is often an identifier |
-| Body | Favorit, 15.5 px / 1.65, text stops at 736 px. In dark, zinc 250, not white |
-| Code | Favorit Mono, 14 px in blocks, 0.86 em inline |
-| Eyebrows, table headers | Favorit Mono Medium, 11 px, uppercase |
+One scale, on every page. Nothing sits between these steps.
 
+| Size | Use |
+| --- | --- |
+| 40 px, Gaisyr | Page title, fluid down to 30 px |
+| 21 px, Gaisyr | Section strip (h2) |
+| 18 px, Gaisyr | Subsection (h3), card title |
+| 15.5 px, Favorit | Reading text and callouts at 1.65; h4 at weight 500 |
+| 14 px, Favorit | Tables |
+| 13 px | Rail pages, outline, code, card text |
+| 12 px, mono | What you can press: bar links, tabs, rail sections, page actions, Copy |
+| 11 px, mono | Labels: eyebrows, breadcrumbs, table headers, chips |
+
+Mono is wide and set in capitals, so a mono label a size down from its neighbour looks the same size.
 Never apply uppercase to code. Case is part of an identifier's name.
 
 ## Line breaks
@@ -99,7 +102,8 @@ scroll, and Copy is always visible.
 
 ## Diagrams
 
-Hand-drawn SVG in `src/components/diagrams/`, keyed to the exact Mermaid source. If the source
+Flat, in the page's own tokens: tiles with hairlines, fine lines, a small dot where one line branches,
+and a mono tag for what moves. No objects, figures or 3D. Hand-drawn SVG in `src/components/diagrams/`, keyed to the exact Mermaid source. If the source
 changes, the site falls back to Mermaid until someone redraws it, so a drawing can never go stale.
 `npm run check:diagrams -- --base <url>` proves that every node, edge and label matches. Each has a
 stacked layout for phones. Markdown twins keep the Mermaid text for AI tools.

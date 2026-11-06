@@ -53,6 +53,7 @@ export const layouts: DiagramLayouts = {
       SLV: { x: 583.5, y: 96, w: 96, h: 48 },
     },
     groups: {},
+    junctions: [[116, 120]],
     edges: {
       "q-enc": { points: [[100.5, 120], [116, 120], [116, 24], [176, 24]], label: { x: 146, y: 18 } },
       "q-ver": { points: [[100.5, 120], [176, 120]], label: { x: 146, y: 114 } },
@@ -63,7 +64,7 @@ export const layouts: DiagramLayouts = {
       "h-dec": { points: [[386, 206], [268, 206]], label: { x: 327, y: 200 } },
       "dec-h": { points: [[268, 226], [386, 226]], label: { x: 327, y: 242 } },
       "h-slv": { points: [[494, 110], [583.5, 110]], label: { x: 539, y: 104 } },
-      "slv-h": { points: [[583.5, 130], [494, 130]], label: { x: 539, y: 146 } },
+      "slv-h": { points: [[583.5, 130], [494, 130]], label: { x: 539, y: 146, lines: ["XQMX", "sample"] } },
     },
   },
   narrow: {
@@ -78,6 +79,7 @@ export const layouts: DiagramLayouts = {
       H: { x: 269.5, y: 64, w: 70, h: 288, lines: ["Host", "program"] },
     },
     groups: {},
+    junctions: [[16, 88], [16, 168]],
     edges: {
       "q-enc": { points: [[16, 40.5], [16, 88], [76, 88]], label: { x: 46, y: 82 } },
       "q-ver": { points: [[16, 40.5], [16, 168], [76, 168]], label: { x: 46, y: 162 } },
@@ -86,7 +88,7 @@ export const layouts: DiagramLayouts = {
       "h-ver": { points: [[269.5, 158], [164, 158]], label: { x: 217, y: 152 } },
       "ver-h": { points: [[164, 178], [269.5, 178]], label: { x: 217, y: 193 } },
       "h-dec": { points: [[269.5, 238], [164, 238]], label: { x: 217, y: 232 } },
-      "dec-h": { points: [[164, 258], [269.5, 258]], label: { x: 217, y: 273 } },
+      "dec-h": { points: [[164, 258], [269.5, 258]], label: { x: 217, y: 282, lines: ["decoded", "result"] } },
       "h-slv": { points: [[269.5, 318], [164, 318]], label: { x: 217, y: 312 } },
       "slv-h": { points: [[164, 338], [269.5, 338]], label: { x: 217, y: 353 } },
     },

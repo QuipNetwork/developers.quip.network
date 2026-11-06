@@ -105,7 +105,7 @@ export const layouts: DiagramLayouts = {
       },
       "v-m": {
         points: [[236.5, 224], [296, 224], [296, 264]],
-        label: { x: 241, y: 202, anchor: "start", lines: ["model-building", "program"] },
+        label: { x: 339, y: 196, anchor: "end", lines: ["model-building", "program"] },
       },
       "m-h": { points: [[296, 316], [296, 380], [236.5, 380]] },
       "h-slv": { points: [[104, 400], [104, 460]] },

@@ -46,7 +46,7 @@ const SECTIONS = [
 ];
 
 const topLinkClass =
-  "[font-family:var(--font-mono)] font-features-['case'] text-[11px] leading-[1.2] font-medium tracking-[0.4px] text-(--color-text-subtle) uppercase no-underline transition-colors duration-150 hover:text-zinc-950";
+  "[font-family:var(--font-mono)] font-features-['case'] text-[12px] leading-[1.2] font-medium tracking-[0.4px] text-(--color-text-subtle) uppercase no-underline transition-colors duration-150 hover:text-zinc-950";
 
 export default function Home() {
   return (
@@ -108,7 +108,7 @@ export default function Home() {
                 href={NETWORK.feedback}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:bg-zinc-750 inline-flex items-center border border-zinc-900 bg-zinc-900 px-2.5 pt-1.5 pb-1 [font-family:var(--font-mono)] font-features-['case'] text-[10.5px] leading-[1.2] font-medium tracking-[0.4px] text-zinc-50 uppercase no-underline transition-colors duration-150"
+                className="hover:bg-zinc-750 inline-flex items-center border border-zinc-900 bg-zinc-900 px-2.5 pt-1.5 pb-1 [font-family:var(--font-mono)] font-features-['case'] text-[12px] leading-[1.2] font-medium tracking-[0.4px] text-zinc-50 uppercase no-underline transition-colors duration-150"
               >
                 Feedback
               </a>

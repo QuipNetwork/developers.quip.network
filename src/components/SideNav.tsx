@@ -65,7 +65,7 @@ export function SideNav({ items }: { items: Item[] }) {
               data-active={String(item.id === active)}
               // Keep the rail in sync when a link is clicked, ahead of the scroll settling.
               onClick={() => setActive(item.id)}
-              className="sidenav-link block px-2 py-1.5 [font-family:var(--font-mono)] font-features-['case'] text-[11px] leading-[1.2] font-medium tracking-[0.4px] whitespace-nowrap text-(--color-muted) uppercase no-underline transition-colors duration-150 hover:bg-(--color-surface-1) hover:text-zinc-950"
+              className="sidenav-link block px-2 py-1.5 [font-family:var(--font-mono)] font-features-['case'] text-[12px] leading-[1.2] font-medium tracking-[0.4px] whitespace-nowrap text-(--color-muted) uppercase no-underline transition-colors duration-150 hover:bg-(--color-surface-1) hover:text-zinc-950"
             >
               {item.label}
             </a>

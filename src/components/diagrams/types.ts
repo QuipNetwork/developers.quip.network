@@ -86,6 +86,8 @@ export interface DiagramLayout {
   nodes: Record<string, NodeBox>;
   groups: Record<string, GroupBox>;
   edges: Record<string, EdgeRoute>;
+  /** Where one line branches into several, marked so a join never reads as a crossing. */
+  junctions?: [number, number][];
 }
 
 export interface DiagramLayouts {

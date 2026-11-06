@@ -22,82 +22,20 @@ function Label({ x, y, text }: { x: number; y: number; text: string }) {
   );
 }
 
-/* The image gives each consumer sector an oval and a stick figure. */
-function Person({ box, label }: { box: Box; label: string }) {
-  const cx = box.x + box.w / 2;
-  const hips = box.y + box.h - 14;
-  return (
-    <>
-      <ellipse className="qd-shape" cx={cx} cy={box.y + 13} rx={box.w / 2 - 0.5} ry={12.5} />
-      <Label x={cx} y={box.y + 17.5} text={label} />
-      <circle className="qd-figure" cx={cx} cy={box.y + 34.5} r={4.5} />
-      <path
-        className="qd-figure"
-        d={`M${cx} ${box.y + 39} V${hips} M${cx - 9} ${box.y + 45} H${cx + 9} M${cx - 8} ${box.y + box.h} L${cx} ${hips} L${cx + 8} ${box.y + box.h}`}
-      />
-    </>
-  );
-}
-
-function Cube({ box, depth, label }: { box: Box; depth: number; label: string }) {
-  const [l, t, r, b] = [box.x, box.y, box.x + box.w, box.y + box.h];
-  return (
-    <>
-      <polygon
-        className="qd-shape"
-        points={`${l},${t + depth} ${l + depth},${t} ${r},${t} ${r - depth},${t + depth}`}
-      />
-      <polygon
-        className="qd-shape"
-        points={`${r - depth},${t + depth} ${r},${t} ${r},${b - depth} ${r - depth},${b}`}
-      />
-      <rect className="qd-shape" x={l} y={t + depth} width={box.w - depth} height={box.h - depth} />
-      <Label x={l + (box.w - depth) / 2} y={t + depth + (box.h - depth) / 2 + 4.5} text={label} />
-    </>
-  );
-}
-
-/* Three sheets, the front one with the document's wavy foot. */
-function Sheets({ box, depth, label }: { box: Box; depth: number; label: string }) {
-  const [w, h] = [box.w - depth * 2, box.h - depth];
-  const sheet = (x: number, y: number) =>
-    `M${x} ${y} H${x + w} V${y + h - 6} C${x + w * 0.66} ${y + h + 5} ${x + w * 0.33} ${y + h - 13} ${x} ${y + h - 3} Z`;
-  return (
-    <>
-      <path className="qd-shape" d={sheet(box.x + depth * 2, box.y)} />
-      <path className="qd-shape" d={sheet(box.x + depth, box.y + depth / 2)} />
-      <path className="qd-shape" d={sheet(box.x, box.y + depth)} />
-      <Label x={box.x + w / 2} y={box.y + depth + h / 2} text={label} />
-    </>
-  );
-}
-
-/* Two plain rectangles, one behind the other. */
-function Rects({ box, depth, label }: { box: Box; depth: number; label: string }) {
-  const [w, h] = [box.w - depth, box.h - depth];
-  return (
-    <>
-      <rect className="qd-shape" x={box.x + depth} y={box.y} width={w} height={h} />
-      <rect className="qd-shape" x={box.x} y={box.y + depth} width={w} height={h} />
-      <Label x={box.x + w / 2} y={box.y + depth + h / 2 + 4.5} text={label} />
-    </>
-  );
-}
-
-function Item({ shape, box, depth, label }: { shape: ItemShape; box: Box; depth: number; label: string }) {
+/* Every item is the same flat tile. The image's ovals, cubes and sheets stay in the data as what
+   each item is, but a diagram in this style says that with its label, not a drawn object. */
+function Item({ shape, box, label }: { shape: ItemShape; box: Box; label: string }) {
   return (
     <g data-kind="item" data-id={label} data-shape={shape}>
-      {shape === "person" && <Person box={box} label={label} />}
-      {shape === "cube" && <Cube box={box} depth={depth} label={label} />}
-      {shape === "sheets" && <Sheets box={box} depth={depth} label={label} />}
-      {shape === "rects" && <Rects box={box} depth={depth} label={label} />}
+      <rect className="qd-node" x={box.x} y={box.y} width={box.w} height={box.h} />
+      <Label x={box.x + box.w / 2} y={box.y + box.h / 2 + 4.5} text={label} />
     </g>
   );
 }
 
 function Layer({ layer, row, layout }: { layer: StackLayer; row: number; layout: StackLayout }) {
   const top = layout.frame.y + row * layout.rowHeight;
-  const { x, y, w, h, gap, depth } = layout.items;
+  const { x, y, w, h, gap } = layout.items;
   const width = (w - gap * (layer.items.length - 1)) / layer.items.length;
   const lines = layout.nameOnOneLine ? [layer.name.join(" ")] : layer.name;
   return (
@@ -115,7 +53,6 @@ function Layer({ layer, row, layout }: { layer: StackLayer; row: number; layout:
         <Item
           key={item.label}
           shape={item.shape}
-          depth={depth}
           label={item.label}
           box={{ x: x + i * (width + gap), y: top + y, w: width, h }}
         />
@@ -124,25 +61,17 @@ function Layer({ layer, row, layout }: { layer: StackLayer; row: number; layout:
   );
 }
 
-/* A hollow arrow across the divider between a layer and the next, its label inside. */
+/* What moves down to the next layer: a tag sitting on the divider, with a small arrowhead below it. */
 function Block({ flow, row, layout }: { flow: (typeof data.flows)[number]; row: number; layout: StackLayout }) {
   const divider = layout.frame.y + (row + 1) * layout.rowHeight;
-  const { cx, top, neck, bottom, shaft, head, baseline } = layout.block;
-  const points = [
-    [cx - shaft, divider + top],
-    [cx + shaft, divider + top],
-    [cx + shaft, divider + neck],
-    [cx + head, divider + neck],
-    [cx, divider + bottom],
-    [cx - head, divider + neck],
-    [cx - shaft, divider + neck],
-  ]
-    .map((p) => p.join(","))
-    .join(" ");
+  const { cx } = layout.block;
+  const [w, h] = [48, 20];
+  const foot = divider + h / 2;
   return (
     <g data-kind="edge" data-id={flow.id} data-from={flow.from} data-to={flow.to} data-style="block">
-      <polygon className="qd-block" points={points} />
-      <text className="qd-edge-label" x={cx} y={divider + baseline} textAnchor="middle">
+      <rect className="qd-tag" x={cx - w / 2} y={divider - h / 2} width={w} height={h} />
+      <polygon className="qd-head" points={`${cx - 5},${foot} ${cx + 5},${foot} ${cx},${foot + 7}`} />
+      <text className="qd-edge-label" x={cx} y={divider + 4} textAnchor="middle">
         <tspan x={cx} dy={0}>
           {flow.label[0]}
         </tspan>
@@ -191,6 +120,9 @@ function Drawing({ layout, name }: { layout: StackLayout; name: "wide" | "narrow
         .map((flow) => (
           <Edge key={flow.id} edge={flow as DiagramEdge} layout={routes} />
         ))}
+      {layout.junctions.map(([x, y]) => (
+        <circle key={`${x},${y}`} className="qd-junction" cx={x} cy={y} r={2.5} />
+      ))}
 
       <g data-kind="node" data-id={data.liquidity.id}>
         <rect className="qd-node" x={liquidity.x} y={liquidity.y} width={liquidity.w} height={liquidity.h} />

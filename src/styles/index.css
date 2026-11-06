@@ -85,7 +85,7 @@
 
 /* The radio itself is visually hidden, so move its focus ring to the label. */
 .quip-home .qs-radio:focus-visible + label {
-  outline: 2px solid var(--color-accent);
+  outline: 2px solid var(--color-zinc-950);
   outline-offset: 2px;
 }
 

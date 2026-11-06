@@ -13,15 +13,11 @@
   --qd-node-stroke: color-mix(in srgb, var(--color-fd-foreground) 30%, var(--color-fd-background));
   --qd-group-stroke: var(--color-fd-border);
   --qd-group-fill: var(--color-fd-card);
-  --qd-raised-fill: #fff;
+  --qd-raised-fill: var(--color-fd-background);
   --qd-raised-stroke: var(--qd-node-stroke);
   /* The emphasised node is a step darker and drawn in ink. */
   --qd-accent-fill: var(--color-fd-secondary);
   --qd-accent-stroke: var(--color-fd-foreground);
-}
-
-.dark .quip-diagram {
-  --qd-raised-fill: var(--color-fd-background);
 }
 
 .quip-diagram svg {
@@ -97,14 +93,14 @@
 
 .quip-diagram .qd-group-label {
   font-family: var(--font-mono);
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 500;
   fill: var(--qd-detail);
 }
 
 .quip-diagram .qd-edge-label {
   font-family: var(--font-mono);
-  font-size: 11.5px;
+  font-size: 12px;
   font-variant-numeric: tabular-nums;
   fill: var(--qd-detail);
 }
@@ -127,7 +123,7 @@
 
 .quip-diagram g[data-style="thick"] path.qd-edge {
   stroke: var(--qd-text);
-  stroke-width: 2.5;
+  stroke-width: 1.5;
 }
 
 .quip-diagram g[data-style="thick"] polygon.qd-head {
@@ -139,34 +135,31 @@
   fill: var(--qd-text);
 }
 
-/* The participant stack: its frame, its item shapes and the hollow arrows between its layers. */
+/* The participant stack: its frame, and the tags that sit on its dividers. */
 .quip-diagram .qd-frame {
   fill: none;
-  stroke: var(--qd-node-stroke);
+  stroke: var(--color-fd-border);
   stroke-width: 1;
 }
 
-.quip-diagram .qd-shape {
-  fill: var(--qd-node-fill);
-  stroke: var(--qd-node-stroke);
-  stroke-width: 1;
-}
-
-.quip-diagram .qd-figure {
-  fill: none;
-  stroke: var(--qd-detail);
-  stroke-width: 1.25;
-}
-
-.quip-diagram polygon.qd-block {
+.quip-diagram rect.qd-tag {
   fill: var(--color-fd-background);
   stroke: var(--qd-line);
-  stroke-width: 1.25;
+  stroke-width: 1;
 }
 
 .quip-diagram g[data-kind="bus"] path.qd-edge {
   stroke: var(--qd-text);
-  stroke-width: 2.5;
+  stroke-width: 1.5;
+  stroke-linecap: square;
+}
+
+.quip-diagram circle.qd-junction {
+  fill: var(--qd-line);
+}
+
+.quip-diagram g[data-kind="bus"] ~ circle.qd-junction {
+  fill: var(--qd-text);
 }
 
 /* In a page's own figure, the caption sets the space below. */
