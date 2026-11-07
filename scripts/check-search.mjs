@@ -66,7 +66,13 @@ const rare = [...words].filter(([, set]) => set.size <= 4);
 const common = [...words].filter(([, set]) => set.size >= 5);
 
 const headingPages = new Map();
-for (const { page, query } of headings) (headingPages.get(query.toLowerCase()) ?? headingPages.set(query.toLowerCase(), new Set()).get(query.toLowerCase())).add(page.path);
+// From the raw text: which pages have a heading must not depend on how fences are stripped.
+for (const page of pages) {
+  for (const [, heading] of page.text.matchAll(/^#{1,6} +(.+)$/gm)) {
+    const key = stripMd(heading).toLowerCase();
+    (headingPages.get(key) ?? headingPages.set(key, new Set()).get(key)).add(page.path);
+  }
+}
 const titlePages = new Map();
 for (const page of pages) (titlePages.get(page.title.toLowerCase()) ?? titlePages.set(page.title.toLowerCase(), new Set()).get(page.title.toLowerCase())).add(page.path);
 

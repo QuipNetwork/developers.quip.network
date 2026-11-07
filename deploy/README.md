@@ -132,7 +132,8 @@ is already 60 seconds.
 
 ## Cutover checklist
 
-1. Staging runs `:fumadocs`, and `npm run check:staging -- https://<staging host>` passes.
+1. Staging runs `:fumadocs`, and `npm run check:staging -- https://<staging host>` passes. That covers
+   pages, URLs, the XQuad book, diagrams, about 5,000 search queries and a full MCP session.
 2. Stop auto publishing on Netlify before the merge. The Next.js build has never passed
    there, and this keeps the current site live on Netlify as the fallback. That fallback is
    the old site: it stops getting updates once publishing is stopped.
