@@ -62,12 +62,14 @@ function createServer() {
             title: page.data.title,
             url: absolute(url),
             markdown_url: absolute(markdownUrlOf(page)),
-            snippet: hit.type === "page" ? (page.data.description ?? "") : String(hit.content).replace(/<\/?mark>/g, ""),
+            snippet: hit.type === "page" ? "" : String(hit.content).replace(/<\/?mark>/g, ""),
           });
         } else if (!entry.snippet && hit.type !== "page") {
           entry.snippet = String(hit.content).replace(/<\/?mark>/g, "");
         }
       }
+      // A passage shows why a page matched; a page with none falls back on its description.
+      for (const [url, entry] of pages) entry.snippet ||= (source.getPageByUrl?.(url) ?? findPage(url))?.data.description ?? "";
       if (pages.size === 0) return text(`No pages match "${query}". Try fewer or different words, or use list_pages.`);
       return text(JSON.stringify([...pages.values()], null, 2));
     },

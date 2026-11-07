@@ -8,7 +8,7 @@
  *
  *   node scripts/check-search.mjs https://developers-staging.quip.network [--seed 7] [--json file]
  */
-import { writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 
 const args = process.argv.slice(2);
 const option = (name, fallback) => (args.includes(name) ? args[args.indexOf(name) + 1] : fallback);
@@ -78,7 +78,7 @@ await each(pages, async (page) => {
   const { hits, status } = await find(page.title);
   const order = ranked(hits);
   const rank = order.indexOf(page.path);
-  record("title", page.title, status === 200 && titlePages.get(page.title.toLowerCase()).has(order[0]), { expected: page.path, rank, top: order[0] });
+  record("title", page.title, status === 200 && titlePages.get(page.title.toLowerCase()).has(order[0]) && rank >= 0, { expected: page.path, rank, top: order[0] });
 });
 
 await each(sample(headings, 700), async ({ page, query }) => {
@@ -89,7 +89,9 @@ await each(sample(headings, 700), async ({ page, query }) => {
   const titled = titlePages.get(query.toLowerCase()) ?? new Set();
   // A heading on more pages than one result list holds, like "Example", only has to lead to one.
   const listed = rank >= 0 || truth.size > 15;
-  record("heading", query, status === 200 && (truth.has(order[0]) || titled.has(order[0])) && listed, { expected: page.path, rank, top: order[0] });
+  // A page named for the term rightly outranks a page with it as a heading.
+  const named = pages.find((p) => p.path === order[0])?.title.toLowerCase().includes(query.toLowerCase());
+  record("heading", query, status === 200 && (truth.has(order[0]) || titled.has(order[0]) || named) && (listed || named), { expected: page.path, rank, top: order[0] });
 });
 
 const contains = (term) => (path) => pages.find((p) => p.path === path)?.lower.includes(term.toLowerCase());
@@ -104,6 +106,8 @@ await each(sample(rare, 900), async ([term, where]) => {
   const { hits, status } = await find(term);
   const order = ranked(hits);
   record("rare word", term, status === 200 && contains(term)(order[0]), { expected: [...where][0], count: order.length, top: order[0] });
+  const shown = hits.filter((h) => pageOf(h.url) === order[0] && h.type !== "page").some((h) => String(h.content).toLowerCase().includes(term));
+  record("snippet shows the term", term, shown, { top: order[0] });
 });
 
 // Every result for a common word must truly contain it, so nothing irrelevant comes back.
@@ -142,6 +146,25 @@ await each(odd, async (query) => {
   const { status, hits, error } = await find(query);
   record("odd input", query.slice(0, 40), status === 200 && Array.isArray(hits), { status, count: hits.length, error });
 });
+
+// Written by a second reviewer who read the docs: what a person types, typos included.
+const cases = JSON.parse(readFileSync(new URL("./search-cases.json", import.meta.url), "utf8"));
+await each(cases, async ({ q, top3 }) => {
+  const order = ranked((await find(q)).hits);
+  const rank = order.indexOf(top3);
+  record("human queries", q, rank >= 0 && rank < 3, { expected: top3, rank, top: order[0] });
+});
+
+// A term with punctuation must lead to a page that has it.
+await each(["$QUIP", "WOTS+", "llms.txt", "xquad[quip]", "@quip.network/ethereum-sdk", "D-Wave", "0x0D", "FN-DSA-512", "ERC-7913"], async (term) => {
+  const order = ranked((await find(term)).hits);
+  record("punctuation", term, !!order[0] && contains(term)(order[0]), { top: order[0] });
+});
+
+for (const typo of [["validtor", "validator"], ["quantun", "quantum"], ["faucett", "faucet"], ["bytcode", "bytecode"]]) {
+  const order = ranked((await find(typo[0])).hits);
+  record("typo", typo[0], !!order[0] && contains(typo[1])(order[0]), { top: order[0] });
+}
 
 // Every heading anchor a result links to must exist on its page, or a click lands at the top.
 const html = new Map();
