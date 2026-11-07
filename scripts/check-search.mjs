@@ -52,7 +52,7 @@ await each(pages, async (page) => {
   page.lower = page.text.toLowerCase();
 });
 
-const stripMd = (t) => t.replace(/`/g, "").replace(/\[([^\]]*)\]\([^)]*\)/g, "$1").replace(/[*_]/g, "").trim();
+const stripMd = (t) => t.replace(/`/g, "").replace(/\[([^\]]*)\]\([^)]*\)/g, "$1").replace(/\*/g, "").trim();
 const inFence = (text) => text.replace(/```[\s\S]*?```/g, "").replace(/\]\([^)]*\)/g, "]").replace(/<[^>]+>/g, " ");
 const headings = pages.flatMap((p) => [...inFence(p.text).matchAll(/^#{2,4} +(.+)$/gm)].map((m) => ({ page: p, query: stripMd(m[1]) })));
 const codeTerms = new Map();
@@ -130,7 +130,8 @@ await each(phrases, async ({ page, words: sentence }) => {
   const query = `${a} ${b}`;
   const { hits, status } = await find(query);
   const top = ranked(hits)[0];
-  record("two words", query, status === 200 && contains(a)(top) && contains(b)(top), { expected: page.path, top });
+  const stem = (word) => word.replace(/s$/, "");
+  record("two words", query, status === 200 && contains(stem(a))(top) && contains(stem(b))(top), { expected: page.path, top });
 });
 
 const letters = "bcdfghjklmnpqrstvwxz";

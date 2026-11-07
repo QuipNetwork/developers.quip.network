@@ -11,6 +11,8 @@ const MAX_HITS = 60;
 const HITS_PER_PAGE = 4;
 const SNIPPET = 220;
 const MAX_QUERY = 200;
+/** How many pages get the closer, slower look for a query of several words. */
+const CONTENDERS = 40;
 
 /*
  * The product is called QVM on quip.network and XQuad in these docs, and the docs never use the
@@ -65,7 +67,8 @@ const escape = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 /** Splits a query into words, dropping the small ones a question is made of. */
 function termsOf(query: string) {
-  const all = query.split(/[\s\-_.:/]+/).filter(Boolean);
+  // Split on separators, but keep a version number like 0.5 in one piece.
+  const all = query.split(/[\s\-_:/]+|(?<=\D)\.|\.(?=\D)/).filter(Boolean);
   const kept = all.filter((term) => !STOP_WORDS.has(term));
   return kept.length ? kept : all;
 }
@@ -100,10 +103,16 @@ function scorer(query: string) {
     }
     return 0;
   };
-  /** Among equals, the page with the most of the words on one line. */
-  const coverage = (page: Page) =>
-    terms.length < 2 ? 0 : Math.max(...page.lowerLines.map((line) => words.filter((word) => word.test(line)).length));
-  return { score, coverage };
+  /*
+   * Among equals, the page with the most of the words on one line, a rare word counting for more
+   * than a common one, and the words of its title for more again. Only called on the leaders.
+   */
+  const coverage = (page: Page, weights: number[]) => {
+    const on = (line: string) => words.reduce((sum, word, i) => sum + (word.test(line) ? weights[i] : 0), 0);
+    return page.lowerLines.reduce((best, line) => Math.max(best, on(line)), 2 * on(page.lowerTitle));
+  };
+  const rarity = (pages: Page[]) => words.map((word) => 1 / Math.max(1, pages.filter((page) => word.test(page.lower)).length));
+  return { score, coverage, rarity, several: terms.length > 1 };
 }
 
 /** A window of text around a term, starting at a word. */
@@ -147,7 +156,7 @@ function editDistance(a: string, b: string, limit: number) {
 async function rank(asked: string) {
   const query = asked.toLowerCase();
   const [hits, { pages }] = await Promise.all([index.search(asked, { limit: 2000 }), load()]);
-  const { score, coverage } = scorer(query);
+  const { score, coverage, rarity, several } = scorer(query);
   const terms = termsOf(query);
 
   const grouped = new Map<string, typeof hits>();
@@ -160,12 +169,17 @@ async function rank(asked: string) {
 
   const indexOrder = [...grouped.keys()];
   const results: typeof hits = [];
-  const order = pages
-    .map((page) => ({ page, score: score(page), rank: indexOrder.indexOf(page.url) }))
+  const entries = pages
+    .map((page) => ({ page, score: score(page), rank: indexOrder.indexOf(page.url), coverage: 0 }))
     // A page that says the term is a result, whatever the index made of it.
-    .filter((entry) => entry.score > 0 || entry.rank >= 0)
-    .map((entry) => ({ ...entry, coverage: entry.score <= 2 ? coverage(entry.page) : 0 }))
-    .sort((a, b) => b.score - a.score || b.coverage - a.coverage || (a.rank < 0 ? 1e6 : a.rank) - (b.rank < 0 ? 1e6 : b.rank));
+    .filter((entry) => entry.score > 0 || entry.rank >= 0);
+  const byRank = (a: { rank: number }, b: { rank: number }) => (a.rank < 0 ? 1e6 : a.rank) - (b.rank < 0 ? 1e6 : b.rank);
+  if (several) {
+    const weights = rarity(pages);
+    const contenders = entries.filter((entry) => entry.score <= 2).sort(byRank).slice(0, CONTENDERS);
+    for (const entry of contenders) entry.coverage = coverage(entry.page, weights);
+  }
+  const order = entries.sort((a, b) => b.score - a.score || b.coverage - a.coverage || byRank(a, b));
 
   for (const { page, score: pageScore } of order) {
     const [first, ...rest] = grouped.get(page.url) ?? [{ id: page.url, type: "page" as const, content: page.title, url: page.url }];
