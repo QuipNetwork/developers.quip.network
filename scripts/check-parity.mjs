@@ -47,6 +47,12 @@ const INTENDED = new Map([
   ["/sg/", { status: 301, location: "/" }],
   ["/sg/index.html", { status: 301, location: "/" }],
 ]);
+// Text the new site changed on purpose. Anything else in these bodies still has to match.
+const QVM_EDIT = ["XQuad compiles quadratic", "XQuad is the toolchain for building on the Quip Virtual Machine (QVM). It compiles quadratic"];
+const TEXT_EDITS = new Map([
+  ["/docs/xquad-toolchain.md", QVM_EDIT],
+  ["/docs/llms-full.txt", QVM_EDIT],
+]);
 const stripCharset = (type) => (type ?? "").split(";")[0].trim().toLowerCase();
 
 async function probe(origin, url) {
@@ -79,7 +85,8 @@ for (const url of [...new Set(urls)]) {
   if (before.location !== after.location) problems.push(`location ${before.location} -> ${after.location}`);
   if (before.status === 200 && before.type !== after.type) problems.push(`type ${before.type} -> ${after.type}`);
   if (before.robots !== after.robots && !(STAGING && after.robots === "noindex")) problems.push(`x-robots-tag ${before.robots} -> ${after.robots}`);
-  if (before.body !== null && before.status === 200 && before.body !== after.body) problems.push("body differs");
+  const expected = TEXT_EDITS.has(url) ? before.body?.replace(...TEXT_EDITS.get(url)) : before.body;
+  if (before.body !== null && before.status === 200 && expected !== after.body) problems.push("body differs");
   if (problems.length) {
     failures += 1;
     console.log(`DIFF ${url}: ${problems.join("; ")}`);
