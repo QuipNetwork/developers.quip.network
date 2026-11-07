@@ -1638,3 +1638,21 @@ kbd {
 [role="dialog"] [role="option"]:not(:has(> .inline-flex)) {
   padding-left: 12px;
 }
+
+[role="dialog"] [role="option"] > [role="none"],
+[role="dialog"] [role="option"] > svg {
+  display: none;
+}
+
+[role="dialog"] [role="option"] > [class*="ps-"] {
+  padding-inline-start: 0;
+  font-weight: 400;
+}
+
+[role="dialog"] [role="option"] > .inline-flex:empty + * {
+  margin-top: 0;
+}
+
+[role="dialog"] [role="option"] * {
+  text-decoration: none;
+}

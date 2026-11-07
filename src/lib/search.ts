@@ -61,8 +61,8 @@ function scorer(query: string) {
   const terms = query.split(/\s+/).filter(Boolean);
   return (page: Page) => {
     if (page.lowerTitle === query) return 7;
-    if (page.lowerHeadings.includes(query)) return 6;
-    if (page.lowerTitle.includes(query)) return 5;
+    if (page.lowerTitle.includes(query)) return 6;
+    if (page.lowerHeadings.includes(query)) return 5;
     if (page.lowerHeadings.some((h) => h.includes(query))) return 4;
     if (whole.test(page.lower)) return 3;
     if (query.length >= 4 && page.lower.includes(query)) return 2;

@@ -87,7 +87,9 @@ await each(sample(headings, 700), async ({ page, query }) => {
   const rank = order.indexOf(page.path);
   const truth = headingPages.get(query.toLowerCase());
   const titled = titlePages.get(query.toLowerCase()) ?? new Set();
-  record("heading", query, status === 200 && (truth.has(order[0]) || titled.has(order[0])) && rank >= 0, { expected: page.path, rank, top: order[0] });
+  // A heading on more pages than one result list holds, like "Example", only has to lead to one.
+  const listed = rank >= 0 || truth.size > 15;
+  record("heading", query, status === 200 && (truth.has(order[0]) || titled.has(order[0])) && listed, { expected: page.path, rank, top: order[0] });
 });
 
 const contains = (term) => (path) => pages.find((p) => p.path === path)?.lower.includes(term.toLowerCase());

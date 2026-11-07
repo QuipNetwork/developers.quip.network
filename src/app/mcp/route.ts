@@ -143,7 +143,11 @@ async function handle(request: Request) {
 
 export const dynamic = "force-dynamic";
 export const POST = handle;
-export const GET = handle;
+// Every answer comes back on its POST, so there is no stream to open. A GET left open would
+// hold a connection on the server for as long as the client stayed.
+export function GET() {
+  return new Response(null, { status: 405, headers: { ...CORS, Allow: "POST, DELETE, OPTIONS" } });
+}
 export const DELETE = handle;
 
 export function OPTIONS() {

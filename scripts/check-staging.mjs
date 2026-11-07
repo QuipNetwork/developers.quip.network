@@ -73,6 +73,8 @@ script("smoke.mjs", base);
 script("check-parity.mjs", base, ...(reference ? [reference] : []), ...(PRODUCTION ? [] : ["--staging"]));
 script("check-xquad-urls.mjs", base);
 script("check-diagrams.mjs", "--base", base);
+script("check-search.mjs", base);
+script("check-mcp.mjs", base);
 
 const pages = JSON.parse((await tool("list_pages", {})).content[0].text);
 const twins = new Map();
