@@ -8,7 +8,7 @@ const index = createFromSource(source);
 
 /** How many results come back, and how many of them one page may take. */
 const MAX_HITS = 60;
-const HITS_PER_PAGE = 4;
+const HITS_PER_PAGE = 3;
 const SNIPPET = 220;
 const MAX_QUERY = 200;
 /** How many pages get the closer, slower look for a query of several words. */
