@@ -3,7 +3,7 @@ import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { z } from "zod";
-import { search, withProductNames } from "@/lib/search";
+import { findInDocs } from "@/lib/search";
 import { SITE_URL, markdownUrlOf } from "@/lib/shared";
 import { source } from "@/lib/source";
 
@@ -48,7 +48,7 @@ function createServer() {
       annotations: { readOnlyHint: true, openWorldHint: false },
     },
     async ({ query, limit }) => {
-      const hits = await search.search(withProductNames(query));
+      const hits = await findInDocs(query);
       // Results come per heading and paragraph; agents want pages, best match first.
       const pages = new Map<string, { title: string; url: string; markdown_url: string; snippet: string }>();
       for (const hit of hits) {
