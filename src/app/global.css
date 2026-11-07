@@ -1583,3 +1583,58 @@ kbd {
 #nd-toc code {
   font-size: 11px;
 }
+
+/* Search results: the same hierarchy as a page. A mono trail, a title, then quiet snippets
+   marked by weight alone, in a single column with no rule beside them. */
+[role="dialog"] [role="option"] {
+  padding: 8px 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--quip-subtle);
+  border: 0 !important;
+  border-radius: 0;
+}
+
+[role="dialog"] [role="option"][aria-selected="true"] {
+  color: var(--color-fd-foreground);
+  background: var(--color-fd-muted);
+}
+
+[role="dialog"] [role="option"] > .inline-flex {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+[role="dialog"] [role="option"] .prose {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+[role="dialog"] [role="option"] > .prose.font-medium {
+  font-size: 14px;
+  color: var(--color-fd-foreground);
+}
+
+[role="dialog"] [role="option"] p {
+  margin: 0;
+}
+
+[role="dialog"] :is(u, mark, [class*="underline"]) {
+  color: var(--color-fd-foreground);
+  font-weight: 500;
+  text-decoration: none;
+  background: transparent;
+}
+
+[role="dialog"] [role="option"]::before,
+[role="dialog"] [role="option"] *::before,
+[role="dialog"] [class*="border-s"] {
+  border-inline-start: 0 !important;
+}
+
+[role="dialog"] [role="option"]:not(:has(> .inline-flex)) {
+  padding-left: 12px;
+}
