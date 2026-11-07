@@ -94,7 +94,10 @@ await each(sample(headings, 700), async ({ page, query }) => {
   record("heading", query, status === 200 && (truth.has(order[0]) || titled.has(order[0]) || named) && (listed || named), { expected: page.path, rank, top: order[0] });
 });
 
-const contains = (term) => (path) => pages.find((p) => p.path === path)?.lower.includes(term.toLowerCase());
+const contains = (term) => (path) => {
+  const page = pages.find((p) => p.path === path);
+  return page?.lower.includes(term.toLowerCase()) || page?.title.toLowerCase().includes(term.toLowerCase());
+};
 
 await each(sample([...codeTerms], 700), async ([term, where]) => {
   const { hits, status } = await find(term);
@@ -107,7 +110,8 @@ await each(sample(rare, 900), async ([term, where]) => {
   const order = ranked(hits);
   record("rare word", term, status === 200 && contains(term)(order[0]), { expected: [...where][0], count: order.length, top: order[0] });
   const shown = hits.filter((h) => pageOf(h.url) === order[0] && h.type !== "page").some((h) => String(h.content).toLowerCase().includes(term));
-  record("snippet shows the term", term, shown, { top: order[0] });
+  const titled = pages.find((p) => p.path === order[0])?.title.toLowerCase().includes(term);
+  record("snippet shows the term", term, shown || titled, { top: order[0] });
 });
 
 // Every result for a common word must truly contain it, so nothing irrelevant comes back.

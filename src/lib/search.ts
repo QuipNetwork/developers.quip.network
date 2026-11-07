@@ -48,7 +48,7 @@ function load() {
         text,
         lower,
         lowerLines: lower.split("\n"),
-        lowerHeadings: [...prose.matchAll(/^#{1,6} +(.+)$/gm)].map((m) => m[1].replace(/[`*_]/g, "").trim()),
+        lowerHeadings: [...prose.matchAll(/^#{1,6} +(.+)$/gm)].map((m) => m[1].replace(/[`*]/g, "").trim()),
       };
     }),
   )
@@ -83,8 +83,10 @@ function scorer(query: string) {
   const prefix = new RegExp(`${start}${escape(query)}`);
   const terms = termsOf(query);
   const loose = new RegExp(`${start}${terms.map(escape).join("[\\W_]+")}`);
-  const words = terms.map((term) => new RegExp(`${start}${escape(term)}`));
-  return (page: Page) => {
+  // A short word must match whole, or SHR would find SHRINCS. A longer one finds its plural too.
+  const stem = (term: string) => (term.length > 4 ? term.replace(/s$/, "") : term);
+  const words = terms.map((term) => new RegExp(`${start}${escape(stem(term))}${term.length <= 3 ? end : ""}`));
+  const score = (page: Page) => {
     if (page.lowerTitle === query) return 9;
     if (whole.test(page.lowerTitle)) return 8;
     if (page.lowerHeadings.includes(query)) return 7;
@@ -98,6 +100,10 @@ function scorer(query: string) {
     }
     return 0;
   };
+  /** Among equals, the page with the most of the words on one line. */
+  const coverage = (page: Page) =>
+    terms.length < 2 ? 0 : Math.max(...page.lowerLines.map((line) => words.filter((word) => word.test(line)).length));
+  return { score, coverage };
 }
 
 /** A window of text around a term, starting at a word. */
@@ -141,7 +147,7 @@ function editDistance(a: string, b: string, limit: number) {
 async function rank(asked: string) {
   const query = asked.toLowerCase();
   const [hits, { pages }] = await Promise.all([index.search(asked, { limit: 2000 }), load()]);
-  const score = scorer(query);
+  const { score, coverage } = scorer(query);
   const terms = termsOf(query);
 
   const grouped = new Map<string, typeof hits>();
@@ -152,12 +158,14 @@ async function rank(asked: string) {
     else grouped.set(url, [hit]);
   }
 
+  const indexOrder = [...grouped.keys()];
   const results: typeof hits = [];
   const order = pages
-    .map((page) => ({ page, score: score(page), rank: [...grouped.keys()].indexOf(page.url) }))
+    .map((page) => ({ page, score: score(page), rank: indexOrder.indexOf(page.url) }))
     // A page that says the term is a result, whatever the index made of it.
     .filter((entry) => entry.score > 0 || entry.rank >= 0)
-    .sort((a, b) => b.score - a.score || (a.rank < 0 ? 1e6 : a.rank) - (b.rank < 0 ? 1e6 : b.rank));
+    .map((entry) => ({ ...entry, coverage: entry.score <= 2 ? coverage(entry.page) : 0 }))
+    .sort((a, b) => b.score - a.score || b.coverage - a.coverage || (a.rank < 0 ? 1e6 : a.rank) - (b.rank < 0 ? 1e6 : b.rank));
 
   for (const { page, score: pageScore } of order) {
     const [first, ...rest] = grouped.get(page.url) ?? [{ id: page.url, type: "page" as const, content: page.title, url: page.url }];
