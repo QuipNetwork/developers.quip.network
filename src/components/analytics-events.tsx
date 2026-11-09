@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { track } from "@/lib/analytics";
 
 /*
@@ -38,6 +39,39 @@ export function AnalyticsEvents() {
       document.removeEventListener("keydown", onKey);
     };
   }, []);
+  return <GuideEvents />;
+}
+
+/*
+ * Kevin's guide reader events from the old site (main 348f91f), with the same names and
+ * data: guide-scroll at 25, 50, 75 and 100 percent, and guide-link for a link in the page.
+ * Keyed on the path, so moving between guides without a reload counts each one.
+ */
+function GuideEvents() {
+  const page = usePathname();
+  useEffect(() => {
+    if (!page.startsWith("/docs/guides/")) return;
+    const sent = new Set<number>();
+    function onScroll() {
+      const depth = (scrollY + innerHeight) / document.documentElement.scrollHeight;
+      for (const mark of [25, 50, 75, 100]) {
+        if (depth * 100 >= mark && !sent.has(mark)) {
+          sent.add(mark);
+          track("guide-scroll", { page, depth: mark });
+        }
+      }
+    }
+    function onClick(event: MouseEvent) {
+      const link = (event.target as Element | null)?.closest?.("article a, main a");
+      if (link) track("guide-link", { page, href: link.getAttribute("href") ?? "" });
+    }
+    addEventListener("scroll", onScroll, { passive: true });
+    document.addEventListener("click", onClick);
+    return () => {
+      removeEventListener("scroll", onScroll);
+      document.removeEventListener("click", onClick);
+    };
+  }, [page]);
   return null;
 }
 

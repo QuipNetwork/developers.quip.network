@@ -44,15 +44,15 @@ One convention matters for integrators: all coefficients and energies travel as 
 In code, you build a model and hand it to a solver. This example uses the local CPU solver, which needs no network connection:
 
 ```python
-from xqvm_py import XQMX
-from xqsa import SolverDWaveCPU
+from xqffi.vm import XqmxModel
+from xqsa import SolverCPU
 
-model = XQMX.binary_model(size=4)
+model = XqmxModel.binary(4)
 model.set_linear(0, -1)        # bias on variable 0
-model.set_quadratic(0, 1, 2)   # coupling between variables 0 and 1
+model.set_quad(0, 1, 2)        # coupling between variables 0 and 1
 
-result = SolverDWaveCPU().solve(model)
-print(result.sample, result.energy)
+result = SolverCPU().solve(model)
+print(result.sample.values, result.energy)
 ```
 
 The tools accept binary models (variables of 0 or 1) as well as spin models, and convert binary models to the spin basis for you.
@@ -64,7 +64,7 @@ from xqsa.quip import SolverQuip
 
 solver = SolverQuip.for_network("aglais", keystore="~/.quip/keystore.json")
 result = solver.solve(model)
-print(result.sample, result.energy)
+print(result.sample.values, result.energy)
 ```
 
 This example prints a warning that some coefficients fall outside the topology's allowed values. The job is still submitted and solved as given; [Allowed values are advisory for your job](/docs/compute/ising-topologies#allowed-values-are-advisory-for-your-job) explains why.
@@ -88,7 +88,7 @@ print(solver.create_order(model).quote())
 
 It builds the same transaction `solve()` would send, asks the chain for the fee, checks your balance, and submits nothing. `solve()` prints the same quote before it submits.
 
-As of xquad 0.4.3, `SolverQuip` lives in `xqsa.quip` (also reachable as `xquad.sa.quip`). The old `from xqsa import SolverQuip` still works but prints a deprecation warning and goes away in 0.5.0.
+`SolverQuip` lives in `xqsa.quip`, also reachable as `xquad.sa.quip`.
 
 ## Job orders: draft, price, submit, pick up later
 

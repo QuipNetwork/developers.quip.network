@@ -30,9 +30,9 @@ no database or disk, so every replica is identical and a rollback is a tag chang
 | `ROBOTS_NOINDEX=1` | staging only | Adds `X-Robots-Tag: noindex` to pages; Caddy adds it to everything else |
 
 Everything else is fixed at build time. Canonical URLs always name production, on staging
-too. The Umami values are public and are set as CI variables `NEXT_PUBLIC_UMAMI_SRC` and
-`NEXT_PUBLIC_UMAMI_WEBSITE_ID`. Analytics only report from `developers.quip.network`, so
-staging sends nothing. Leave the id empty to ship without analytics.
+too. Umami reports into the quip.network website, as the old site did. To change that, set
+the public CI variables `NEXT_PUBLIC_UMAMI_SRC` and `NEXT_PUBLIC_UMAMI_WEBSITE_ID`. Analytics
+only report from `developers.quip.network`, so staging sends nothing.
 
 ## Deploy path
 

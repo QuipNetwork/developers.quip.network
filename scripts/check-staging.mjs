@@ -150,7 +150,10 @@ await group("search engines", async (bad) => {
     if (/<meta name="robots" content="[^"]*noindex/.test(html)) bad(`${location} is in the sitemap but noindex`);
     const robots = page.headers.get("x-robots-tag");
     if (PRODUCTION ? robots : robots !== "noindex") bad(`${location} has X-Robots-Tag: ${robots}`);
-    if (/umami/i.test(html)) bad(`${location} loads analytics`);
+    // Umami on every page, reporting from production only: data-domains is what keeps
+    // staging and local runs out of the numbers.
+    if (!html.includes("4d97cda9-1fb5-4705-aea2-cb757cae3ad8")) bad(`${location} does not load Umami`);
+    if (!/data-domains\\?"?[:=]\\?"developers\.quip\.network\\?"/.test(html)) bad(`${location} lets Umami report from any host`);
     if (/<a [^>]*href="https:\/\/developers\.quip\.network/.test(html)) bad(`${location} links away from this host`);
   });
   if (!PRODUCTION) {

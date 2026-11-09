@@ -14,14 +14,6 @@ const MAX_QUERY = 200;
 /** How many pages get the closer, slower look for a query of several words. */
 const CONTENDERS = 40;
 
-/*
- * The product is called QVM on quip.network and XQuad in these docs, and the docs never use the
- * word. Readers arrive with the product's name, so its names lead to the toolchain's pages.
- */
-const PRODUCT_NAMES = /\b(?:qvm|(?:quip|quantum) virtual machine)\b/gi;
-
-const withProductNames = (query: string) => query.replace(PRODUCT_NAMES, "toolchain");
-
 const STOP_WORDS = new Set("a an and are at be can do does for from how i in is it my of on or the to what when where which why with you your".split(" "));
 
 interface Page {
@@ -198,7 +190,7 @@ async function rank(asked: string) {
 
 /** The search behind the dialog and the MCP server, so the two always agree. */
 export async function findInDocs(input: string) {
-  const asked = withProductNames(input).replace(/\s+/g, " ").trim().slice(0, MAX_QUERY);
+  const asked = input.replace(/\s+/g, " ").trim().slice(0, MAX_QUERY);
   if (!asked) return [];
   let results = await rank(asked);
   if (results.length === 0) {
