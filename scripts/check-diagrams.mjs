@@ -28,6 +28,11 @@ import { createHash } from "node:crypto";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import net from "node:net";
+
+// Node gives each address 250 ms to connect; under load that cutoff reports ETIMEDOUT for
+// a server that is fine. See check-mcp.mjs.
+net.setDefaultAutoSelectFamilyAttemptTimeout(2000);
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const diagramsDir = join(root, "src/components/diagrams");

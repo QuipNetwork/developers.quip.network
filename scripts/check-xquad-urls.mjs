@@ -13,6 +13,11 @@
  */
 import { readFileSync } from "node:fs";
 import path from "node:path";
+import net from "node:net";
+
+// Node gives each address 250 ms to connect; under load that cutoff reports ETIMEDOUT for
+// a server that is fine. See check-mcp.mjs.
+net.setDefaultAutoSelectFamilyAttemptTimeout(2000);
 
 const ORIGIN = (process.argv[2] ?? "http://localhost:3000").replace(/\/$/, "");
 const root = path.resolve(import.meta.dirname, "..");

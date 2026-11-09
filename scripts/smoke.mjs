@@ -11,6 +11,12 @@
  * Set EXPECT_COMMIT to also require that commit on /api/health.
  */
 
+import net from "node:net";
+
+// Node gives each address 250 ms to connect; under load that cutoff reports ETIMEDOUT for
+// a server that is fine. See check-mcp.mjs.
+net.setDefaultAutoSelectFamilyAttemptTimeout(2000);
+
 const base = (process.argv[2] ?? "http://127.0.0.1:3000").replace(/\/$/, "");
 const expectCommit = process.env.EXPECT_COMMIT;
 const STARTUP_MS = 60_000;
