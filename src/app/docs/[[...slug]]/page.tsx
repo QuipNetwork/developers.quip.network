@@ -76,10 +76,13 @@ export default async function Page({ params }: Props) {
         <header className="quip-doc-head">
           <nav aria-label="Breadcrumb" className="quip-doc-crumbs">
             <ol className="flex flex-wrap gap-2">
-              {breadcrumbs.map((crumb, index) => (
+              {/* The trail starts at the section. The logo already goes home, and a reader in
+                  the docs wants the section, not the portal. Search engines still get the full
+                  trail from the schema above. */}
+              {breadcrumbs.slice(1).map((crumb, index) => (
                 <li key={crumb.href} className="flex gap-2">
                   {index > 0 ? <span aria-hidden="true">/</span> : null}
-                  {index === breadcrumbs.length - 1 ? <span aria-current="page">{crumb.name}</span> : <a href={crumb.href}>{crumb.name}</a>}
+                  {index === breadcrumbs.length - 2 ? <span aria-current="page">{crumb.name}</span> : <a href={crumb.href}>{crumb.name}</a>}
                 </li>
               ))}
             </ol>
