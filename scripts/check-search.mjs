@@ -9,6 +9,11 @@
  *   node scripts/check-search.mjs https://developers-staging.quip.network [--seed 7] [--json file]
  */
 import { readFileSync, writeFileSync } from "node:fs";
+import net from "node:net";
+
+// Many requests at once can take longer than Node's 250 ms per-address connect cutoff
+// from a home line; see check-mcp.mjs.
+net.setDefaultAutoSelectFamilyAttemptTimeout(2000);
 
 const args = process.argv.slice(2);
 const option = (name, fallback) => (args.includes(name) ? args[args.indexOf(name) + 1] : fallback);

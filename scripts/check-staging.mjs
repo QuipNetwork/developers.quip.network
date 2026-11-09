@@ -12,6 +12,11 @@
 import { spawnSync } from "node:child_process";
 import { get as getHttp } from "node:http";
 import { get as getHttps } from "node:https";
+import net from "node:net";
+
+// Many requests at once can take longer than Node's 250 ms per-address connect cutoff
+// from a home line; see check-mcp.mjs.
+net.setDefaultAutoSelectFamilyAttemptTimeout(2000);
 
 const args = process.argv.slice(2);
 const PRODUCTION = args.includes("--production");
