@@ -232,10 +232,11 @@ await mkdir(contentRoot, { recursive: true });
 await mkdir(publicRoot, { recursive: true });
 const full = [];
 const index = ["# Quip Network documentation", "", "> Technical documentation for Quip Network.", ""];
-// Sidebar order: one meta.json per folder, and the root one lists groups as separators.
+// Sidebar order: one meta.json per folder. Every group is a collapsible folder, so every
+// section name in the sidebar behaves the same. A group of one-segment pages (XQuad's
+// toolchain page and its book link) uses a "(group)" folder, which adds nothing to the URL.
 const folderPages = new Map();
 const rootPages = [];
-let lastGroup = null;
 
 for (const page of pages) {
   const raw = await readFile(path.join(sourceRoot, page.sourcePath), "utf8");
@@ -247,7 +248,8 @@ for (const page of pages) {
     description ? `description: ${JSON.stringify(description)}` : "",
     `source_path: ${JSON.stringify(page.sourcePath)}`,
   ].filter(Boolean).join("\n");
-  const relativeOutput = page.route ? `${page.route}.mdx` : "index.mdx";
+  const bare = page.route && !page.route.includes("/") && page.group !== "Overview";
+  const relativeOutput = page.route ? `${bare ? `(${slugify(page.group)})/` : ""}${page.route}.mdx` : "index.mdx";
   const contentPath = path.join(contentRoot, relativeOutput);
   const mirrorPath = page.route ? path.join(publicRoot, `${page.route}.md`) : rootMirror;
   await mkdir(path.dirname(contentPath), { recursive: true });
@@ -258,7 +260,11 @@ for (const page of pages) {
   index.push(`- [${page.title}](${url}): ${page.group}.`);
   full.push(normalized);
 
-  const [folder, file] = page.route.includes("/") ? page.route.split("/") : [null, page.route || "index"];
+  const [folder, file] = page.route.includes("/")
+    ? page.route.split("/")
+    : bare
+      ? [`(${slugify(page.group)})`, page.route]
+      : [null, page.route || "index"];
   if (folder) {
     // A collapsible group in the sidebar. The section you are in opens by itself.
     if (!folderPages.has(folder)) {
@@ -267,16 +273,18 @@ for (const page of pages) {
     }
     folderPages.get(folder).pages.push(file);
   } else {
-    if (page.group !== lastGroup && page.group !== "Overview") rootPages.push(`---${page.group}---`);
     rootPages.push(file);
   }
-  lastGroup = page.group;
 }
 
-// Nav-only links (the XQuad book) go into the sidebar after their group's pages.
+// Nav-only links (the XQuad book) go into their group's folder, after its pages.
 for (const link of links) {
-  if (link.group !== lastGroup) rootPages.push(`---${link.group}---`);
-  rootPages.push(`[${link.title}](${link.href})`);
+  const folder = `(${slugify(link.group)})`;
+  if (!folderPages.has(folder)) {
+    folderPages.set(folder, { title: link.group, pages: [] });
+    rootPages.push(folder);
+  }
+  folderPages.get(folder).pages.push(`[${link.title}](${link.href})`);
 }
 
 for (const [folder, meta] of folderPages) {
