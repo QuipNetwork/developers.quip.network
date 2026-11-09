@@ -1,27 +1,28 @@
 ---
 description: >-
   QVM stands for quantum virtual machine, and the term covers two kinds of
-  software. See how they differ, then run a job on the Quip Network QVM.
+  software. See how they differ, then run a job on QVM, the Quip Virtual
+  Machine.
 icon: microchip
 ---
 
 # What is a QVM?
 
-A QVM, or quantum virtual machine, is software that runs quantum programs without tying them to a single physical quantum processor. The term covers two different kinds of tool, so check which one a page means before you install anything.
+A QVM, or quantum virtual machine, is software that runs quantum programs without tying them to a single physical quantum processor. The term covers two different kinds of tools, so check which one a page means before you install anything.
 
 Simulators run on classical computers and imitate quantum hardware. Rigetti's [open-source QVM](https://github.com/quil-lang/qvm) simulates programs written in its Quil language, and Google's [Quantum Virtual Machine](https://quantumai.google/cirq/simulate/quantum_virtual_machine) uses noise data to mimic its own processors.
 
-An execution layer takes one program and sends it to real machines. Quip Network's [QVM](https://quip.network/blog/qvm-launch) works this way: you write the problem once, then choose where it runs. It is [live on the Aglais testnet](https://quip.network/blog/qvm-launch).
+An execution layer takes one program and sends it to real machines. Quip Network's [QVM](https://quip.network/blog/qvm-launch), the Quip Virtual Machine, works this way: you write the problem once, then choose where it runs. It is [live on the Aglais testnet](https://aglais.quip.network).
 
-| | Rigetti QVM | Google Quantum Virtual Machine | Quip Network QVM |
+| | Rigetti QVM | Google Quantum Virtual Machine | Quip Virtual Machine |
 | --- | --- | --- | --- |
 | **Purpose** | Simulate Quil programs | Mimic Google processors | Run one program across different backends |
-| **Runs on** | Classical computer | Classical computer | [CPU, GPU, D-Wave quantum annealer or the Quip Network](/docs/xquad-toolchain#backends) |
+| **Runs on** | Classical computer | Classical computer | [CPU, GPU, D-Wave quantum annealer or Quip Network](/docs/xquad-toolchain#backends) |
 | **Program format** | Quil | Cirq circuits | [Quadratic models](/docs/xquad-toolchain#what-it-models), written in a constraint language or built in Python |
 
-## Which problems the Quip QVM runs
+## Which problems the Quip Virtual Machine runs
 
-The [XQuad toolchain](/docs/xquad-toolchain) handles combinatorial problems that reduce to quadratic binary models. Route planning, graph coloring, knapsack and portfolio optimization all fall in range. If your work needs a gate-level circuit simulator for research, the Rigetti and Google tools above are built for that job.
+The [XQuad toolchain](/docs/xquad-toolchain) handles combinatorial problems that reduce to quadratic binary models. Route planning, graph coloring, knapsack and portfolio optimization all fall in range. Support for gate-based hardware, starting with IonQ, is [coming](https://quip.network/blog/qvm-launch). Until then, if your work needs a gate-level circuit simulator for research, the Rigetti and Google tools above are built for that job.
 
 ## Run a job on your own machine
 
