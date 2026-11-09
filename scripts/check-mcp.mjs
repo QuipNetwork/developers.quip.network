@@ -6,6 +6,13 @@
  *
  *   node scripts/check-mcp.mjs https://developers-staging.quip.network
  */
+import net from "node:net";
+
+// Node gives each address 250 ms to connect before trying the next. A hundred connections
+// opened at once can take longer than that from a home line, and Node then reports
+// ETIMEDOUT for a server that was fine (curl, with no such cutoff, saw 500 of 500).
+net.setDefaultAutoSelectFamilyAttemptTimeout(2000);
+
 const base = (process.argv[2] ?? "http://127.0.0.1:3000").replace(/\/$/, "");
 const JSON_RPC = { "Content-Type": "application/json", Accept: "application/json, text/event-stream" };
 let failed = 0;
@@ -57,7 +64,7 @@ for (const form of ["/docs/getting-started/quickstart", "docs/getting-started/qu
   say(!(await call("get_page", { path: form })).isError, `get_page accepts ${form}`);
 }
 const search = async (query, limit) => JSON.parse(text(await call("search_docs", { query, limit })));
-for (const [query, expected] of [["QVM", "/docs/xquad-toolchain"], ["quantum virtual machine", "/docs/xquad-toolchain"], ["Solver._recompute_energy()", "/docs/xquad/solving/energy-and-precision"], ["run a validator", "/docs/nodes/run-a-validator-testnet"], ["faucet", null]]) {
+for (const [query, expected] of [["QVM", "/docs/guides/what-is-a-qvm"], ["quantum virtual machine", "/docs/guides/what-is-a-qvm"], ["Solver._recompute_energy()", "/docs/xquad/solving/energy-and-precision"], ["run a validator", "/docs/nodes/run-a-validator-testnet"], ["faucet", null]]) {
   const hits = await search(query, 5);
   say(hits.length > 0 && (!expected || hits[0].url.endsWith(expected)), `search_docs "${query}"`, hits[0]?.url);
 }
@@ -88,9 +95,23 @@ const plain = await post({ jsonrpc: "2.0", id: 99, method: "tools/list", params:
 say(plain.headers.get("cache-control")?.includes("no-store") && !plain.headers.get("content-encoding"), "not cached, not compressed in a way that holds a stream");
 
 const started = Date.now();
-const burst = await Promise.all(Array.from({ length: 100 }, (_, i) => call("search_docs", { query: ["validator", "QVM", "faucet", "swap"][i % 4], limit: 3 }).then((r) => !r?.isError, () => false)));
+// Each request reports why it failed, so a dropped request can be traced on the host.
+const once = async (query) => {
+  try {
+    const response = await post({ jsonrpc: "2.0", id: ++id, method: "tools/call", params: { name: "search_docs", arguments: { query, limit: 3 } } });
+    if (!response.ok) return `HTTP ${response.status} ${(await response.text()).slice(0, 80)}`;
+    const reply = await response.json();
+    return reply.result && !reply.result.isError ? true : `tool error ${JSON.stringify(reply).slice(0, 80)}`;
+  } catch (error) {
+    return `${error.name}: ${error.cause?.code ?? error.message}`;
+  }
+};
+const burst = await Promise.all(Array.from({ length: 100 }, (_, i) => once(["validator", "QVM", "faucet", "swap"][i % 4])));
 const ms = Date.now() - started;
-say(burst.every(Boolean), "100 requests at once", `${burst.filter(Boolean).length}/100 in ${ms} ms`);
+const why = {};
+for (const result of burst) if (result !== true) why[result] = (why[result] ?? 0) + 1;
+const reasons = Object.entries(why).map(([reason, count]) => `${count}x ${reason}`).join("; ");
+say(burst.every((result) => result === true), "100 requests at once", `${burst.filter((result) => result === true).length}/100 in ${ms} ms${reasons ? `: ${reasons}` : ""}`);
 
 console.log(failed ? `\ncheck-mcp: ${failed} failed against ${base}` : `\ncheck-mcp: all passed against ${base}`);
 process.exit(failed ? 1 : 0);
