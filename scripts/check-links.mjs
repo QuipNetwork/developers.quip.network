@@ -68,6 +68,9 @@ const SKIP = [
   // LinkedIn answers 403 to every non-browser client, so a probe can't tell this
   // page dead from blocked.
   "linkedin.com/company/postquant-labs",
+  // This site's own MCP server. Production serves it only from cutover (QUI-2168), and
+  // check-mcp.mjs tests it on staging. Remove this line once production answers.
+  "developers.quip.network/mcp",
 ];
 
 /*
