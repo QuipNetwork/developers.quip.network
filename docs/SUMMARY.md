@@ -12,6 +12,7 @@
 ## Guides
 
 * [What Is a QVM?](guides/what-is-a-qvm.md)
+* [Post-Quantum Signature Schemes for Blockchains](guides/post-quantum-signatures-for-blockchains.md)
 
 ## Quip Interlock Protocol
 
