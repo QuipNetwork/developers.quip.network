@@ -27,6 +27,19 @@ if (!base) {
   console.error("usage: check-staging.mjs <url> [--production] [--reference <origin>]");
   process.exit(2);
 }
+
+// The site's per-client limit on /mcp and /api/search; see check-mcp.mjs. The checks this
+// runs inherit PORTAL_CHECK_TOKEN, and the --reference site never sees it.
+if (process.env.PORTAL_CHECK_TOKEN) {
+  const send = globalThis.fetch;
+  const origin = new URL(base).origin;
+  globalThis.fetch = (url, init = {}) => {
+    if (new URL(String(url), base).origin !== origin) return send(url, init);
+    const headers = new Headers(init.headers);
+    headers.set("X-Portal-Check", process.env.PORTAL_CHECK_TOKEN);
+    return send(url, { ...init, headers });
+  };
+}
 const SITE = "https://developers.quip.network";
 const PAGE_CHARS = 40_000;
 

@@ -14,6 +14,20 @@ import net from "node:net";
 net.setDefaultAutoSelectFamilyAttemptTimeout(2000);
 
 const base = (process.argv[2] ?? "http://127.0.0.1:3000").replace(/\/$/, "");
+
+// The site limits /mcp and /api/search per client (src/lib/rate-limit.ts). With
+// PORTAL_CHECK_TOKEN set to the host's RATE_LIMIT_BYPASS_TOKEN, requests to the site under
+// test skip the limit. Requests to any other origin never carry the token.
+if (process.env.PORTAL_CHECK_TOKEN) {
+  const send = globalThis.fetch;
+  const origin = new URL(base).origin;
+  globalThis.fetch = (url, init = {}) => {
+    if (new URL(String(url), base).origin !== origin) return send(url, init);
+    const headers = new Headers(init.headers);
+    headers.set("X-Portal-Check", process.env.PORTAL_CHECK_TOKEN);
+    return send(url, { ...init, headers });
+  };
+}
 const JSON_RPC = { "Content-Type": "application/json", Accept: "application/json, text/event-stream" };
 let failed = 0;
 let id = 1;

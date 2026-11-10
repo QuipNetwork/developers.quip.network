@@ -12,7 +12,9 @@ no database or disk, so every replica is identical and a rollback is a tag chang
         registry.gitlab.com/quip.network/developers.quip.network:main
 
 - **A reverse proxy** (Caddy, Traefik or nginx) with TLS, HTTP/2 and gzip or brotli. It must:
-  - forward `Host`, `X-Forwarded-For` and `X-Forwarded-Proto`;
+  - forward `Host`, `X-Forwarded-For` and `X-Forwarded-Proto`. `X-Forwarded-For` must be
+    the client's address as the proxy saw it, replaced rather than appended to, because the
+    rate limit counts by it. Caddy does this by default;
   - forward `Accept`, which serves Markdown to AI tools at the same URL;
   - leave `/mcp` unbuffered and not cache it (the app sends `no-store`);
   - not cache HTML. The app sets `Cache-Control` itself: `/_next/static/*` and `/fonts/*`
@@ -28,6 +30,12 @@ no database or disk, so every replica is identical and a rollback is a tag chang
 | --- | --- | --- |
 | `PORT` | optional | Listening port, default 3000 |
 | `ROBOTS_NOINDEX=1` | staging only | Adds `X-Robots-Tag: noindex` to pages; Caddy adds it to everything else |
+| `RATE_LIMIT_BYPASS_TOKEN` | optional, secret | Requests with this value in `X-Portal-Check` skip the rate limit |
+
+`/api/search` and `/mcp` are rate-limited per client address, an IPv6 client per /64. Over
+the limit they answer 429 with `Retry-After`. The numbers are in `src/lib/rate-limit.ts`.
+The check scripts read `PORTAL_CHECK_TOKEN` and send it in `X-Portal-Check`, but only to the
+site under test. Without the token, `check:staging` runs into the limit.
 
 Everything else is fixed at build time. Canonical URLs always name production, on staging
 too. Umami reports into the quip.network website, as the old site did. To change that, set
@@ -95,6 +103,10 @@ First setup, after `sh deploy/host/setup.sh` as root:
 # As portal. The deploy token (read_registry) is typed, not pasted into a file.
 podman login --authfile ~/.config/containers/auth.json -u <token user> --password-stdin registry.gitlab.com
 chmod 600 ~/.config/containers/auth.json
+# The check scripts' bypass token. Both units need it, or they don't start. Whoever runs
+# check:staging sets it as PORTAL_CHECK_TOKEN; read it back with
+# podman secret inspect --showsecret --format '{{.SecretData}}' portal-check-token
+openssl rand -hex 32 | podman secret create portal-check-token -
 install -m 0644 /usr/local/share/portal/portal-staging.container ~/.config/containers/systemd/
 systemctl --user daemon-reload
 systemctl --user start portal-staging

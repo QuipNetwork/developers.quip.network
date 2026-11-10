@@ -3,6 +3,7 @@ import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { z } from "zod";
+import { rateLimit } from "@/lib/rate-limit";
 import { findInDocs } from "@/lib/search";
 import { SITE_URL, markdownUrlOf } from "@/lib/shared";
 import { source } from "@/lib/source";
@@ -128,10 +129,18 @@ const CORS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Accept, Authorization, Mcp-Session-Id, Mcp-Protocol-Version, Last-Event-ID",
-  "Access-Control-Expose-Headers": "Mcp-Session-Id, Mcp-Protocol-Version",
+  "Access-Control-Expose-Headers": "Mcp-Session-Id, Mcp-Protocol-Version, Retry-After",
 };
 
 async function handle(request: Request) {
+  const wait = rateLimit(request, "mcp");
+  if (wait) {
+    const error = { jsonrpc: "2.0", error: { code: -32000, message: `Too many requests. Try again in ${wait} s.` }, id: null };
+    return Response.json(error, {
+      status: 429,
+      headers: { ...CORS, "Retry-After": String(wait), "Cache-Control": "no-store", "X-Robots-Tag": "noindex" },
+    });
+  }
   const transport = new WebStandardStreamableHTTPServerTransport({ sessionIdGenerator: undefined, enableJsonResponse: true });
   const server = createServer();
   await server.connect(transport);

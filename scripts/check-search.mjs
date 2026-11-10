@@ -18,6 +18,18 @@ net.setDefaultAutoSelectFamilyAttemptTimeout(2000);
 const args = process.argv.slice(2);
 const option = (name, fallback) => (args.includes(name) ? args[args.indexOf(name) + 1] : fallback);
 const base = (args.find((a, i) => !a.startsWith("--") && !args[i - 1]?.startsWith("--")) ?? "http://127.0.0.1:3000").replace(/\/$/, "");
+
+// Thousands of searches would hit the site's per-client limit; see check-mcp.mjs.
+if (process.env.PORTAL_CHECK_TOKEN) {
+  const send = globalThis.fetch;
+  const origin = new URL(base).origin;
+  globalThis.fetch = (url, init = {}) => {
+    if (new URL(String(url), base).origin !== origin) return send(url, init);
+    const headers = new Headers(init.headers);
+    headers.set("X-Portal-Check", process.env.PORTAL_CHECK_TOKEN);
+    return send(url, { ...init, headers });
+  };
+}
 let seed = Number(option("--seed", 7));
 const random = () => ((seed = (seed * 1664525 + 1013904223) % 4294967296) / 4294967296);
 const sample = (list, n) => [...list].map((v) => [random(), v]).sort((a, b) => a[0] - b[0]).slice(0, n).map((p) => p[1]);
