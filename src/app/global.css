@@ -832,7 +832,9 @@ kbd {
 }
 
 :is(#nd-sidebar, #nd-sidebar-mobile) a[data-active="true"],
-:is(#nd-sidebar, #nd-sidebar-mobile) a[data-active="true"]:hover {
+:is(#nd-sidebar, #nd-sidebar-mobile) a[data-active="true"]:hover,
+/* A section with its own page (the XQuad book) must outrank the section-name colour above. */
+:is(#nd-sidebar, #nd-sidebar-mobile) a[data-active="true"]:has(> svg[data-icon]) {
   color: var(--quip-current-fg);
   background: var(--quip-current-bg);
   font-weight: 400;
