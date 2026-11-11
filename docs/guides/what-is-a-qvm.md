@@ -68,7 +68,7 @@ print(result.sample.values, result.energy)
 
 The first run creates a keystore at `~/.quip/keystore.json` and draws test tokens from the faucet. Keep the keystore private. AGLS, the test token, [holds no value](https://aglais.quip.network), so this job costs you nothing real.
 
-When we ran this model on November 1, 2026, the quote came to 1.002 AGLS: a 1 AGLS reward plus a fee of about 0.002 AGLS. A miner returned the same answer in about 93 seconds, and the chain's recorded energy matched the result. Expect the amounts to change with runtime upgrades, because they come from the chain at the time you ask.
+When we ran this model on November 1, 2026, the quote came to 1.002 AGLS: a 1 AGLS reward plus a fee of about 0.002 AGLS. When the job completes, the client checks that the energy recorded on chain matches the result it hands back. Expect the amounts to change with runtime upgrades, because they come from the chain at the time you ask.
 
 ## Where to go next
 
