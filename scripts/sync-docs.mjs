@@ -231,7 +231,16 @@ await rm(rootMirror, { force: true });
 await mkdir(contentRoot, { recursive: true });
 await mkdir(publicRoot, { recursive: true });
 const full = [];
-const index = ["# Quip Network documentation", "", "> Technical documentation for Quip Network.", ""];
+const index = [
+  "# Quip Network documentation",
+  "",
+  "> Developer documentation for Quip Network: post-quantum protection for assets on existing chains, and a marketplace for optimization jobs on quantum hardware. Every link below is a page's Markdown file, and llms-full.txt has all of them in one file.",
+  "",
+  "Coding assistants can also search and read these docs through the MCP server at https://developers.quip.network/mcp (Streamable HTTP, no sign-in). Setup for each assistant: https://developers.quip.network/docs/getting-started/use-with-ai",
+  "",
+  "## Documentation",
+  "",
+];
 // Sidebar order: one meta.json per folder. Every group is a collapsible folder, so every
 // section name in the sidebar behaves the same. A group of one-segment pages (XQuad's
 // toolchain page and its book link) uses a "(group)" folder, which adds nothing to the URL.
@@ -257,7 +266,7 @@ for (const page of pages) {
   await writeFile(contentPath, `---\n${metadata}\n---\n\n${toMdx(body, page.sourcePath).trim()}\n`);
   await writeFile(mirrorPath, normalized);
   const url = `https://developers.quip.network/docs${page.route ? `/${page.route}` : ""}.md`;
-  index.push(`- [${page.title}](${url}): ${page.group}.`);
+  index.push(`- [${page.title}](${url}): ${description ?? `${page.group}.`}`);
   full.push(normalized);
 
   const [folder, file] = page.route.includes("/")
@@ -300,6 +309,59 @@ await writeFile(
 );
 
 await cp(path.join(sourceRoot, ".gitbook/assets"), path.join(publicRoot, "assets"), { recursive: true });
+// The indexes cover every page the site serves, not only the ones this script writes: the
+// XQuad book and the Reference tree follow, from the twins their own scripts wrote. Those
+// run first in prebuild, so a build always indexes all three. `npm run dev` syncs only
+// docs/, so locally a tree that was never synced is left out, with a note.
+const extra = [...(await xquadSection()), ...(await referenceSection())];
+for (const section of extra) {
+  index.push("", `## ${section.title}`, "");
+  for (const page of section.pages) {
+    index.push(`- [${page.title}](${page.url})${page.description ? `: ${page.description}` : ""}`);
+    full.push(page.twin);
+  }
+}
 await writeFile(path.join(publicRoot, "llms.txt"), `${index.join("\n")}\n`);
 await writeFile(path.join(publicRoot, "llms-full.txt"), full.join("\n---\n\n"));
-console.log(`Synced ${pages.length} pages and ${links.length} nav links from ${sourceRoot}.`);
+const extraPages = extra.reduce((sum, section) => sum + section.pages.length, 0);
+console.log(`Synced ${pages.length} pages and ${links.length} nav links from ${sourceRoot}; the indexes list ${pages.length + extraPages} pages.`);
+
+/** The XQuad book, in its own index's order. Its pages have no descriptions, so each gets its section. */
+async function xquadSection() {
+  const bookIndex = await readFile(path.join(publicRoot, "xquad/llms.txt"), "utf8").catch(() => undefined);
+  if (bookIndex === undefined) {
+    console.warn("sync-docs: no XQuad twins (run npm run xquad:sync); the indexes leave the book out.");
+    return [];
+  }
+  const pages = [];
+  for (const [, title, url, section] of bookIndex.matchAll(/^- \[([^\]]+)\]\((https:\/\/developers\.quip\.network\/docs\/xquad[^)]*\.md)\)(?:: (.+))?$/gm)) {
+    const twin = await readFile(path.join(projectRoot, "public", new URL(url).pathname), "utf8");
+    pages.push({ title, url, description: section, twin });
+  }
+  if (pages.length < 80) throw new Error(`public/docs/xquad/llms.txt lists ${pages.length} pages; expected the whole book.`);
+  return [{ title: "XQuad book", pages }];
+}
+
+/** The Reference tree, in its sidebar's order, with each page's own title and description. */
+async function referenceSection() {
+  const referenceRoot = path.join(docsRoot, "reference");
+  if (!(await readdir(path.join(publicRoot, "reference")).catch(() => undefined))) {
+    console.warn("sync-docs: no Reference twins (run node scripts/sync-reference.mjs); the indexes leave Reference out.");
+    return [];
+  }
+  const { pages: order } = JSON.parse(await readFile(path.join(referenceRoot, "meta.json"), "utf8"));
+  const pages = [];
+  for (const slug of order) {
+    const { frontmatter } = splitFrontmatter(await readFile(path.join(referenceRoot, `${slug}.mdx`), "utf8"));
+    const field = (name) => frontmatter.match(new RegExp(`^${name}:\\s*(.+)$`, "m"))?.[1].trim().replace(/^"(.*)"$/, "$1");
+    // markdownUrlOf() puts a folder's index beside the folder: /docs/reference.md.
+    const twinPath = slug === "index" ? "/docs/reference.md" : `/docs/reference/${slug}.md`;
+    pages.push({
+      title: field("title"),
+      description: field("description"),
+      url: `https://developers.quip.network${twinPath}`,
+      twin: await readFile(path.join(projectRoot, "public", twinPath), "utf8"),
+    });
+  }
+  return [{ title: "Reference", pages }];
+}

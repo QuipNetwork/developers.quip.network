@@ -126,7 +126,9 @@ role and `write_repository`, because `main` restricts pushes to Maintainers.
   build output and are overwritten by the sync. The script reads navigation and
   public routes from `SUMMARY.md`, normalizes GitBook-only markup, rewrites
   internal links, copies assets, and builds `llms.txt`, `llms-full.txt`, and
-  per-page Markdown mirrors.
+  per-page Markdown mirrors. The two indexes also cover the XQuad book and the
+  Reference tree, from the twins their own scripts write, so `prebuild` runs
+  those first.
 - **The XQuad book is not in this repo.** `scripts/sync-xquad.mjs` takes its Markdown
   from the latest xquad release tag at build and writes MDX to `content/docs/xquad/`
   and twins to `public/docs/xquad/`, all ignored build output. `npm run dev` does not

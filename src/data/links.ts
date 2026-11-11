@@ -50,6 +50,7 @@ export const DOCS = {
  * this app (src/app/mcp/route.ts); GitBook's went away with GitBook.
  */
 export const AI = {
+  mcp: `${SITE_ORIGIN}/mcp`,
   llmsTxt: `${DOCS_BASE}/llms.txt`,
   llmsFullTxt: `${DOCS_BASE}/llms-full.txt`,
 };

@@ -9,7 +9,7 @@
     "dev": "next dev",
     "docs:sync": "node scripts/sync-docs.mjs",
     "xquad:sync": "node scripts/sync-xquad.mjs",
-    "prebuild": "node scripts/check-endpoints.mjs && npm run docs:sync && npm run xquad:sync && node scripts/sync-reference.mjs",
+    "prebuild": "node scripts/check-endpoints.mjs && npm run xquad:sync && node scripts/sync-reference.mjs && npm run docs:sync",
     "build": "next build",
     "start": "cp -r public .next/standalone/ && cp -r .next/static .next/standalone/.next/ && node .next/standalone/server.js",
     "check": "npm run docs:sync && next typegen && tsc --noEmit",
