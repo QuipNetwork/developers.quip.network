@@ -25,7 +25,11 @@ const root = path.resolve(import.meta.dirname, "..");
 
 // The docs' own index lists every page; the redirects come from next.config.mjs.
 const llms = readFileSync(path.join(root, "public/docs/llms.txt"), "utf8");
-const twins = [...llms.matchAll(/\]\(https:\/\/developers\.quip\.network(\/[^)]+)\)/g)].map((m) => m[1]);
+// Only the pages the old site had: the index now also lists the XQuad book's twins, which
+// check-xquad-urls.mjs covers, and the Reference tree, which is new.
+const twins = [...llms.matchAll(/\]\(https:\/\/developers\.quip\.network(\/[^)]+)\)/g)]
+  .map((m) => m[1])
+  .filter((url) => !/^\/docs\/(xquad|reference)([/.]|$)/.test(url));
 const pages = twins.map((t) => (t === "/docs.md" ? "/docs" : t.replace(/\.md$/, "")));
 const config = readFileSync(path.join(root, "next.config.mjs"), "utf8");
 const redirects = [...config.matchAll(/moved\("([^"]+)"/g)].map((m) => m[1]).filter((u) => u !== "/sitemap-index.xml");
@@ -58,6 +62,21 @@ const TEXT_EDITS = new Map([
   ["/docs/xquad-toolchain.md", QVM_EDIT],
   ["/docs/llms-full.txt", QVM_EDIT],
 ]);
+// Files rewritten on purpose, compared by status and type only. The AI page and the
+// portal's llms.txt gained the MCP server.
+const REWRITTEN = new Set(["/docs/getting-started/use-with-ai.md", "/llms.txt"]);
+const REWRITTEN_TITLES = new Set(["# Use These Docs with AI"]);
+// The indexes grew on purpose: llms.txt gained descriptions and the XQuad and Reference
+// sections, and llms-full.txt appends those pages. Every page the old llms-full.txt has
+// must still be there, in order and byte for byte, apart from the rewritten ones; llms.txt
+// is compared by status and type only.
+const GREW = new Set(["/docs/llms.txt", "/docs/llms-full.txt"]);
+const PAGE_BREAK = "\n---\n\n";
+function keptPagesDiffer(before, after) {
+  const old = before.split(PAGE_BREAK);
+  const now = after.split(PAGE_BREAK);
+  return old.some((page, i) => !REWRITTEN_TITLES.has(page.split("\n")[0]) && page !== now[i]);
+}
 const stripCharset = (type) => (type ?? "").split(";")[0].trim().toLowerCase();
 
 async function probe(origin, url) {
@@ -91,7 +110,11 @@ for (const url of [...new Set(urls)]) {
   if (before.status === 200 && before.type !== after.type) problems.push(`type ${before.type} -> ${after.type}`);
   if (before.robots !== after.robots && !(STAGING && after.robots === "noindex")) problems.push(`x-robots-tag ${before.robots} -> ${after.robots}`);
   const expected = TEXT_EDITS.has(url) ? before.body?.replace(...TEXT_EDITS.get(url)) : before.body;
-  if (before.body !== null && before.status === 200 && expected !== after.body) problems.push("body differs");
+  if (url === "/docs/llms-full.txt") {
+    if (before.status === 200 && keptPagesDiffer(expected, after.body ?? "")) problems.push("a page the old file had differs");
+  } else if (before.body !== null && before.status === 200 && expected !== after.body && !GREW.has(url) && !REWRITTEN.has(url)) {
+    problems.push("body differs");
+  }
   if (problems.length) {
     failures += 1;
     console.log(`DIFF ${url}: ${problems.join("; ")}`);

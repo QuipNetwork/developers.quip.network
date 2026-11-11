@@ -29,10 +29,11 @@ const body = `# Quip Network for developers
 
 ## Machine-readable documentation
 
+- [Docs MCP server](${AI.mcp}): Streamable HTTP, public, no sign-in. Tools: search_docs, get_page, list_pages. Claude Code: claude mcp add --transport http quip-docs ${AI.mcp}
 - [Docs llms.txt](${AI.llmsTxt}): Annotated index of every documentation page.
 - [Docs llms-full.txt](${AI.llmsFullTxt}): The entire documentation set as one markdown file.
 - Any documentation page also returns markdown if you append .md to its URL.
-- [Use These Docs with AI](${DOCS.useWithAi}): Machine-readable indexes and markdown mirrors. Any docs page also returns markdown if you append .md to its URL.
+- [Use These Docs with AI](${DOCS.useWithAi}): MCP setup for each coding assistant, plus the indexes and markdown mirrors.
 
 ## Build applications
 
