@@ -8,9 +8,9 @@ icon: signature
 
 # Post-quantum signature schemes for blockchains
 
-Blockchains can move to post-quantum signatures with ML-DSA or SLH-DSA, the two schemes NIST finalized on August 13, 2024 in [FIPS 204](https://csrc.nist.gov/pubs/fips/204/final) and [FIPS 205](https://csrc.nist.gov/pubs/fips/205/final), or with Falcon once NIST finishes [its standard](https://csrc.nist.gov/projects/post-quantum-cryptography). The smallest ML-DSA signature runs to 2,420 bytes against 64 bytes for a Bitcoin Schnorr signature, so chain designers mostly weigh signature size against signer state.
+Blockchains can move to post-quantum signatures with ML-DSA or SLH-DSA, the two schemes NIST finalized on August 13, 2024 in [FIPS 204](https://csrc.nist.gov/pubs/fips/204/final) and [FIPS 205](https://csrc.nist.gov/pubs/fips/205/final), or with Falcon once NIST finishes [its standard](https://csrc.nist.gov/projects/post-quantum-cryptography). The smallest ML-DSA signature runs to 2,420 bytes against 64 bytes for a Bitcoin Schnorr signature, so the choice comes down to signature size and the state a signer has to keep. A [hybrid signature](#hybrid-signatures) keeps the chain's existing algorithm in place and adds the post-quantum one next to it, so a weakness in the new scheme leaves you with today's security.
 
-NIST runs its [post-quantum cryptography project](https://csrc.nist.gov/projects/post-quantum-cryptography) because a future quantum computer could break many of the cryptographic systems in wide use now.
+NIST runs its [post-quantum cryptography project](https://csrc.nist.gov/projects/post-quantum-cryptography) because quantum computers, which may be years or decades away, could eventually break many of the cryptographic systems in wide use today.
 
 ## Key and signature sizes
 
@@ -38,16 +38,24 @@ A signer using LMS or XMSS therefore marks each one-time key as spent, and write
 
 ## Hybrid signatures
 
-A hybrid signature pairs a classical signature with a post-quantum one. Verifiers accept the pair only if both halves verify. Quip Network's open-source Rust library [pqhybridsign](https://github.com/QuipNetwork/pqhybridsign) builds these composites from ed25519 or sr25519 plus ML-DSA-44, Falcon-512 or SHRINCS. According to its README, a composite stays unforgeable as long as either half survives a break. The library's verifier evaluates both halves on every call, even after the first half fails.
+A hybrid signature pairs a classical signature with a post-quantum one. Verifiers accept the pair only if both halves verify. According to the [pqhybridsign README](https://github.com/QuipNetwork/pqhybridsign), the composite stays unforgeable while either half survives a break, so in the worst case you fall back to the security of the classical algorithm you already use.
 
-Composite sizes add up from the halves. An ed25519 and ML-DSA-44 composite carries a 1,344-byte public key and a 2,484-byte signature, 64 bytes more than ML-DSA-44 alone.
+Quip Network's open-source library [pqhybridsign](https://github.com/QuipNetwork/pqhybridsign) is a hybrid classical and post-quantum suite written in Rust, with C, Python and WebAssembly bindings. It pairs ed25519 or sr25519 with one of three post-quantum schemes:
 
-## Hash-based signing in Quip Accounts
+* **ML-DSA-44**, the FIPS 204 lattice scheme.
+* **Falcon-512 (FN-DSA-512)**, the other lattice option, built on the `fn-dsa` crate ahead of a final FIPS 206.
+* **SHRINCS**, a stateful hash-based scheme.
 
-A [Quip Account](../interlock/quip-accounts.md) holds assets in a smart contract on the chain you already use and releases them only against a hash-based signature. The account signs with SHRINCS, Quip's hash-based scheme, and pqhybridsign pairs the same scheme with ed25519 or sr25519 in its hybrid suites. SHRINCS gives each account two signing paths:
+The library's verifier evaluates both halves on every call, even after the first half fails. Composite sizes add up from the halves. An ed25519 and ML-DSA-44 composite carries a 1,344-byte public key and a 2,484-byte signature, 64 bytes more than ML-DSA-44 alone.
+
+## Hybrid signing in Quip Accounts
+
+A [Quip Account](../interlock/quip-accounts.md) holds assets in a smart contract on the chain you already use. Every Quip signature wraps the chain's existing algorithm with a post-quantum one. On EVM chains, the account contract gates each owner operation behind both the owner's ECDSA key and a SHRINCS signature, so an attacker has to break both to move funds.
+
+SHRINCS is the two-path hash-based construction described by Kudinov and Nick in [ePrint 2025/2203](https://eprint.iacr.org/2025/2203). Quip implements it in its `hashsigs-rs` library, and pqhybridsign pairs the same scheme with ed25519 or sr25519 in its stateful suites. SHRINCS gives each account two signing paths:
 
 1. An everyday path, where each signature consumes one slot from a fixed budget.
-2. A break-glass path for recovery and key rotation, with more expensive signatures and no need for a record of used slots.
+2. A break-glass path for recovery, including rotation to a fresh key bundle, with more expensive signatures and no need for a record of used slots.
 
 The Quip clients track slots for account holders. A team writing its own signer with [`@quip.network/hashsigs-wasm`](../getting-started/quip-sdk.md) keeps that record itself, under the same rule as LMS and XMSS.
 
