@@ -18,13 +18,18 @@ import { CHAIN, EVM, EXPLORER } from "../data/testnet";
 // EVM chain ID is identical on both.
 const AGENT_PROMPT = [
   "You are helping me build on Quip Network.",
-  `Docs index: ${AI.llmsTxt}. Any docs page returns markdown if you append .md to its URL.`,
+  `Docs MCP server: ${AI.mcp} (Streamable HTTP, no sign-in), with tools to search and read the docs. Docs index: ${AI.llmsTxt}. Any docs page returns markdown if you append .md to its URL.`,
   `Testnet EVM JSON-RPC: ${EVM.rpcUrl} (chain ID ${EVM.chainId}). Verify on-chain results against ${EXPLORER.url}.`,
   `Confirm you are on the right chain by genesis hash ${CHAIN.genesis}, not by chain ID.`,
   "TypeScript SDK: @quip.network/ethereum-sdk@beta. Python compute toolchain: xquad[quip], which installs the xqsa solvers and the Quip Network backend.",
 ].join("\n\n");
 
 const SURFACES = [
+  {
+    label: "MCP server",
+    description: "Connect your coding assistant",
+    href: `${DOCS_HREF.useWithAi}#connect-your-assistant`,
+  },
   {
     label: "llms.txt",
     description: "Annotated page index",
@@ -64,7 +69,7 @@ export function BuildWithAi() {
                 Bootstrap prompt
               </MonoLabel>
               <p className="m-0 text-[13px] leading-[1.45] text-zinc-400">
-                Docs index, testnet endpoint, and the right package names.
+                Docs MCP server and index, testnet endpoint, and the right package names.
               </p>
             </div>
             <CopyCommand
