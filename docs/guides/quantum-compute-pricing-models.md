@@ -18,7 +18,7 @@ The table summarizes each provider's pricing page as read on November 11, 2026.
 | --- | --- | --- | --- |
 | [Amazon Braket](https://aws.amazon.com/braket/pricing/) | A fee per task plus a fee per shot, or an hourly reservation | Number of tasks and shots | Local simulator in the Braket SDK |
 | [IBM Quantum](https://www.ibm.com/quantum/pricing) | Seconds of usage on the Pay-As-You-Go plan | Runtime | Open Plan, up to 10 minutes of runtime per month |
-| [Azure Quantum with IonQ](https://learn.microsoft.com/en-us/azure/quantum/pricing) | Gate-shots, billed in Azure Quantum Tokens | Gates multiplied by shots | IonQ simulator |
+| [Azure Quantum with IonQ](https://learn.microsoft.com/en-us/azure/quantum/pricing) | Gate-shots, billed in Azure Quantum Tokens, with a minimum price per program | Gates multiplied by shots | IonQ simulator |
 | [Azure Quantum with Rigetti](https://learn.microsoft.com/en-us/azure/quantum/pricing) | Job execution time, in 10 millisecond increments | Runtime | Rigetti QVM simulator |
 | [Quip Network](/docs/compute/submit-a-job#what-a-job-costs) (Aglais test network) | A reward you set for each job, plus a transaction fee | Your reward, and model size for the fee | Local CPU solver in `xqsa` |
 
@@ -28,7 +28,7 @@ Amazon Braket charges two amounts for each run on a quantum processing unit (QPU
 
 At the same rates, a 100-shot debugging run costs $0.0425 in shots and $0.30 for the task. The task fee now accounts for nearly 90% of the $0.34 bill, and you save almost nothing by cutting shots further. On this model, run fewer hardware tasks during development, and send to hardware only circuits already checked in a simulator.
 
-Azure Quantum bills IonQ hardware by gate-shots, at rates such as $0.000975 per two-qubit-gate shot on Aria 1. Under that model the bill rises with circuit depth as well as shot count, so you lower it by removing gates or by running fewer shots.
+Azure Quantum bills IonQ hardware by gate-shots, at rates such as $0.000975 per two-qubit-gate shot on Aria 1, with a minimum price for each program execution ($12.4166 on Aria 1 with error mitigation off, $97.50 with it on). Above that minimum, the bill rises with gate count as well as shot count, so you lower it by removing gates or by running fewer shots. Below it, the minimum plays the same role as the Braket task fee.
 
 ## Per second of processor time
 
@@ -42,7 +42,7 @@ Quip Network prices optimization work by the job. You describe the problem as an
 
 Since the chain [charges for the reward and the fee alone](/docs/compute/submit-a-job#what-a-job-costs), a job costs the same whether a miner finishes in a second or a minute. On the Aglais test network, the minimum reward is 1 AGLS, and the faucet hands out AGLS for free.
 
-For iterative work, the `xqsa` package runs a local CPU solver through the same `solve()` call as the network backend. You develop the model on your own machine at no cost, then change the solver line to send it to the network. Before sending a job, call `create_order(model).quote()` to fetch the reward plus fee from the chain without submitting anything.
+For iterative work, the `xqsa` package runs a local CPU solver through the same `solve()` call as the network backend. You develop the model on your own machine at no cost, then change the solver line to send it to the network. Before sending a job, call `create_order(model).quote()`. It returns your reward plus the fee the chain quotes for the job, and checks your balance, without submitting anything.
 
 ## Picking a model for a development loop
 
