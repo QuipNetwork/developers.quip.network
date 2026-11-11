@@ -32,7 +32,7 @@ The sizes come from Table 2 of [FIPS 204](https://nvlpubs.nist.gov/nistpubs/FIPS
 
 ## Stateful schemes count every signature
 
-[SP 800-208](https://csrc.nist.gov/pubs/sp/800/208/final) approves LMS and XMSS, two stateful hash-based schemes, along with their multi-tree variants. Each private key in these schemes covers a fixed supply of one-time keys, and [RFC 8554](https://datatracker.ietf.org/doc/html/rfc8554) forbids signing a second message with a one-time key after it has signed the first.
+[SP 800-208](https://csrc.nist.gov/pubs/sp/800/208/final) specifies LMS and XMSS, two stateful hash-based schemes, along with their multi-tree variants. Each private key in these schemes covers a fixed supply of one-time keys, and [RFC 8554](https://datatracker.ietf.org/doc/html/rfc8554) forbids signing a second message with a one-time key after it has signed the first.
 
 A signer using LMS or XMSS therefore marks each one-time key as spent, and writes the mark [before broadcasting](../interlock/quip-accounts.md#if-you-build-your-own-signer-track-your-slots) the transaction. When a user restores a wallet from an old backup, the signer loses track of keys spent since the backup and can sign with one of them again.
 
