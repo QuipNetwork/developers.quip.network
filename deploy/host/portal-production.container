@@ -35,6 +35,8 @@ Environment=REGISTRY_AUTH_FILE=%h/.config/containers/auth.json
 TimeoutStartSec=60
 # Don't wait systemd's default 90 s for a container that ignores SIGTERM.
 TimeoutStopSec=20
+# Node exits 143 on SIGTERM. Without this, every stop and update leaves the unit "failed".
+SuccessExitStatus=143
 Restart=always
 RestartSec=5
 
