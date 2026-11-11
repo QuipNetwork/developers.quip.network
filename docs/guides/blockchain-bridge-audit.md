@@ -22,7 +22,7 @@ The [ethereum.org bridge guide](https://ethereum.org/en/developers/docs/bridges/
 
 ## Failure classes and audit checks
 
-Loss figures come from the linked incident write-ups.
+Loss figures are the US dollar values given in the linked incident write-ups. Other sources value the same losses slightly differently, depending on token prices at the time.
 
 | Failure class | Incident | Cause | Audit check |
 | --- | --- | --- | --- |
@@ -45,7 +45,7 @@ The [QuipSwap security page](/docs/quipswap/security) gives a worked example of 
 
 A hashlocked swap moves assets across chains without a bridge pool. In [QuipSwap](/docs/quipswap/overview), each side locks its assets in the `Omnibus` settlement contract on its own chain, and a shared secret settles both sides. No bridge, oracle or wrapped asset takes part in settlement.
 
-An audit of this design focuses on the settlement state machine and its deadlines. [Oak Security audited](/docs/quipswap/security) the Quip contracts, `Omnibus` included, and published its report on 24 September 2026. The security page lists the design's known limits as well. For example, each chain's contract checks only its own leg, so the taker confirms the proposer's commit on the other chain before committing.
+An audit of this design focuses on the settlement state machine and its deadlines. [Oak Security audited](/docs/quipswap/security) the Quip contracts, `Omnibus` included, in a report dated 24 September 2026. The security page lists the design's known limits as well. For example, each chain's contract checks only its own leg, so the taker confirms the proposer's commit on the other chain before committing.
 
 ## Where to go next
 
