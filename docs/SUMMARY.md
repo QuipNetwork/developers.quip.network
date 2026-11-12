@@ -15,6 +15,7 @@
 * [Post-Quantum Signature Schemes for Blockchains](guides/post-quantum-signatures-for-blockchains.md)
 * [Blockchain Bridge Audits](guides/blockchain-bridge-audit.md)
 * [Quantum Compute Pricing Models Compared](guides/quantum-compute-pricing-models.md)
+* [Post-Quantum Cryptography Libraries for Blockchain Developers](guides/post-quantum-cryptography-libraries.md)
 
 ## Quip Interlock Protocol
 
