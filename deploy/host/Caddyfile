@@ -24,16 +24,16 @@ developers-staging.quip.network {
 }
 
 # Production, enabled at cutover:
-# developers.quip.network {
-# 	header Strict-Transport-Security "max-age=31536000"
-# 	header /docs* +Vary "Accept"
-# 	@compress not path /mcp /mcp/*
-# 	encode @compress zstd gzip
-# 	reverse_proxy 127.0.0.1:3002 {
-# 		flush_interval -1
-# 		lb_try_duration 30s
-# 		transport http {
-# 			keepalive 3s
-# 		}
-# 	}
-# }
+developers.quip.network {
+	header Strict-Transport-Security "max-age=31536000"
+	header /docs* +Vary "Accept"
+	@compress not path /mcp /mcp/*
+	encode @compress zstd gzip
+	reverse_proxy 127.0.0.1:3002 {
+		flush_interval -1
+		lb_try_duration 30s
+		transport http {
+			keepalive 3s
+		}
+	}
+}
