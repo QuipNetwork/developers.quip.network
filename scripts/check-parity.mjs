@@ -58,9 +58,11 @@ const INTENDED = new Map([
 ]);
 // Text the new site changed on purpose. Anything else in these bodies still has to match.
 const QVM_EDIT = ["XQuad compiles quadratic", "XQuad is the toolchain for building on the Quip Virtual Machine (QVM). It compiles quadratic"];
+// robots.txt named Astro's sitemap, which Next only redirects from.
 const TEXT_EDITS = new Map([
   ["/docs/xquad-toolchain.md", QVM_EDIT],
   ["/docs/llms-full.txt", QVM_EDIT],
+  ["/robots.txt", ["/sitemap-index.xml", "/sitemap.xml"]],
 ]);
 // Files rewritten on purpose, compared by status and type only. The AI page and the
 // portal's llms.txt gained the MCP server.
