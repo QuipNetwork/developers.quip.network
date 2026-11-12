@@ -21,7 +21,7 @@
  *    merge, so the pipeline could never go green on the MR that introduces it.
  */
 
-const SITE_ORIGIN = import.meta.env.SITE ?? "https://developers.quip.network";
+const SITE_ORIGIN = "https://developers.quip.network";
 
 export const DOCS_BASE = new URL("/docs", SITE_ORIGIN).href;
 
@@ -46,16 +46,24 @@ export const DOCS = {
 };
 
 /*
- * No mcpEndpoint. The only MCP server for these docs was hosted by GitBook, on
- * the domain this migration retires, so pointing agents at it would keep the
- * dependency we are removing. The generated llms.txt / llms-full.txt and the
- * per-page .md twins cover the machine-readable need from the canonical host.
- * A self-hosted MCP server is tracked separately.
+ * Machine-readable surfaces, all on the canonical host. The MCP server is part of
+ * this app (src/app/mcp/route.ts); GitBook's went away with GitBook.
  */
 export const AI = {
+  mcp: `${SITE_ORIGIN}/mcp`,
   llmsTxt: `${DOCS_BASE}/llms.txt`,
   llmsFullTxt: `${DOCS_BASE}/llms-full.txt`,
 };
+
+/*
+ * For links on a page: the same URLs without the origin, so a visitor stays on the host they
+ * came to, staging included. DOCS and AI stay absolute for llms.txt and text agents copy.
+ */
+const onThisHost = <T extends Record<string, string>>(links: T) =>
+  Object.fromEntries(Object.entries(links).map(([key, url]) => [key, url.slice(SITE_ORIGIN.length)])) as T;
+
+export const DOCS_HREF = onThisHost(DOCS);
+export const AI_HREF = onThisHost(AI);
 
 /** GitLab is canonical. GitHub is a mirror, and is labelled as one. */
 export const CODE = {
@@ -124,4 +132,5 @@ export const PENDING = [
   "explorer.quip.network",
 ] as const;
 
-export const LAST_UPDATED = import.meta.env.PUBLIC_BUILD_DATE;
+// Set once per build in next.config.mjs.
+export const LAST_UPDATED = process.env.NEXT_PUBLIC_BUILD_DATE ?? "";

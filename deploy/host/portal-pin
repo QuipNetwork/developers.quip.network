@@ -1,0 +1,21 @@
+#!/bin/sh
+# Run one site on an older image, or put it back on its branch tag:
+#   portal-pin staging e4a00afa-3033767146
+#   portal-pin staging --unpin
+# A pinned tag never changes, so podman auto-update leaves the site alone until it is unpinned.
+set -eu
+site=${1:?usage: portal-pin staging|production <tag>|--unpin}
+tag=${2:?usage: portal-pin staging|production <tag>|--unpin}
+case $site in staging|production) ;; *) echo "unknown site: $site" >&2; exit 2 ;; esac
+unit=portal-$site
+dir=$HOME/.config/containers/systemd/$unit.container.d
+if [ "$tag" = --unpin ]; then
+  rm -f "$dir/pin.conf"
+else
+  printf '%s' "$tag" | grep -Eq '^[A-Za-z0-9][A-Za-z0-9._-]*$' || { echo "not a tag: $tag" >&2; exit 2; }
+  mkdir -p "$dir"
+  printf '[Container]\nImage=registry.gitlab.com/quip.network/developers.quip.network:%s\n' "$tag" >"$dir/pin.conf"
+fi
+systemctl --user daemon-reload
+systemctl --user restart "$unit"
+podman inspect --format '{{.ImageName}}' "$unit"

@@ -1,3 +1,5 @@
+"use client";
+
 import clsx from "clsx";
 import { useCallback, useEffect, useRef, useState } from "react";
 import CheckIcon from "@design/components/icons/CheckIcon";
@@ -59,7 +61,7 @@ export function CopyCommand({
     >
       <div
         className={clsx(
-          "flex min-w-0 flex-1 gap-2 overflow-x-auto px-3 py-2 [font-family:var(--font-mono)] text-[12.5px] leading-[1.55]",
+          "flex min-w-0 flex-1 gap-2 overflow-x-auto px-3 py-2 [font-family:var(--font-mono)] text-[13px] leading-[1.55]",
           multiline ? "items-start" : "items-center",
         )}
       >
@@ -85,7 +87,7 @@ export function CopyCommand({
         onClick={copy}
         aria-label={label ? `Copy ${label}` : "Copy to clipboard"}
         className={clsx(
-          "inline-flex shrink-0 cursor-pointer items-center justify-center gap-1.5 px-3 [font-family:var(--font-mono)] font-features-['case'] text-[10px] leading-[1.15] font-medium tracking-[0.4px] uppercase transition-colors duration-150",
+          "inline-flex shrink-0 cursor-pointer items-center justify-center gap-1.5 px-3 [font-family:var(--font-mono)] font-features-['case'] text-[11px] leading-[1.15] font-medium tracking-[0.4px] uppercase transition-colors duration-150",
           multiline ? "border-t py-2" : "border-l",
           BUTTON[variant],
         )}

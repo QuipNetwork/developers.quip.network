@@ -1,0 +1,172 @@
+/*
+ * Quip diagrams. Colours come from the site's theme tokens, so they follow .dark without
+ * any rule of their own, except the two tints with no token to follow.
+ */
+.quip-diagram {
+  container-type: inline-size;
+  margin: 2rem 0;
+  --qd-line: var(--color-fd-muted-foreground);
+  --qd-text: var(--color-fd-foreground);
+  /* Muted foreground misses AA at 12px on the card fill, so detail is a step stronger. */
+  --qd-detail: color-mix(in srgb, var(--color-fd-foreground) 72%, var(--color-fd-background));
+  --qd-node-fill: var(--color-fd-card);
+  --qd-node-stroke: color-mix(in srgb, var(--color-fd-foreground) 30%, var(--color-fd-background));
+  --qd-group-stroke: var(--color-fd-border);
+  --qd-group-fill: var(--color-fd-card);
+  --qd-raised-fill: var(--color-fd-background);
+  --qd-raised-stroke: var(--qd-node-stroke);
+  /* The emphasised node is a step darker and drawn in ink. */
+  --qd-accent-fill: var(--color-fd-secondary);
+  --qd-accent-stroke: var(--color-fd-foreground);
+}
+
+.quip-diagram svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-inline: auto;
+}
+
+/* The docs column can run wider on a large screen, where the type would grow past the prose. */
+.quip-diagram .qd-wide {
+  max-width: 764px;
+}
+
+.quip-diagram .qd-narrow {
+  display: none;
+  max-width: 440px;
+}
+
+@container (max-width: 619px) {
+  .quip-diagram .qd-wide {
+    display: none;
+  }
+  .quip-diagram .qd-narrow {
+    display: block;
+  }
+}
+
+.quip-diagram rect.qd-node {
+  fill: var(--qd-node-fill);
+  stroke: var(--qd-node-stroke);
+  stroke-width: 1;
+}
+
+.quip-diagram rect.qd-node[data-emphasis] {
+  fill: var(--qd-accent-fill);
+  stroke: var(--qd-accent-stroke);
+  stroke-width: 1.5;
+}
+
+.quip-diagram rect.qd-group {
+  fill: var(--qd-group-fill);
+  stroke: var(--qd-group-stroke);
+  stroke-width: 1;
+}
+
+.quip-diagram rect.qd-group[data-raised] {
+  fill: var(--qd-raised-fill);
+  stroke: var(--qd-raised-stroke);
+}
+
+.quip-diagram text {
+  font-family: var(--font-body);
+  fill: var(--qd-text);
+}
+
+.quip-diagram .qd-name {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.quip-diagram .qd-detail {
+  font-size: 12px;
+  font-weight: 400;
+  fill: var(--qd-detail);
+}
+
+.quip-diagram .qd-mono-node {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.quip-diagram .qd-group-label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  fill: var(--qd-detail);
+}
+
+.quip-diagram .qd-edge-label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  fill: var(--qd-detail);
+}
+
+.quip-diagram g[data-style="thick"] .qd-edge-label {
+  font-weight: 500;
+  fill: var(--qd-text);
+}
+
+.quip-diagram path.qd-edge {
+  fill: none;
+  stroke: var(--qd-line);
+  stroke-width: 1.25;
+  stroke-linejoin: miter;
+}
+
+.quip-diagram polygon.qd-head {
+  fill: var(--qd-line);
+}
+
+.quip-diagram g[data-style="thick"] path.qd-edge {
+  stroke: var(--qd-text);
+  stroke-width: 1.5;
+}
+
+.quip-diagram g[data-style="thick"] polygon.qd-head {
+  fill: var(--qd-text);
+}
+
+.quip-diagram g[data-style="line"] .qd-edge-label {
+  font-size: 13px;
+  fill: var(--qd-text);
+}
+
+/* The participant stack: its frame, and the tags that sit on its dividers. */
+.quip-diagram .qd-frame {
+  fill: none;
+  stroke: var(--color-fd-border);
+  stroke-width: 1;
+}
+
+.quip-diagram rect.qd-tag {
+  fill: var(--color-fd-background);
+  stroke: var(--qd-line);
+  stroke-width: 1;
+}
+
+.quip-diagram g[data-kind="bus"] path.qd-edge {
+  stroke: var(--qd-text);
+  stroke-width: 1.5;
+  stroke-linecap: square;
+}
+
+.quip-diagram circle.qd-junction {
+  fill: var(--qd-line);
+}
+
+.quip-diagram g[data-kind="bus"] ~ circle.qd-junction {
+  fill: var(--qd-text);
+}
+
+/* In a page's own figure, the caption sets the space below. */
+figure > .quip-diagram {
+  margin: 0;
+}
+
+.quip-diagram rect.qd-knockout {
+  fill: var(--color-fd-background);
+}

@@ -7,7 +7,7 @@ icon: toolbox
 
 # Toolchain
 
-XQuad compiles quadratic optimization problems into bytecode for a single virtual machine, the XQVM, and runs that bytecode on whichever backend you point it at. A problem written once runs unchanged on a D-Wave quantum processor, a GPU annealer, a local CPU sampler, or the Quip Network. It plays the role LLVM plays for compilers: one intermediate representation, many targets.
+XQuad is the toolchain for building on the Quip Virtual Machine (QVM). It compiles quadratic optimization problems into bytecode for a single virtual machine, the XQVM, and runs that bytecode on whichever backend you point it at. A problem written once runs unchanged on a D-Wave quantum processor, a GPU annealer, a local CPU sampler, or the Quip Network. It plays the role LLVM plays for compilers: one intermediate representation, many targets.
 
 {% hint style="info" %}
 **Early public release.** The instruction set, binary format, and public API may change before v1.0.

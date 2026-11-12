@@ -4,16 +4,29 @@ The developer portal for Quip Network. A single dense page that routes
 developers, node operators and evaluators to the right destination, plus live
 testnet state and machine-readable docs for coding agents.
 
-Live at <https://developers.quip.network>, deployed by Netlify from `main`.
+Live at <https://developers.quip.network>. Next.js 16 and Fumadocs 16, shipped as one
+Docker image; see [deploy/README.md](deploy/README.md).
 
 ## Run it
 
     npm install
-    npm run dev        # http://localhost:4321
-    npm run build      # static output in dist/
-    npm run check      # astro check
+    npm run dev        # http://localhost:3000
+    npm run build      # standalone server in .next/standalone
+    npm start          # runs that build, as production does
+    npm run check      # type check
+    npm run check:parity  # compare every URL with production
+    npm run check:smoke -- <URL>  # is this running copy working?
 
-Node 22 or newer.
+Node 22 or newer. To run exactly what production runs:
+
+    docker build -t devportal . && docker run --rm -p 3000:3000 devportal
+
+## Editing the docs
+
+Until the cutover, edit Markdown in `docs/`. `scripts/sync-docs.mjs` generates two things
+from it: MDX in `content/docs/(docs)` for the site, and the plain Markdown twins and
+`llms` files in `public/docs` for agents. Neither is committed. The site also serves a
+docs MCP server at `/mcp`.
 
 ## What is real and what is not
 
@@ -113,7 +126,15 @@ role and `write_repository`, because `main` restricts pushes to Maintainers.
   build output and are overwritten by the sync. The script reads navigation and
   public routes from `SUMMARY.md`, normalizes GitBook-only markup, rewrites
   internal links, copies assets, and builds `llms.txt`, `llms-full.txt`, and
-  per-page Markdown mirrors.
+  per-page Markdown mirrors. The two indexes also cover the XQuad book and the
+  Reference tree, from the twins their own scripts write, so `prebuild` runs
+  those first.
+- **The XQuad book is not in this repo.** `scripts/sync-xquad.mjs` takes its Markdown
+  from the latest xquad release tag at build and writes MDX to `content/docs/xquad/`
+  and twins to `public/docs/xquad/`, all ignored build output. `npm run dev` does not
+  run it, so run `npm run xquad:sync` once to see the book locally.
+  `npm run check:xquad-urls` checks that every URL the old mdBook site published still
+  answers.
 - **`npm run build` runs a guard first.** `scripts/check-endpoints.mjs` fails the
   build if a retired endpoint reappears anywhere in `src/`, or if the aglais
   endpoints and genesis hash go missing. It is offline by design and never

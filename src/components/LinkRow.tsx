@@ -1,0 +1,66 @@
+import clsx from "clsx";
+import { ArrowAffordance } from "@design/components/Buttons";
+
+/*
+ * One row in a dense list of destinations. Label, one line of "why you would
+ * click this", and an external affordance. Hairline separated rather than
+ * carded, which is what lets six of these fit where two cards used to.
+ */
+
+export function LinkRow({
+  label,
+  description,
+  href,
+  mono = false,
+  tone = "light",
+}: {
+  label: string;
+  description?: string;
+  href: string;
+  mono?: boolean;
+  tone?: "light" | "dark";
+}) {
+  const isDark = tone === "dark";
+
+  return (
+    <li
+      className={clsx(
+        "border-t last:border-b",
+        isDark ? "border-zinc-700" : "border-(--color-border)",
+      )}
+    >
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={clsx(
+          "group flex items-baseline gap-3 py-2 no-underline transition-colors duration-150",
+          isDark
+            ? "hover:text-(--color-accent)"
+            : "hover:text-(--color-accent-text)",
+        )}
+      >
+        <span
+          className={clsx(
+            "inline-flex shrink-0 items-center gap-1.5 text-[13px] leading-[1.45]",
+            mono ? "[font-family:var(--font-mono)] font-medium" : "font-medium",
+            isDark ? "text-zinc-50" : "text-zinc-950",
+          )}
+        >
+          {label}
+          <ArrowAffordance size="xs" />
+        </span>
+        {description && (
+          <span
+            className={clsx(
+              "ml-auto text-right text-[13px] leading-[1.45] max-md:text-left",
+              isDark ? "text-zinc-400" : "text-(--color-muted)",
+            )}
+          >
+            {description}
+          </span>
+        )}
+      </a>
+    </li>
+  );
+}

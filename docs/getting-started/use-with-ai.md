@@ -1,49 +1,155 @@
 ---
 description: >-
-  Connect these docs to Claude, ChatGPT, Cursor, or Claude Code: every page
-  has a markdown mirror, and the whole site is indexed for language models.
+  Connect Claude Code, Cursor, VS Code, Codex or any other MCP client to these
+  docs, or read any page as Markdown. No sign-in needed.
 icon: robot
 ---
 
 # Use These Docs with AI
 
-These docs are built to be read by AI tools as well as people. Every page has a plain-markdown mirror, and the whole site is indexed for language models. Both are live today.
+Your coding assistant can search and read these docs while it works, so it answers from the current docs rather than from what it remembers. Connect it to the docs MCP server once:
+
+* **Server URL:** `https://developers.quip.network/mcp`
+* **Transport:** Streamable HTTP
+* **Sign-in:** none. The server is public and read-only, with no API key.
 
 **Which option should you use?**
 
-| You are | Use |
+| You want | Use |
 | --- | --- |
-| Asking questions about one page | [Open the page in your assistant](use-with-ai.md#ask-an-assistant-about-one-page) |
-| Feeding the docs to your own tool, agent, or evaluation | [The site indexes](use-with-ai.md#give-a-model-the-whole-site), never scrape the HTML |
+| Your coding assistant to look things up as it works | [The MCP server](use-with-ai.md#connect-your-assistant) |
+| To ask an assistant about one page | [The page as Markdown](use-with-ai.md#read-a-page-as-markdown) |
+| The docs as data for your own tool, agent or evaluation | [The site indexes](use-with-ai.md#give-a-model-the-whole-site), never scraped HTML |
 
-## Ask an assistant about one page
+## Connect your assistant
 
-Every page on this site has a markdown mirror: add `.md` to the end of the page URL.
+Every assistant uses the same URL. Only the way you add it differs.
 
-**What it does.** Gives an AI assistant the clean content of a page, structure and code blocks preserved, navigation noise removed.
+### Claude Code
 
-**When to use it.** Quick questions, code generation, or a longer analysis grounded in a single page.
+```bash
+claude mcp add --transport http quip-docs https://developers.quip.network/mcp
+```
 
-**How to use it.** Tell your assistant to read the page's `.md` URL:
+Keep `--transport http`: without it, Claude Code treats the URL as a program to run. Add `--scope user` to use the docs in all your projects, or `--scope project` to share the server with your team through the project's `.mcp.json`.
+
+### Claude and Claude Desktop
+
+Open **Connectors**, choose **Add custom connector**, and enter `quip-docs` and the server URL. Under authentication, choose **No sign in**. On Team and Enterprise plans, an Owner adds the connector for the organization first.
+
+### Cursor
+
+Add the server to `~/.cursor/mcp.json` for all projects, or `.cursor/mcp.json` for one:
+
+```json
+{
+  "mcpServers": {
+    "quip-docs": { "url": "https://developers.quip.network/mcp" }
+  }
+}
+```
+
+### VS Code (GitHub Copilot)
+
+Add the server to `.vscode/mcp.json`. VS Code's top-level key is `servers`, and it needs `"type": "http"`:
+
+```json
+{
+  "servers": {
+    "quip-docs": { "type": "http", "url": "https://developers.quip.network/mcp" }
+  }
+}
+```
+
+### OpenAI Codex
+
+Add the server to `~/.codex/config.toml`:
+
+```toml
+[mcp_servers.quip-docs]
+url = "https://developers.quip.network/mcp"
+```
+
+### Gemini CLI
+
+```bash
+gemini mcp add --transport http quip-docs https://developers.quip.network/mcp
+```
+
+If you edit `settings.json` instead, use the `httpUrl` key. In Gemini CLI, `url` means the older SSE transport, which this server does not use.
+
+### Windsurf
+
+Add the server to Windsurf's `mcp_config.json`, using the `serverUrl` key:
+
+```json
+{
+  "mcpServers": {
+    "quip-docs": { "serverUrl": "https://developers.quip.network/mcp" }
+  }
+}
+```
+
+### Any other assistant
+
+Give it the server URL as a remote or HTTP server. If it can only start local servers, bridge to this one with [`mcp-remote`](https://github.com/geelen/mcp-remote), which runs as a local command:
+
+```json
+{
+  "mcpServers": {
+    "quip-docs": { "command": "npx", "args": ["mcp-remote", "https://developers.quip.network/mcp"] }
+  }
+}
+```
+
+### Check that it works
+
+In Claude Code, `/mcp` lists `quip-docs` as connected. In any assistant, ask something only the docs know, such as "Search the Quip docs for how to request testnet tokens." The answer should cite a page under `developers.quip.network/docs`.
+
+## What the server can do
+
+The server has three tools. All of them only read.
+
+| Tool | What it does |
+| --- | --- |
+| `search_docs` | Searches the docs and returns the best-matching pages, each with its URL and a snippet |
+| `get_page` | Returns one page as Markdown, by URL or path. A long page comes in parts |
+| `list_pages` | Lists every page with its title, description and URL |
+
+You don't call these yourself. Ask in your own words and the assistant picks the tool, for example:
+
+* "Using the Quip docs, write a script that requests AGLS from the testnet faucet."
+* "Check the Quip docs, then show me how to submit a compute job from Python."
+* "Which Quip SDK do I install for post-quantum accounts on an EVM chain?"
+
+## Read a page as Markdown
+
+Every page on this site has a Markdown version: the same content with its structure and code blocks, and without the navigation.
+
+* **Add `.md` to the page's URL.** For example, [`/docs/getting-started/quickstart.md`](https://developers.quip.network/docs/getting-started/quickstart.md).
+* **Ask for Markdown.** A request with `Accept: text/markdown` gets the Markdown at the page's own URL, as in the example below.
+* **Use the buttons at the top of each page.** **Copy Markdown** copies the page, and **Open** sends it to Claude, ChatGPT or Cursor.
+
+```bash
+curl -H "Accept: text/markdown" https://developers.quip.network/docs/getting-started/quickstart
+```
+
+To ask about a page in a chat assistant without the buttons, give it the page's `.md` URL:
 
 * **Claude:** `https://claude.ai/new?q=Read <page URL>.md so I can ask questions about it.`
 * **ChatGPT:** `https://chatgpt.com/?q=Read <page URL>.md so I can ask questions about it.`
 
-For example, to work with the [QuipSwap](../interlock/quipswap.md) page, copy the page's address from your browser and add `.md` to the end. The [`/llms.txt` index](use-with-ai.md#give-a-model-the-whole-site) lists the exact mirror URL for every page.
-
 ## Give a model the whole site
 
-**What it does.** Two standing indexes cover the entire documentation at once.
+Two indexes cover every page, including the XQuad book and the Reference section.
 
 | URL | Contents |
 | --- | --- |
-| [`/llms.txt`](https://developers.quip.network/docs/llms.txt) | An annotated index of every page with its markdown mirror, for models that fetch pages on demand |
-| [`/llms-full.txt`](https://developers.quip.network/docs/llms-full.txt) | The entire documentation in one markdown file, for pasting into a model's context window |
+| [`/docs/llms.txt`](https://developers.quip.network/docs/llms.txt) | An index of every page's Markdown URL, with a short description, for models that fetch pages as they need them |
+| [`/docs/llms-full.txt`](https://developers.quip.network/docs/llms-full.txt) | Every page in one Markdown file, about 1 MB. Too large for most context windows: use it to load your own tool or search index |
 
-**When to use it.** You are building a tool, agent, or evaluation that consumes the docs as data.
-
-**How to use it.** Fetch the index URL directly. Use these rather than scraping the HTML: they are generated from the same source as the site, so they are always current.
+Fetch these rather than scraping the HTML. They are built from the same source as the site at every deploy, so they always match it.
 
 {% hint style="info" %}
-These endpoints reflect the published documentation. If a page is not on the live site yet, it is not in the indexes.
+These indexes and the MCP server reflect the published documentation. A page that is not on the live site yet is not in them.
 {% endhint %}

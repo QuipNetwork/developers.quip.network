@@ -1,0 +1,39 @@
+# The site sets its own Cache-Control, so nothing here caches. Certificates come from Let's
+# Encrypt over HTTP-01 once DNS points here. lb_try_duration holds requests through the few
+# seconds a container takes to restart on an update.
+#
+# Node closes an idle connection after 6 s (keepAliveTimeout 5 s plus its 1 s buffer), and
+# Caddy keeps one for 2 minutes by default. A request sent just as Node closes the connection
+# gets EOF, and Caddy cannot retry a POST, so /mcp answered 502. Measured on staging: 5 of 62
+# requests sent 5.998 to 6.003 s after the last one. With keepalive 3s, Caddy closes first.
+
+developers-staging.quip.network {
+	# Docs URLs answer with HTML or Markdown. Next overwrites Vary on HTML, so it is added here.
+	header /docs* +Vary "Accept"
+	@compress not path /mcp /mcp/*
+	encode @compress zstd gzip
+	reverse_proxy 127.0.0.1:3001 {
+		# The app's own noindex skips /_next, /api, /fonts and /images.
+		header_down X-Robots-Tag "noindex"
+		flush_interval -1
+		lb_try_duration 30s
+		transport http {
+			keepalive 3s
+		}
+	}
+}
+
+# Production, enabled at cutover:
+# developers.quip.network {
+# 	header Strict-Transport-Security "max-age=31536000"
+# 	header /docs* +Vary "Accept"
+# 	@compress not path /mcp /mcp/*
+# 	encode @compress zstd gzip
+# 	reverse_proxy 127.0.0.1:3002 {
+# 		flush_interval -1
+# 		lb_try_duration 30s
+# 		transport http {
+# 			keepalive 3s
+# 		}
+# 	}
+# }

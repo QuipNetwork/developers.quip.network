@@ -1,0 +1,44 @@
+---
+title: Faucet API
+description: Request AGLS on the Aglais test network from a server or curl.
+---
+
+import { FaucetApi } from "@/components/faucet-api";
+
+The faucet sends test AGLS to an address on the Aglais test network. Its base URL is `https://faucet.aglais.quip.network`. It is an API with no web page: the root path returns 404.
+
+<Callout type="warn" title="Not callable from a browser">
+The CORS preflight for `POST /request` returns 405 with no `Access-Control-Allow-Methods` header, so a browser refuses to send the JSON request. Call the faucet from a server or curl. This page has no request playground for the same reason.
+</Callout>
+
+## Request a drip
+
+One request sends one drip of 10 AGLS. Requests are rate-limited per destination.
+
+```sh
+curl -X POST https://faucet.aglais.quip.network/request \
+  -H 'Content-Type: application/json' \
+  -d '{"dest": "<your address>"}'
+```
+
+`dest` takes an SS58 address, a 0x-prefixed 64-hex AccountId, or a 0x-prefixed 40-hex EVM address. For an XQuad keystore, use its `account_id_hex` field, as [Submit Your First Compute Job](/docs/compute/submit-a-job#fund-your-account-from-the-faucet) describes.
+
+<FaucetApi path="/request" method="post" />
+
+## Check health
+
+```sh
+curl https://faucet.aglais.quip.network/health
+```
+
+<FaucetApi path="/health" method="get" />
+
+## Other paths
+
+Read-only requests observed on 2026-11-03. None of them dispense anything.
+
+| Request | Response |
+| --- | --- |
+| `GET /` | 404 |
+| `GET /request` | 405, `Allow: POST` |
+| `OPTIONS /request` | 405, `Allow: POST` |

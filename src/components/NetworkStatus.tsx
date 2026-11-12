@@ -1,3 +1,5 @@
+"use client";
+
 import { useSyncExternalStore } from "react";
 import { PersonaIcon } from "@design/components/PersonaIcon";
 import { CHAIN } from "../data/testnet";
@@ -217,8 +219,8 @@ function useNetwork() {
  * literally the symbol for the nodes whose health it reports.
  */
 const TONE = {
-  live: "text-[#047857]",
-  syncing: "text-[#9a5b00]",
+  live: "text-[#047857] dark:text-(--quip-positive)",
+  syncing: "text-[#9a5b00] dark:text-(--quip-warning)",
   down: "text-(--color-accent-text)",
   idle: "text-(--color-zinc-300)",
 } as const;
@@ -251,7 +253,7 @@ export function NetworkPulse() {
   return (
     <>
       <div className="flex items-baseline gap-2">
-        <span className="[font-family:var(--font-mono)] font-features-['case'] text-[10px] leading-none font-medium tracking-[0.4px] text-(--color-muted) uppercase">
+        <span className="[font-family:var(--font-mono)] font-features-['case'] text-[11px] leading-none font-medium tracking-[0.4px] text-(--color-muted) uppercase">
           Network
         </span>
         <span className="inline-flex items-center gap-1.5">
@@ -263,7 +265,7 @@ export function NetworkPulse() {
       </div>
       {state.status === "ok" && (
         <div className="flex items-baseline gap-2">
-          <span className="[font-family:var(--font-mono)] font-features-['case'] text-[10px] leading-none font-medium tracking-[0.4px] text-(--color-muted) uppercase">
+          <span className="[font-family:var(--font-mono)] font-features-['case'] text-[11px] leading-none font-medium tracking-[0.4px] text-(--color-muted) uppercase">
             Blocks produced
           </span>
           <span className="[font-family:var(--font-mono)] text-[12px] leading-[1.4] font-medium text-zinc-950 tabular-nums">
@@ -300,17 +302,17 @@ export function NetworkReadout() {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-baseline gap-2.5">
-        <span className="[font-family:var(--font-mono)] font-features-['case'] text-[10px] leading-none font-medium tracking-[0.4px] text-(--color-muted) uppercase">
+        <span className="[font-family:var(--font-mono)] font-features-['case'] text-[11px] leading-none font-medium tracking-[0.4px] text-(--color-muted) uppercase">
           Live status
         </span>
         <span className="inline-flex items-center gap-1.5">
           <StateGlyph state={state} />
-          <span className="[font-family:var(--font-mono)] text-[11.5px] leading-none font-medium text-zinc-950">
+          <span className="[font-family:var(--font-mono)] text-[12px] leading-none font-medium text-zinc-950">
             {labelFor(state)}
           </span>
         </span>
         {state.status === "ok" && (
-          <span className="ml-auto [font-family:var(--font-mono)] text-[10.5px] leading-none text-(--color-muted)">
+          <span className="ml-auto [font-family:var(--font-mono)] text-[11px] leading-none text-(--color-muted)">
             {state.at.toLocaleTimeString("en-US", {
               hour: "2-digit",
               minute: "2-digit",
@@ -339,7 +341,7 @@ export function NetworkReadout() {
               key={row.label}
               className="flex items-baseline justify-between gap-3 border-t border-(--color-border) py-1.5"
             >
-              <dt className="[font-family:var(--font-mono)] font-features-['case'] text-[10px] leading-none font-medium tracking-[0.4px] text-(--color-muted) uppercase">
+              <dt className="[font-family:var(--font-mono)] font-features-['case'] text-[11px] leading-none font-medium tracking-[0.4px] text-(--color-muted) uppercase">
                 {row.label}
               </dt>
               <dd className="m-0 [font-family:var(--font-mono)] text-[12px] leading-[1.4] text-zinc-950 tabular-nums">

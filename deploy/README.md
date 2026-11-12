@@ -1,0 +1,165 @@
+# Running developers.quip.network
+
+One Docker image: a Next.js standalone server on port 3000. It keeps no state and needs
+no database or disk, so every replica is identical and a rollback is a tag change.
+
+## What the host provides
+
+- **A way to run a container.** 1 vCPU and 1 GB of memory is plenty. A second replica is
+  optional. The root filesystem can be read-only if `/tmp` and `/app/.next/cache` are tmpfs:
+
+      docker run -d --read-only --tmpfs /tmp --tmpfs /app/.next/cache -p 3000:3000 \
+        registry.gitlab.com/quip.network/developers.quip.network:main
+
+- **A reverse proxy** (Caddy, Traefik or nginx) with TLS, HTTP/2 and gzip or brotli. It must:
+  - forward `Host`, `X-Forwarded-For` and `X-Forwarded-Proto`. `X-Forwarded-For` must be
+    the client's address as the proxy saw it, replaced rather than appended to, because the
+    rate limit counts by it. Caddy does this by default;
+  - forward `Accept`, which serves Markdown to AI tools at the same URL;
+  - leave `/mcp` unbuffered and not cache it (the app sends `no-store`);
+  - not cache HTML. The app sets `Cache-Control` itself: `/_next/static/*` and `/fonts/*`
+    are immutable, and everything else revalidates. A CDN in front of the proxy, such as
+    Cloudflare, can follow those headers as they are.
+
+- **Two hostnames.** Staging (suggested `developers-staging.quip.network`), and production,
+  `developers.quip.network`, which moves off Netlify at cutover.
+
+## Runtime settings
+
+| Variable | Where | Meaning |
+| --- | --- | --- |
+| `PORT` | optional | Listening port, default 3000 |
+| `ROBOTS_NOINDEX=1` | staging only | Adds `X-Robots-Tag: noindex` to pages; Caddy adds it to everything else |
+| `RATE_LIMIT_BYPASS_TOKEN` | optional, secret | Requests with this value in `X-Portal-Check` skip the rate limit |
+
+`/api/search` and `/mcp` are rate-limited per client address, an IPv6 client per /64. Over
+the limit they answer 429 with `Retry-After`. The numbers are in `src/lib/rate-limit.ts`.
+The check scripts read `PORTAL_CHECK_TOKEN` and send it in `X-Portal-Check`, but only to the
+site under test. Without the token, `check:staging` runs into the limit.
+
+Everything else is fixed at build time. Canonical URLs always name production, on staging
+too. Umami reports into the quip.network website, as the old site did. To change that, set
+the public CI variables `NEXT_PUBLIC_UMAMI_SRC` and `NEXT_PUBLIC_UMAMI_WEBSITE_ID`. Analytics
+only report from `developers.quip.network`, so staging sends nothing.
+
+## Deploy path
+
+CI builds and pushes; it never deploys (see the top of `.gitlab-ci.yml`). Each push to
+`fumadocs` or `main` runs three jobs:
+
+1. `build-image` builds with kaniko and pushes `:<short sha>-<pipeline id>`, a tag unique to
+   that build, so a rollback target is never overwritten.
+2. `smoke-image` starts that image and runs `scripts/smoke.mjs` against it.
+3. `promote-image` moves the branch tag to it, only if the smoke test passed.
+
+| Branch | Tag the host follows | Runs on |
+| --- | --- | --- |
+| `fumadocs` | `:fumadocs` | Staging |
+| `main` | `:main` | Production |
+
+The `:main` tag needs a protection rule in the project's container registry settings, so a
+branch pipeline cannot publish to production. Check it still lets the people who merge to
+`main` run `promote-image`.
+
+The registry is set to private and the host needs a deploy token with `read_registry`. The
+Dinamo fonts are also in `public/fonts`, which is public in this repo, so that question
+sits with the licence rather than the registry.
+
+The host follows those tags on its own. That must work unattended, because the
+data-refresh bot commits to `main` daily and each commit needs to reach production.
+
+**The XQuad release hook moves at cutover.** xquad's `docs:publish` job posts to a Netlify
+build hook. It needs to start a pipeline on `main` of this project instead, through a
+pipeline trigger token (Settings, CI/CD). The pipeline id it sends today is not needed: with
+none, `scripts/sync-xquad.mjs` publishes the newest release whose book built, which is that
+release. The change is in the xquad repo, so its maintainers review it.
+
+## Health and monitoring
+
+- `GET /api/health` returns 200 and `{"ok":true,"pages":N,"commit":"<sha>"}`. The image has
+  a Docker `HEALTHCHECK` on it. Compare `commit` with the head of `main` to catch production
+  no longer following it.
+- Put uptime checks on `/api/health` and `/docs/llms.txt`.
+- Logs go to stdout.
+
+## The host
+
+One DigitalOcean droplet runs both sites: Debian 13, rootless Podman under the `portal`
+user, Caddy in front. The files are in `deploy/host/`.
+
+| File | What it does |
+| --- | --- |
+| `setup.sh` | One-time setup as root: Podman, Caddy, fail2ban, nightly security updates, the `portal` user |
+| `portal-staging.container` | Quadlet unit following `:fumadocs` on `127.0.0.1:3001`, with `ROBOTS_NOINDEX=1` |
+| `portal-production.container` | The same for `:main` on `127.0.0.1:3002`, installed at cutover |
+| `Caddyfile` | TLS, compression, and `noindex` on every staging response |
+| `podman-auto-update.timer.d/` | Checks the registry every 5 minutes instead of daily |
+| `portal-prune.*` | Removes images nothing has used for three days |
+| `portal-pin` | Runs a site on an older tag, or puts it back |
+
+First setup, after `sh deploy/host/setup.sh` as root:
+
+```bash
+# As portal. The deploy token (read_registry) is typed, not pasted into a file.
+podman login --authfile ~/.config/containers/auth.json -u <token user> --password-stdin registry.gitlab.com
+chmod 600 ~/.config/containers/auth.json
+# The check scripts' bypass token. Both units need it, or they don't start. Whoever runs
+# check:staging sets it as PORTAL_CHECK_TOKEN; read it back with
+# podman secret inspect --showsecret --format '{{.SecretData}}' portal-check-token
+openssl rand -hex 32 | podman secret create portal-check-token -
+install -m 0644 /usr/local/share/portal/portal-staging.container ~/.config/containers/systemd/
+systemctl --user daemon-reload
+systemctl --user start portal-staging
+systemctl --user enable --now podman-auto-update.timer portal-prune.timer
+```
+
+At cutover, install `/usr/local/share/portal/portal-production.container` the same way and uncomment the production
+block in `/etc/caddy/Caddyfile`.
+
+Updates need nobody: within 5 minutes of `promote-image`, `podman auto-update` pulls the new
+image and restarts the site, and Caddy holds requests through the restart. If the new
+container never turns healthy, it puts the previous image back. That rollback is quiet, so
+`podman auto-update --dry-run` showing `pending` after a release means the host refused it.
+
+```bash
+journalctl --user -u podman-auto-update -n 20   # what the last runs did
+journalctl -t portal-staging -n 50              # the site's logs
+podman auto-update --dry-run                    # anything waiting
+systemctl --user start podman-auto-update.service   # apply now; not `podman auto-update`, which can race the timer
+```
+
+## Rollback
+
+On the host, as `portal`:
+
+```bash
+portal-pin staging <short sha>-<pipeline id>    # or production; any tag still in the registry
+portal-pin staging --unpin                      # back on the branch tag
+```
+
+A pinned site stays put until it is unpinned, even when new images arrive. The registry keeps
+the last 10 tags and everything under 14 days old. For two weeks after the cutover, keep the
+Netlify site running, so going back is also a DNS change. The TTL on `developers.quip.network`
+is already 60 seconds.
+
+## Cutover checklist
+
+1. Staging runs `:fumadocs`, and `npm run check:staging -- https://<staging host>` passes. That covers
+   pages, URLs, the XQuad book, diagrams, about 5,000 search queries and a full MCP session.
+2. Stop auto publishing on Netlify before the merge. The Next.js build has never passed
+   there, and this keeps the current site live on Netlify as the fallback. That fallback is
+   the old site: it stops getting updates once publishing is stopped.
+3. Merge `fumadocs` to `main`, wait for `:main`, and confirm it on the production container
+   by its IP or a temporary hostname.
+4. Switch DNS. Run `npm run check:staging -- https://developers.quip.network --production
+   --reference <netlify URL>`.
+5. Swap the XQuad release hook.
+6. Submit `/sitemap.xml` in Search Console.
+7. After two quiet weeks, retire the Netlify site, `netlify.toml` and `netlify-cli`, and drop
+   `fumadocs` from the image rules in `.gitlab-ci.yml`.
+
+## Optional: Umami
+
+To self-host analytics, run Umami (one container plus Postgres) at something like
+`analytics.quip.network` and set `NEXT_PUBLIC_UMAMI_SRC=https://analytics.quip.network/script.js`.
+Otherwise the default is Umami Cloud's script URL.

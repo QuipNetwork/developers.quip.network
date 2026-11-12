@@ -1,0 +1,44 @@
+# developers.quip.network: follows :main. Caddy proxies to 127.0.0.1:3002. Installed at cutover.
+# podman auto-update moves it to a new image, and puts the old one back if this one never turns healthy.
+
+[Unit]
+Description=developers.quip.network production
+
+[Container]
+ContainerName=portal-production
+Image=registry.gitlab.com/quip.network/developers.quip.network:main
+AutoUpdate=registry
+Label=io.containers.autoupdate.authfile=%h/.config/containers/auth.json
+PublishPort=127.0.0.1:3002:3000
+# Lets the check scripts past the app's rate limit; see deploy/README.md.
+Secret=portal-check-token,type=env,target=RATE_LIMIT_BYPASS_TOKEN
+ReadOnly=true
+Tmpfs=/tmp:size=64m
+Tmpfs=/app/.next/cache:size=256m,mode=1777
+DropCapability=all
+NoNewPrivileges=true
+# Quadlet in Podman 5.4 has no Memory= key.
+PodmanArgs=--memory=768m
+# Podman ignores HEALTHCHECK in OCI images, which kaniko pushes, so the unit carries it.
+# Single quotes outside: Quadlet 5.4 drops a closing double quote at the end of a value.
+HealthCmd=node -e 'fetch("http://127.0.0.1:3000/api/health").then(r=>process.exit(r.ok?0:1),()=>process.exit(1))'
+HealthInterval=5s
+HealthTimeout=3s
+HealthRetries=6
+HealthStartPeriod=30s
+Notify=healthy
+LogDriver=journald
+PodmanArgs=--log-opt=tag=portal-production
+
+[Service]
+Environment=REGISTRY_AUTH_FILE=%h/.config/containers/auth.json
+TimeoutStartSec=60
+# Don't wait systemd's default 90 s for a container that ignores SIGTERM.
+TimeoutStopSec=20
+# Node exits 143 on SIGTERM. Without this, every stop and update leaves the unit "failed".
+SuccessExitStatus=143
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target

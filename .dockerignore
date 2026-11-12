@@ -1,0 +1,16 @@
+.git
+.next
+node_modules
+dist
+.astro
+.netlify
+.env
+.source
+content/docs
+!content/docs/reference
+public/docs
+public/docs.md
+link-health.json
+.geo-cache.json
+Dockerfile
+.dockerignore

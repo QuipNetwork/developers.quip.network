@@ -12,8 +12,8 @@
  * one outcome this script will not produce is a green run that proves nothing.
  *
  * URLs are discovered by scanning source, not by importing src/data/links.ts.
- * Two reasons: links.ts reads import.meta.env, which does not exist under plain
- * node, and — more importantly — scanning source is what catches a URL
+ * Two reasons: links.ts is TypeScript and this runs under plain node with no
+ * build step, and — more importantly — scanning source is what catches a URL
  * hard-coded into a template instead of a data file. That is the exact bug this
  * repo already shipped once.
  *
@@ -68,6 +68,9 @@ const SKIP = [
   // LinkedIn answers 403 to every non-browser client, so a probe can't tell this
   // page dead from blocked.
   "linkedin.com/company/postquant-labs",
+  // This site's own MCP server. Production serves it only from cutover (QUI-2168), and
+  // check-mcp.mjs tests it on staging. Remove this line once production answers.
+  "developers.quip.network/mcp",
 ];
 
 /*
