@@ -149,7 +149,3 @@ Two indexes cover every page, including the XQuad book and the Reference section
 | [`/docs/llms-full.txt`](https://developers.quip.network/docs/llms-full.txt) | Every page in one Markdown file, about 1 MB. Too large for most context windows: use it to load your own tool or search index |
 
 Fetch these rather than scraping the HTML. They are built from the same source as the site at every deploy, so they always match it.
-
-{% hint style="info" %}
-These indexes and the MCP server reflect the published documentation. A page that is not on the live site yet is not in them.
-{% endhint %}
