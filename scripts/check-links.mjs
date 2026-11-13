@@ -49,7 +49,7 @@ const TIMEOUT_MS = 15_000;
 /* Below this, assume the extractor broke rather than that the page went bare. */
 const URL_FLOOR = 30;
 const GENESIS =
-  "0x542a9915acf840b8940d35ca6de242f669a0c6e3b40f9a8d8c14b9bf7b8ebecb";
+  "0xc7145a3f75f272fd19d27cf4466567f6fd893b87098d6b604078d467590b0e54";
 
 /*
  * A browser-ish UA is not cosmetic. npmjs.com returns 403 to non-browser
