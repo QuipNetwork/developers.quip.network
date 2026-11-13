@@ -44,7 +44,7 @@ export const CHAIN = {
   tokenSymbol: "AGLS",
   tokenDecimals: 12,
   ss58Prefix: 42,
-  genesis: "0x542a9915acf840b8940d35ca6de242f669a0c6e3b40f9a8d8c14b9bf7b8ebecb",
+  genesis: "0xc7145a3f75f272fd19d27cf4466567f6fd893b87098d6b604078d467590b0e54",
 
   /*
    * The directory, not the raw file: aglais-network.json is 2.36 MB, which is
