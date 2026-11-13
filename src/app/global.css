@@ -688,8 +688,8 @@ body {
   gap: 16px;
 }
 
-[data-header-body] > div:last-child a,
-.quip-nav-toggle {
+[data-header-body] > div:last-child a {
+  white-space: nowrap;
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 500;
@@ -705,8 +705,7 @@ body {
   transition: color 150ms;
 }
 
-[data-header-body] > div:last-child a:hover,
-.quip-nav-toggle:hover {
+[data-header-body] > div:last-child a:hover {
   color: var(--color-fd-foreground);
 }
 
@@ -1314,10 +1313,6 @@ kbd {
   color: var(--quip-subtle);
 }
 
-/* The home page's text theme switch, in the docs bar. */
-.quip-nav-toggle {
-  min-height: 32px;
-}
 
 /* The rail starts level with the page panel. */
 :is(#nd-sidebar, #nd-sidebar-mobile) [class*="overscroll-contain"] {
@@ -1539,7 +1534,6 @@ kbd {
    Mono is wide and set in capitals, so a mono label a size down from its neighbour looks the
    same size. Nothing sits between these steps. */
 [data-header-body] > div:last-child a,
-.quip-nav-toggle,
 [data-header-tabs] a,
 :is(#nd-sidebar, #nd-sidebar-mobile) button,
 :is(#nd-sidebar, #nd-sidebar-mobile) a:has(> svg[data-icon]),
@@ -1657,4 +1651,71 @@ kbd {
 
 [role="dialog"] [role="option"] * {
   text-decoration: none;
+}
+
+/* Theme switch: Light and Dark side by side, the current one filled with the same ink as
+   the rail's current page. The fill keys off the `dark` class next-themes sets before
+   paint, so it is right on first render. Square, no shadow, coral only for focus. */
+/* In the components layer so a utility such as max-[359px]:hidden can still hide it. */
+@layer components {
+  .quip-theme-switch {
+    display: inline-flex;
+  }
+}
+
+.quip-theme-switch {
+  flex-shrink: 0;
+  border: 1px solid var(--color-fd-border);
+}
+
+.quip-theme-switch button {
+  min-height: 30px;
+  padding: 0 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--quip-subtle);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  transition: color 150ms, background-color 150ms;
+}
+
+.quip-theme-switch button + button {
+  border-left: 1px solid var(--color-fd-border);
+}
+
+/* Coral on hover, the brand's interactive accent: the darker coral in light, where full coral is too faint. */
+.quip-theme-switch button:hover {
+  color: var(--quip-coral-text);
+}
+
+.dark .quip-theme-switch button:hover {
+  color: var(--quip-coral);
+}
+
+.quip-theme-switch button:focus-visible {
+  outline: 2px solid var(--quip-coral);
+  outline-offset: -2px;
+}
+
+html:not(.dark) .quip-theme-switch [data-theme-option="light"],
+html.dark .quip-theme-switch [data-theme-option="dark"] {
+  color: var(--quip-current-fg);
+  background: var(--quip-current-bg);
+  cursor: default;
+}
+
+@media (max-width: 479px) {
+  .quip-theme-switch button {
+    padding: 0 8px;
+  }
+}
+
+/* In the docs bar it sits just before Feedback, which is order 9. */
+[data-header-body] .quip-theme-switch {
+  order: 8;
 }

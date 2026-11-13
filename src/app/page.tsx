@@ -80,7 +80,7 @@ export default function Home() {
                 href={DOCS.home}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={topLinkClass}
+                className={`${topLinkClass} max-[359px]:hidden`}
               >
                 Docs
               </a>
@@ -88,7 +88,7 @@ export default function Home() {
                 href={EXPLORER.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={topLinkClass}
+                className={`${topLinkClass} max-[479px]:hidden`}
               >
                 Explorer
               </a>
@@ -100,10 +100,10 @@ export default function Home() {
               >
                 GitLab
               </a>
-              {/* Below 345px the bar has no room for it, and the theme still follows the system. */}
-              <ThemeToggle
-                className={`${topLinkClass} cursor-pointer max-[344px]:hidden`}
-              />
+              {/* Below 480px Explorer gives way to the theme switch, and below 360px Docs does too.
+                  The page still links both (Masthead, Paths). The switch itself always stays,
+                  so a saved choice can always be changed. */}
+              <ThemeToggle />
               <a
                 href={NETWORK.feedback}
                 target="_blank"

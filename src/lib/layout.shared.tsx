@@ -7,11 +7,12 @@ import { ThemeToggle } from "@/components/ThemeToggle";
  * The portal-style bar, shared by the docs: logo lockup and a mono surface label, as on
  * the developers.quip.network home header (not quip.network's marketing navbar).
  */
+// The label hides below 1120px, where the centred search would otherwise run into it.
 export function PortalTitle({ label }: { label: string }) {
   return (
     <span className="flex items-center gap-3">
       <img src="/images/quip-logo-with-icon.svg" alt="Quip Network" width={84} height={26} className="h-[26px] w-auto dark:invert" />
-      <span className="quip-eyebrow border border-fd-border px-1.5 pt-1 pb-0.5 text-[10px] leading-none max-md:hidden">
+      <span className="quip-eyebrow border border-fd-border px-1.5 pt-1 pb-0.5 text-[10px] leading-none max-[1119px]:hidden">
         {label}
       </span>
     </span>
@@ -37,6 +38,6 @@ export function baseOptions(label = "Developers"): BaseLayoutProps {
         ),
       },
     ],
-    themeSwitch: { component: <ThemeToggle className="quip-nav-toggle" /> },
+    themeSwitch: { component: <ThemeToggle /> },
   };
 }
