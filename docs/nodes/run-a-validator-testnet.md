@@ -13,19 +13,21 @@ How to join the Quip Network testnet as a validator, change your keys, and leave
 ## How validating works on Quip
 
 * Validators produce blocks and finalize them. Every validator key is a hybrid post-quantum key (a classical key plus FN-DSA-512), so the Polkadot.js portal ([portal.aglais.quip.network](https://portal.aglais.quip.network)) and the node have a few Quip-specific steps.
-* Joining is approved, not automatic: you bond AGLS (the testnet token), register your node's keys, and declare that you want to validate. The Quip Foundation then approves your account, usually within 24 hours, and makes a seat for you. You are elected at the next validator election and join the active set one session (10 minutes) later.
-* Sessions last 10 minutes and an era is 6 sessions (1 hour). After approval you are usually active within 10 to 20 minutes, or up to about 70 minutes if no new era is forced.
-* Unbonded AGLS stays locked for 28 eras (about 28 hours) before you can withdraw it.
-* The testnet pays no validator rewards yet, and nominating is switched off.
+* Joining is approved, not automatic: you bond AGLS (the testnet token), register your node's keys, and declare that you want to validate. The Quip Foundation then approves your account, usually within 24 hours, and makes a seat for you. You are elected at the next validator election and join the active set one session (1 hour) later.
+* Sessions last 1 hour and an era is 6 sessions (6 hours). After approval you are usually active within 1 to 2 hours, or up to about 7 hours if no new era is forced.
+* Unbonded AGLS stays locked for 28 eras (about 7 days) before you can withdraw it.
+* Active validators earn AGLS rewards every era, shared by era points, which they earn by producing blocks. Rewards are paid only when someone claims them (see [Claim your rewards](#claim-your-rewards)).
+* Other accounts can nominate you: they bond AGLS behind your stash, and their stake counts toward yours in the election.
+* Signing twice for the same slot or vote, which happens when two nodes run with the same keys, is reported automatically and can cost you part or all of your bond (a slash). The slash is applied 28 eras (about 7 days) after the offence.
 
 ## What you need
 
 * A Linux server that can run a Quip node around the clock, with port 30333/tcp open to inbound connections. Baseline: 4 CPU cores (x86_64), 8 GB of RAM, a 200 GB SSD and about 1 TB of network traffic a month. At today's activity a validator uses about 2 GB of RAM and well under one core, and its database grows by about 1.5 GB a day.
-* Docker, to run the Quip node software. The commands on this page use the image `registry.gitlab.com/quip.network/quip-validator/quip-network-node` with the tag `v0.4.0`.
+* Docker, to run the Quip node software. The commands on this page use the image `registry.gitlab.com/quip.network/quip-validator/quip-network-node` with the tag `v0.5.0`.
 * The testnet chain spec, [aglais-network.json](https://gitlab.com/quip.network/nodes.quip.network/-/raw/main/chain-specs/aglais-network.json). The Step 2 commands download it.
 * A shell with `curl` and `jq`.
 * A web browser for the Polkadot.js portal.
-* At least **6 AGLS**: 5 to bond (the current minimum validator bond) and 1 for fees. One request to the [faucet](https://agls.quip.network/#faucet) gives you 10.
+* At least **6 AGLS**: 5 to bond (the current minimum validator bond) and 1 for fees. One request to the [faucet](https://agls.quip.network/#faucet) gives you 10. Validators already in the set may show far larger stakes on **Staking → Overview**, such as 2,000 AGLS. That is what they chose to bond, not the minimum, and you don't need to match it.
 
 ## Step 1: Create your stash account
 
@@ -33,7 +35,7 @@ How to join the Quip Network testnet as a validator, change your keys, and leave
 
    ```sh
    docker run --rm --network none --log-driver none --entrypoint /usr/local/bin/quip-network-node \
-     registry.gitlab.com/quip.network/quip-validator/quip-network-node:v0.4.0 \
+     registry.gitlab.com/quip.network/quip-validator/quip-network-node:v0.5.0 \
      key generate --words 24 --output-type json | jq -r .secretPhrase
    ```
 
@@ -62,14 +64,14 @@ Leave **Settings → in-browser account creation** on "Do not allow local in-bro
    docker run -d --name quip-validator --restart unless-stopped --network host \
      -v "$HOME/quip-validator/data:/data" \
      -v "$HOME/quip-validator/chain-spec.json:/etc/quip/chain-spec.json:ro" \
-     registry.gitlab.com/quip.network/quip-validator/quip-network-node:v0.4.0 \
+     registry.gitlab.com/quip.network/quip-validator/quip-network-node:v0.5.0 \
      --chain=/etc/quip/chain-spec.json --base-path=/data --name=YOUR_NODE_NAME \
      --validator --unsafe-force-node-key-generation
    ```
 
    `--network host` keeps the node's RPC on the server's own 127.0.0.1, which Step 3 needs. Do not add `-p 9944:9944`, `--rpc-external` or `--unsafe-rpc-external`. The node keeps its database, network identity and session keys in `$HOME/quip-validator/data`, so keep that folder when you update or restart the container.
 2. Step 3 calls an unsafe RPC method, one that writes keys. The node accepts it only over 127.0.0.1, so send it only from the server itself, and never make your node's unsafe methods reachable from other machines. A public RPC that serves only safe methods is fine. If you run the [Run A Node](run-a-node-testnet.md) stack (node manager or docker compose), use [Session keys on the Run A Node stack](#session-keys-on-the-run-a-node-stack) instead of Step 3.2.
-3. Check that the node is on the testnet. This prints the hash of its first block, which must be `0x542a9915acf840b8940d35ca6de242f669a0c6e3b40f9a8d8c14b9bf7b8ebecb`:
+3. Check that the node is on the testnet. This prints the hash of its first block, which must be `0xc7145a3f75f272fd19d27cf4466567f6fd893b87098d6b604078d467590b0e54`:
 
    ```sh
    curl -s -H 'Content-Type: application/json' \
@@ -92,7 +94,7 @@ Leave **Settings → in-browser account creation** on "Do not allow local in-bro
 
    ```sh
    docker run --rm --network none --entrypoint /usr/local/bin/quip-network-node \
-     registry.gitlab.com/quip.network/quip-validator/quip-network-node:v0.4.0 \
+     registry.gitlab.com/quip.network/quip-validator/quip-network-node:v0.5.0 \
      key inspect --output-type json YOUR_ADDRESS | jq -r .accountId
    ```
 
@@ -145,10 +147,10 @@ The second node listens only on 127.0.0.1 and removes itself when stopped. `quip
 
 In the portal, open **Network → Staking → Accounts** and choose **+ Validator**.
 
-1. **Setup Validator 1/2**: pick your stash. The **value bonded** field starts with almost your whole balance: replace it with at least 5 and keep at least 1 AGLS unbonded, because later steps such as Stop, Unbond and Change session keys each cost a small fee that bonded funds cannot pay. Pick either **Stash account** option as the payment destination (there are no rewards yet). The **on-chain bonding duration** shows 1 day 4 hrs: that is how long funds stay locked after you unbond. Choose **next**.
+1. **Setup Validator 1/2**: pick your stash. The **value bonded** field starts with almost your whole balance: replace it with at least 5 and keep at least 1 AGLS unbonded, because later steps such as Stop, Unbond and Change session keys each cost a small fee that bonded funds cannot pay. For the payment destination, **Stash account (increase the amount at stake)** adds your rewards to your bond, and **Stash account (do not increase the amount at stake)** keeps them free to spend. The **on-chain bonding duration** shows 7 days: that is how long funds stay locked after you unbond. Choose **next**.
 
-   <figure><a href="../.gitbook/assets/run-a-validator-setup-bond.png"><img src="../.gitbook/assets/run-a-validator-setup-bond.png" alt="Setup Validator 1/2 with a stash selected, 500 AGLS in value bonded, an on-chain bonding duration of 1 day 4 hrs and Stash account as the payment destination" width="1084" height="438" loading="lazy" decoding="async"></a></figure>
-2. **Setup Validator 2/2**: paste the keys into **Keys from rotateKeysWithOwner** first, then the proof into **Session key ownership proof**. Changing the keys afterward empties the proof field, so paste the proof last. Leave **allows new nominations** as it is: nominating is switched off. Set your commission, then choose **Bond & Validate** and sign with your stash.
+   <figure><a href="../.gitbook/assets/run-a-validator-setup-bond.png"><img src="../.gitbook/assets/run-a-validator-setup-bond.png" alt="Setup Validator 1/2 with a stash selected, 5 AGLS in value bonded, an on-chain bonding duration of 7 days and Stash account as the payment destination" width="1084" height="438" loading="lazy" decoding="async"></a></figure>
+2. **Setup Validator 2/2**: paste the keys into **Keys from rotateKeysWithOwner** first, then the proof into **Session key ownership proof**. Changing the keys afterward empties the proof field, so paste the proof last. **Allows new nominations** lets other accounts back you with their stake; leave it on unless you want to refuse new nominators. Set your commission, the share of rewards you keep before the rest is split with your nominators, then choose **Bond & Validate** and sign with your stash.
 
    <figure><a href="../.gitbook/assets/run-a-validator-setup-keys-and-proof.png"><img src="../.gitbook/assets/run-a-validator-setup-keys-and-proof.png" alt="Setup Validator 2/2 with the keys in Keys from rotateKeysWithOwner, the proof in Session key ownership proof, the commission and allows new nominations fields, and the Bond and Validate button" width="1084" height="434" loading="lazy" decoding="async"></a></figure>
 
@@ -162,7 +164,7 @@ In the portal, open **Network → Staking → Accounts** and choose **+ Validato
 
 ## Step 5: Wait for approval
 
-You don't need to send anything. The Quip Foundation approves the stashes listed under **Waiting**, in one vote that also adds a seat and starts a new era. Allow up to 24 hours. While you wait, check that your part is in place:
+You don't need to send anything. Only stashes the Quip Foundation has approved can be elected. Its council approves the stashes listed under **Waiting** with a motion that also adds a seat and starts a new era. Allow up to 24 hours. While you wait, check that your part is in place:
 
 * **Staking → Overview**, with the list switched to **Waiting**, shows your stash.
 * **Staking → Accounts** shows your stash with at least 5 AGLS bonded, its session keys and the **Stop** button.
@@ -177,7 +179,16 @@ After the vote, you are included in the next election.
 * **Network → Explorer** shows blocks authored by your address.
 * Your node's log shows lines like "Prepared block for proposing" and "Pre-sealed block". Such a line means your node produced a block; Explorer shows whether it stayed in the chain.
 
-You are usually active 10 to 20 minutes after the Foundation's vote. Keep your node online (see [If your node goes offline](#if-your-node-goes-offline)).
+You are usually active 1 to 2 hours after the Foundation's vote. Keep your node online (see [If your node goes offline](#if-your-node-goes-offline)).
+
+## Claim your rewards
+
+Each era's rewards can be claimed once the era has ended, and for 84 eras (21 days) after that. Older rewards can no longer be claimed.
+
+1. Open **Network → Staking → Payouts**. With your stash imported, it lists the eras with unclaimed rewards for it.
+2. Choose **Payout all** and sign. Any account can send the claim and pay its small fee, and one claim pays you and your nominators.
+
+The rewards go to the payment destination you chose in Step 4.
 
 ## Change your session keys or move to a new server
 
@@ -186,8 +197,8 @@ You are usually active 10 to 20 minutes after the Foundation's vote. Keep your n
 3. On **Network → Staking → Accounts**, open your stash's menu (⋮) and choose **Change session keys**. In the **Set Session Key** dialog, paste the new keys first, then the proof, choose **Set Session Key** and sign with your stash.
 
    <figure><a href="../.gitbook/assets/run-a-validator-set-session-key.png"><img src="../.gitbook/assets/run-a-validator-set-session-key.png" alt="The Set Session Key dialog for a stash, with the new keys in Keys from rotateKeysWithOwner, the proof in Session key ownership proof and the Set Session Key button" width="1084" height="361" loading="lazy" decoding="async"></a></figure>
-4. Wait for two session changes (10 to 20 minutes). The new keys are queued at the first and take over at the second. The new node's log then shows "Pre-sealed block" lines, and the old node stops producing blocks.
-5. Stop the old node. Never run two nodes with the same keys.
+4. Wait for two session changes (1 to 2 hours). The new keys are queued at the first and take over at the second. The new node's log then shows "Pre-sealed block" lines, and the old node stops producing blocks.
+5. Stop the old node. Never run two nodes with the same keys: if both sign, your bond can be slashed.
 
 The old node's last block comes just before the session change, and the new node's first block just after it.
 
@@ -203,43 +214,41 @@ The old node's last block comes just before the session change, and the new node
 
 To restart your server, update its operating system or take the node down for any other planned work, leave the active set first. Downtime after you have left does not count as going offline.
 
-1. On **Network → Staking → Accounts**, choose **Stop** on your stash. You leave the active set when the next era starts, within about 70 minutes. Keep your node running until **Staking → Overview** no longer lists you as active.
+1. On **Network → Staking → Accounts**, choose **Stop** on your stash. You leave the active set when the next era starts, within about 7 hours. Keep your node running until **Staking → Overview** no longer lists you as active.
 2. Do the maintenance.
 3. Start the node and wait until it is fully synced (see [Step 2](#step-2-run-your-validator-node)).
-4. On **Network → Staking → Accounts**, choose **Validate** on your stash, set your commission and sign. Your approval and your bond stay in place, so you are a candidate at the next election and active again within about 70 minutes.
+4. On **Network → Staking → Accounts**, choose **Validate** on your stash, set your commission and sign. Your approval and your bond stay in place, so you are a candidate at the next election and active again within about 7 hours.
 
 To move to a new server without a break, see [Change your session keys or move to a new server](#change-your-session-keys-or-move-to-a-new-server) instead.
 
 ## Leaving
 
-1. On **Network → Staking → Accounts**, choose **Stop** on your stash. You leave the active set when the next era starts. If you choose Stop during an era's last 10 minutes, the next era's validators are already chosen, so you stay one more era (up to about 70 minutes). Keep your node running until **Staking → Overview** no longer lists you as active.
+1. On **Network → Staking → Accounts**, choose **Stop** on your stash. You leave the active set when the next era starts. If you choose Stop during an era's last hour, the next era's validators are already chosen, so you stay one more era (up to about 7 hours). Keep your node running until **Staking → Overview** no longer lists you as active.
 
    <figure><a href="../.gitbook/assets/run-a-validator-stop.png"><img src="../.gitbook/assets/run-a-validator-stop.png" alt="A validating stash row on Staking Accounts with its session keys, commission and the Stop button" width="1090" height="107" loading="lazy" decoding="async"></a></figure>
 2. From your stash's menu (⋮) choose **Unbond funds** and enter the amount. Stop first: while you are still validating, an unbond must leave at least 5 AGLS bonded.
 
-   <figure><a href="../.gitbook/assets/run-a-validator-unbond.png"><img src="../.gitbook/assets/run-a-validator-unbond.png" alt="The Unbond funds dialog for a stash, unbonding the whole bond, with an on-chain bonding duration of 1 day 4 hrs and the Unbond button" width="1084" height="355" loading="lazy" decoding="async"></a></figure>
-3. The funds unlock after 28 eras (about 28 hours). Until then the stash's row shows a clock icon next to the amount (hover it for the time left), and **Withdraw unbonded funds** stays grayed out.
-4. From the menu choose **Withdraw unbonded funds**. It starts working about 10 minutes before the countdown ends, because the chain counts the next era as soon as it is planned.
+   <figure><a href="../.gitbook/assets/run-a-validator-unbond.png"><img src="../.gitbook/assets/run-a-validator-unbond.png" alt="The Unbond funds dialog for a stash, unbonding the whole bond, with an on-chain bonding duration of 7 days and the Unbond button" width="1084" height="355" loading="lazy" decoding="async"></a></figure>
+3. The funds unlock after 28 eras (about 7 days). Until then the stash's row shows a clock icon next to the amount (hover it for the time left), and **Withdraw unbonded funds** stays grayed out.
+4. From the menu choose **Withdraw unbonded funds**. It starts working about an hour before the countdown ends, because the chain counts the next era as soon as it is planned.
 
    <figure><a href="../.gitbook/assets/run-a-validator-withdraw-menu.png"><img src="../.gitbook/assets/run-a-validator-withdraw-menu.png" alt="The stash menu with Withdraw unbonded funds available, below Bond more funds and Rebond funds" width="210" height="280" loading="lazy" decoding="async"></a></figure>
 
 * Changed your mind while the countdown is still running? **Rebond funds** moves unlocking funds back into your stake. Its dialog is titled "Bond more funds"; the button says **Rebond**. Once the countdown has ended, withdraw first, then bond again with **Bond more funds** (or **+ Stash** if you had unbonded everything). If you chose **Stop**, choose **Validate** again.
 
-  <figure><a href="../.gitbook/assets/run-a-validator-unlocking-row.png"><img src="../.gitbook/assets/run-a-validator-unlocking-row.png" alt="A validating stash row with the Stop button, a clock icon next to the 100 AGLS being unbonded, and its tooltip: Unbonding 100.0000 AGLS, 17,370 blocks, 1 day 4 hrs" width="1090" height="82" loading="lazy" decoding="async"></a></figure>
+  <figure><a href="../.gitbook/assets/run-a-validator-unlocking-row.png"><img src="../.gitbook/assets/run-a-validator-unlocking-row.png" alt="A stash row after Stop, with a clock icon next to the 5 AGLS being unbonded and its tooltip: Unbonding 5.0000 AGLS, 100,536 blocks, 6 days 23 hrs" width="1077" height="94" loading="lazy" decoding="async"></a></figure>
 
-  <figure><a href="../.gitbook/assets/run-a-validator-rebond.png"><img src="../.gitbook/assets/run-a-validator-rebond.png" alt="The Rebond dialog, titled bond more funds, with 100 AGLS in rebonded amount and the Rebond button" width="1084" height="289" loading="lazy" decoding="async"></a></figure>
+  <figure><a href="../.gitbook/assets/run-a-validator-rebond.png"><img src="../.gitbook/assets/run-a-validator-rebond.png" alt="The Rebond dialog, titled bond more funds, with 5 AGLS in rebonded amount and the Rebond button" width="1084" height="292" loading="lazy" decoding="async"></a></figure>
 * Add to your stake at any time with **Bond more funds**.
 
   <figure><a href="../.gitbook/assets/run-a-validator-bond-more.png"><img src="../.gitbook/assets/run-a-validator-bond-more.png" alt="The Bond more funds dialog with 50 AGLS in additional funds to bond and the Bond more button" width="1084" height="292" loading="lazy" decoding="async"></a></figure>
 * Your Foundation approval stays after you leave. If you validate again later, you are a candidate at the next election. Seats go to the highest stakes: you rejoin if a seat is free, or if your stake is higher than the lowest active validator's, who then drops out.
-* If the Foundation removes your approval, you leave the active set 10 to 20 minutes after its vote. Keep your node running until **Staking → Overview** no longer lists you as active. Your bond stays until you unbond it.
+* If the Foundation removes your approval, you leave the active set 1 to 2 hours after its vote. Keep your node running until **Staking → Overview** no longer lists you as active. Your bond stays until you unbond it.
 
 ## Known portal limitations
 
 * **Inject session keys (advanced)** does not work with Quip keys, and its "relay chain" warning does not apply here.
 * Imported accounts are lost when you reload or close the page. The **Import** and **Export** buttons do not take Quip phrases.
-* **+ Nominator** fails, because nominating is switched off.
-* **Payouts** is empty, because there are no validator rewards yet.
 * On first load, the Staking summary can show wrong numbers such as "validators N / 0" or an era over 100%. Reload the page, then import your phrase again.
 * A validator whose commission is exactly 0 shows **Validate** instead of **Stop**. The portal never sends exactly 0 (it sends 1 per billion when you enter 0), but accounts set up outside the portal can have it. Choose **Validate** to set a commission first; **Stop** then appears.
 * The testnet has no separate controller account: your stash signs every step, and **Change controller account** stays grayed out.
