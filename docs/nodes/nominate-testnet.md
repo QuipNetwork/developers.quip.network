@@ -57,7 +57,7 @@ In the portal, open **Network → Staking → Accounts** and choose **+ Nominato
 
    <figure><a href="../.gitbook/assets/nominate-bond-and-nominate-done.png"><img src="../.gitbook/assets/nominate-bond-and-nominate-done.png" alt="Staking Accounts after Bond and Nominate: the events notice lists staking.Bonded and utility.BatchCompleted, and the stash row shows 5 AGLS bonded and the Stop button" width="1103" height="300" loading="lazy" decoding="async"></a></figure>
 
-Until your nomination counts, the stash row may show **Checking validators** instead of the validators you chose. That is a display gap in the portal, not a problem with your nomination.
+Until your nomination counts, the stash row may show **Checking validators** instead of the validators you chose. That is a display gap in the portal, not a problem with your nomination. Once it counts, the row shows **Active nominations** with the number of your validators that are active.
 
 ## When your nomination counts
 
@@ -71,7 +71,7 @@ To check your nomination, open **Developer → Chain state**, choose **staking**
 
 Each era's rewards can be claimed once the era has ended, and for 84 eras (21 days) after that. Older rewards can no longer be claimed.
 
-1. Open **Network → Staking → Payouts**. With your stash imported, it lists the eras with unclaimed rewards from the validators you backed.
+1. Open **Network → Staking → Payouts**. With your stash imported, it lists the eras with unclaimed rewards from the validators you backed, your share of them and the time left to claim. It shows the last 2 days at first: choose **6 days**, **18 days** or **Max, 84 eras** to see older eras.
 2. Choose **Payout all** and sign. Any account can send the claim and pay its small fee, and one claim pays the validator and all of its nominators for that era. If the validator or another nominator has already claimed an era, it no longer appears.
 
 If **Payouts** doesn't list an era you expect, claim it in **Developer → Extrinsics**: choose **staking** and **payoutStakers**, set **validatorStash** to the validator's stash (not yours) and **era** to the era's number, then choose **Submit Transaction** and sign.
