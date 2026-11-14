@@ -27,7 +27,7 @@ How to join the Quip Network testnet as a validator, change your keys, and leave
 * The testnet chain spec, [aglais-network.json](https://gitlab.com/quip.network/nodes.quip.network/-/raw/main/chain-specs/aglais-network.json). The Step 2 commands download it.
 * A shell with `curl` and `jq`.
 * A web browser for the Polkadot.js portal.
-* At least **6 AGLS**: 5 to bond (the current minimum validator bond) and 1 for fees. One request to the [faucet](https://agls.quip.network/#faucet) gives you 10.
+* At least **6 AGLS**: 5 to bond (the current minimum validator bond) and 1 for fees. One request to the [faucet](https://agls.quip.network/#faucet) gives you 10. Validators already in the set may show far larger stakes on **Staking → Overview**, such as 2,000 AGLS. That is what they chose to bond, not the minimum, and you don't need to match it.
 
 ## Step 1: Create your stash account
 
@@ -164,7 +164,7 @@ In the portal, open **Network → Staking → Accounts** and choose **+ Validato
 
 ## Step 5: Wait for approval
 
-You don't need to send anything. The Quip Foundation approves the stashes listed under **Waiting**, in one vote that also adds a seat and starts a new era. Allow up to 24 hours. While you wait, check that your part is in place:
+You don't need to send anything. Only stashes the Quip Foundation has approved can be elected. Its council approves the stashes listed under **Waiting** with a motion that also adds a seat and starts a new era. Allow up to 24 hours. While you wait, check that your part is in place:
 
 * **Staking → Overview**, with the list switched to **Waiting**, shows your stash.
 * **Staking → Accounts** shows your stash with at least 5 AGLS bonded, its session keys and the **Stop** button.
