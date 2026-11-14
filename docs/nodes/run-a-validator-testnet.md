@@ -17,7 +17,7 @@ How to join the Quip Network testnet as a validator, change your keys, and leave
 * Sessions last 1 hour and an era is 6 sessions (6 hours). After approval you are usually active within 1 to 2 hours, or up to about 7 hours if no new era is forced.
 * Unbonded AGLS stays locked for 28 eras (about 7 days) before you can withdraw it.
 * Active validators earn AGLS rewards every era, shared by era points, which they earn by producing blocks. Rewards are paid only when someone claims them (see [Claim your rewards](#claim-your-rewards)).
-* Other accounts can nominate you: they bond AGLS behind your stash, and their stake counts toward yours in the election.
+* Other accounts can nominate you: they bond AGLS behind your stash, and their stake counts toward yours in the election. [Nominate A Validator](nominate-testnet.md) describes their side.
 * Signing twice for the same slot or vote, which happens when two nodes run with the same keys, is reported automatically and can cost you part or all of your bond (a slash). The slash is applied 28 eras (about 7 days) after the offence.
 
 ## What you need

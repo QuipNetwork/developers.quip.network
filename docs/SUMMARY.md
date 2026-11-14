@@ -54,6 +54,7 @@
 
 * [Run A Node (TestNet)](nodes/run-a-node-testnet.md)
 * [Run A Validator (TestNet)](nodes/run-a-validator-testnet.md)
+* [Nominate A Validator (TestNet)](nodes/nominate-testnet.md)
 * [Miners](nodes/miners.md)
 
 ## XQuad
