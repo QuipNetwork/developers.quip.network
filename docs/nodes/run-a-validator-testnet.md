@@ -188,6 +188,8 @@ Each era's rewards can be claimed once the era has ended, and for 84 eras (21 da
 1. Open **Network → Staking → Payouts**. With your stash imported, it lists the eras with unclaimed rewards for it.
 2. Choose **Payout all** and sign. Any account can send the claim and pay its small fee, and one claim pays you and your nominators.
 
+**Payouts** lists an era only if you had at least one nominator in it. Without nominators, claim each era in **Developer → Extrinsics**: choose **staking** and **payoutStakers**, set **validatorStash** to your stash and **era** to the era's number, then choose **Submit Transaction** and sign. **Developer → Chain state → staking → activeEra** shows the current era; you can claim each earlier era in which you were active.
+
 The rewards go to the payment destination you chose in Step 4.
 
 ## Change your session keys or move to a new server
