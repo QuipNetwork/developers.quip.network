@@ -29,12 +29,12 @@
  */
 export const NETWORK_SNAPSHOT = {
   chain: "Aglais",
-  takenOn: "2026-11-13",
-  atBlock: 302,
+  takenOn: "2026-11-14",
+  atBlock: 8446,
   source: "chain storage, read directly from a public bootnode RPC",
-  miners: 3,
-  minersWithWins: 1,
-  validators: 3,
+  miners: 107,
+  minersWithWins: 4,
+  validators: 4,
   topologyNodes: 4575,
   topologyEdges: 41474,
 } as const;
