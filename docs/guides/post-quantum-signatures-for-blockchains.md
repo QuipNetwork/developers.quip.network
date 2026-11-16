@@ -26,6 +26,21 @@ NIST runs its [post-quantum cryptography project](https://csrc.nist.gov/projects
 
 The sizes come from Table 2 of [FIPS 204](https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.204.pdf), Table 2 of [FIPS 205](https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.205.pdf), the [Falcon site](https://falcon-sign.info/) and [BIP-340](https://github.com/bitcoin/bips/blob/master/bip-0340.mediawiki). NIST places ML-DSA-44 in security category 2 and both SLH-DSA-128 sets in category 1, so the rows do not all target the same strength.
 
+The diagram starts from the classical baseline and shows what each post-quantum family costs in bytes, at the smallest parameter set in the table.
+
+```mermaid
+flowchart TD
+    B["Classical baseline: BIP-340 Schnorr<br/>signature 64 bytes, public key 32 bytes"]
+    F["Falcon-512<br/>signature 666 bytes<br/>public key 897 bytes<br/>standard not final"]
+    M["ML-DSA-44<br/>signature 2,420 bytes<br/>public key 1,312 bytes<br/>FIPS 204, final"]
+    S["SLH-DSA-128s<br/>signature 7,856 bytes<br/>public key 32 bytes<br/>FIPS 205, final"]
+    L["LMS or XMSS<br/>sizes depend on<br/>the parameter set<br/>SP 800-208, final"]
+    B -->|smallest signature| F
+    B -->|finalized lattice| M
+    B -->|stateless hash-based| S
+    B -->|stateful hash-based| L
+```
+
 * **Falcon-512** gives the smallest post-quantum signature in the table, at 666 bytes. NIST selected Falcon but has not finalized its standard, and the [pqhybridsign README](https://github.com/QuipNetwork/pqhybridsign) lists this as a limitation. Expect to revisit Falcon code once NIST publishes the final version.
 * **SLH-DSA** uses a 32-byte public key, the size of a BIP-340 key, but its signatures start at 7,856 bytes. FIPS 205 derives it from SPHINCS+, so its security rests on hash functions alone.
 * **ML-DSA** is the finalized lattice option. At its smallest parameter set, an ML-DSA signature is larger than Falcon's and far smaller than SLH-DSA's.
@@ -50,7 +65,7 @@ The library's verifier evaluates both halves on every call, even after the first
 
 ## Hybrid signing in Quip Accounts
 
-A [Quip Account](../interlock/quip-accounts.md) holds assets in a smart contract on the chain you already use. Every Quip signature wraps the chain's existing algorithm with a post-quantum one. On EVM chains, the account contract gates each owner operation behind both the owner's ECDSA key and a SHRINCS signature, so an attacker has to break both to move funds.
+A [Quip Account](../interlock/quip-accounts.md) holds assets in a smart contract on the chain you already use. [How Quip Network fits together](../interlock/how-quip-fits-together.md) shows where the account sits next to QuipSwap and the compute subnets. Every Quip signature wraps the chain's existing algorithm with a post-quantum one. On EVM chains, the account contract gates each owner operation behind both the owner's ECDSA key and a SHRINCS signature, so an attacker has to break both to move funds.
 
 SHRINCS is the two-path hash-based construction described by Kudinov and Nick in [ePrint 2025/2203](https://eprint.iacr.org/2025/2203). Quip implements it in its `hashsigs-rs` library, and pqhybridsign pairs the same scheme with ed25519 or sr25519 in its stateful suites. SHRINCS gives each account two signing paths:
 
@@ -59,7 +74,7 @@ SHRINCS is the two-path hash-based construction described by Kudinov and Nick in
 
 The Quip clients track slots for account holders. A team writing its own signer with [`@quip.network/hashsigs-wasm`](../getting-started/quip-sdk.md) keeps that record itself, under the same rule as LMS and XMSS.
 
-For a Substrate-based chain, a post on the [Quip research forum](https://research.quip.network/t/post-quantum-signature-libraries-for-a-substrate-based-blockchain/14) compares liboqs, pqcrypto and other libraries for these schemes.
+To pick a library that implements these schemes in your language, see [Post-quantum cryptography libraries for blockchain developers](post-quantum-cryptography-libraries.md). For a Substrate-based chain, a post on the [Quip research forum](https://research.quip.network/t/post-quantum-signature-libraries-for-a-substrate-based-blockchain/14) compares liboqs, pqcrypto and other libraries for these schemes.
 
 ## Next step
 

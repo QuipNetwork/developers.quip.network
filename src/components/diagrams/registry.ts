@@ -1,8 +1,13 @@
 import type { ComponentType } from "react";
+import { BridgeAuditScope, data as bridgeAuditScope } from "./bridge-audit-scope";
 import { ConceptsPipeline, data as conceptsPipeline } from "./concepts-pipeline";
 import { HowQuipFitsTogether, data as howQuipFitsTogether } from "./how-quip-fits-together";
 import { ParticipantsFlow, data as participantsFlow } from "./participants-flow";
+import { PqLibraryCoverage, data as pqLibraryCoverage } from "./pq-library-coverage";
+import { PqSignatureSizes, data as pqSignatureSizes } from "./pq-signature-sizes";
+import { PricingShotCount, data as pricingShotCount } from "./pricing-shot-count";
 import { QuipAccountPaths, data as quipAccountPaths } from "./quip-account-paths";
+import { QvmStack, data as qvmStack } from "./qvm-stack";
 import { ThreePrograms, data as threePrograms } from "./three-programs";
 import { TspGraph, data as tspGraph } from "./tsp-graph";
 import { TspPipeline, data as tspPipeline } from "./tsp-pipeline";
@@ -18,6 +23,11 @@ const registry = new Map<string, ComponentType>([
   [threePrograms.source, ThreePrograms],
   [tspPipeline.source, TspPipeline],
   [tspGraph.source, TspGraph],
+  [qvmStack.source, QvmStack],
+  [pqSignatureSizes.source, PqSignatureSizes],
+  [bridgeAuditScope.source, BridgeAuditScope],
+  [pricingShotCount.source, PricingShotCount],
+  [pqLibraryCoverage.source, PqLibraryCoverage],
 ]);
 
 export function bespokeDiagram(chart: string) {

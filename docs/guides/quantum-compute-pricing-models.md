@@ -28,6 +28,17 @@ Amazon Braket charges two amounts for each run on a quantum processing unit (QPU
 
 At the same rates, a 100-shot debugging run costs $0.0425 in shots and $0.30 for the task. The task fee now accounts for nearly 90% of the $0.34 bill, and you save almost nothing by cutting shots further. On this model, run fewer hardware tasks during development, and send to hardware only circuits already checked in a simulator.
 
+The diagram follows one Braket task on Rigetti Cepheus as the shot count grows. The task fee stays at $0.30 while the shot fees scale with the count, so the fee's share of the bill falls from nearly 90% at 100 shots to under 7% at 10,000.
+
+```mermaid
+flowchart LR
+    A["100 shots<br/>$0.0425 in shots<br/>$0.30 task fee<br/>$0.34 in total<br/>task fee: nearly 90%"]
+    B["About 700 shots<br/>about $0.30 in shots<br/>$0.30 task fee<br/>about $0.60 in total<br/>task fee: about half"]
+    C["10,000 shots<br/>$4.25 in shots<br/>$0.30 task fee<br/>$4.55 in total<br/>task fee: under 7%"]
+    A -->|more shots| B
+    B -->|more shots| C
+```
+
 Azure Quantum bills IonQ hardware by gate-shots, at rates such as $0.000975 per two-qubit-gate shot on Aria 1, with a minimum price for each program execution ($12.4166 on Aria 1 with error mitigation off, $97.50 with it on). Above that minimum, the bill rises with gate count as well as shot count, so you lower it by removing gates or by running fewer shots. Below it, the minimum plays the same role as the Braket task fee.
 
 ## Per second of processor time

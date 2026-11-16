@@ -39,6 +39,24 @@ Start the scope from the trust model, then add the code:
 3. Trace each release or mint function back to the proof it checks.
 4. Record the audited commit, then compare it against the verified source of the deployed contract.
 
+The map places each incident from the table against the part of the scope that would have covered it.
+
+```mermaid
+flowchart LR
+    R["Ronin, about $624M<br/>signer threshold compromise"]
+    W["Wormhole, $326M<br/>signature verification bypass"]
+    N["Nomad, $190M<br/>initialization error on upgrade"]
+    subgraph SCOPE["Audit scope"]
+        T["Trust model<br/>relayers, guardians,<br/>multisig signers, upgrade admin"]
+        V["Verification<br/>each release or mint traced<br/>to the proof it checks"]
+        U["Upgrades<br/>deployment, initialization<br/>and upgrade scripts"]
+        D["Deployed code<br/>audited commit compared<br/>with verified source"]
+    end
+    R --> T
+    W --> V
+    N --> U
+```
+
 The [QuipSwap security page](/docs/quipswap/security) gives a worked example of the last step. It names the audited commit, then lists the remediation commits and a later functional change contained in the source verified on Basescan.
 
 ## Swaps without a bridge

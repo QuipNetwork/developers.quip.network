@@ -25,6 +25,27 @@ Every transaction on a chain carries a signature, so the comparison below covers
 
 The notes come from each project's README or package page as of November 12, 2026. Maintainers revise them, so check again before you settle on a library.
 
+The diagram regroups the table by scheme. Each box lists the libraries that implement that scheme, and the arrows mark the three schemes pqhybridsign pairs with a classical key.
+
+```mermaid
+flowchart TD
+    H["pqhybridsign<br/>ed25519 or sr25519<br/>paired with one of<br/>three schemes"]
+    subgraph LAT["Lattice-based"]
+        ML["ML-DSA<br/>FIPS 204, final<br/>liboqs, RustCrypto ml-dsa,<br/>CIRCL, noble-post-quantum"]
+        FAL["Falcon (FN-DSA)<br/>FIPS 206 still in development<br/>liboqs, rust-fn-dsa,<br/>noble-post-quantum (Round 3)"]
+    end
+    subgraph HASH["Hash-based"]
+        SH["SHRINCS<br/>the hash-based scheme in Quip signatures"]
+        SLH["SLH-DSA<br/>FIPS 205, final<br/>liboqs, RustCrypto slh-dsa,<br/>CIRCL, noble-post-quantum"]
+        LMS["LMS and XMSS<br/>SP 800-208, final<br/>liboqs, RustCrypto lms and xmss"]
+    end
+    H --> ML
+    H --> FAL
+    H --> SH
+    classDef quip fill:#FFEDEE,stroke:#C93A3F,color:#1A1618
+    class H quip
+```
+
 ## Falcon code changes once FIPS 206 is final
 
 FIPS 206, the standard for FN-DSA, [is still in development](https://csrc.nist.gov/projects/post-quantum-cryptography/post-quantum-cryptography-standardization). Each Falcon implementation in the table predates the final standard:
@@ -43,7 +64,7 @@ The [PQClean](https://github.com/PQClean/PQClean) collection of portable C imple
 
 A hybrid signature pairs a classical signature with a post-quantum one, and the verifier accepts the pair only if both halves verify. Quip Network's [pqhybridsign](https://github.com/QuipNetwork/pqhybridsign) builds each of its suites this way, combining ed25519 or sr25519 with ML-DSA-44, Falcon-512 or SHRINCS.
 
-SHRINCS is the hash-based scheme in Quip signatures, and Quip uses it only inside this hybrid construction, [paired with a classical key](post-quantum-signatures-for-blockchains.md#hybrid-signing-in-quip-accounts). Its stateful path spends a one-time key slot on every signature, so a signer has to [record each slot](post-quantum-signatures-for-blockchains.md#stateful-schemes-count-every-signature) before it broadcasts the transaction.
+SHRINCS is the hash-based scheme in Quip signatures, and Quip uses it only inside this hybrid construction, [paired with a classical key](post-quantum-signatures-for-blockchains.md#hybrid-signing-in-quip-accounts). Its stateful path spends a one-time key slot on every signature, so a signer has to [record each slot](post-quantum-signatures-for-blockchains.md#stateful-schemes-count-every-signature) before it broadcasts the transaction. [Quip Accounts](../interlock/quip-accounts.md#how-signing-works) explains the two SHRINCS signing paths and how the Quip clients track slots for account holders.
 
 ## Substrate chains
 

@@ -20,6 +20,31 @@ An execution layer takes one program and sends it to real machines. Quip Network
 | **Runs on** | Classical computer | Classical computer | [CPU, GPU, D-Wave quantum annealer or Quip Network](/docs/xquad-toolchain#backends) |
 | **Program format** | Quil | Cirq circuits | [Quadratic models](/docs/xquad-toolchain#what-it-models), written in a constraint language or built in Python |
 
+## Where the Quip Virtual Machine sits
+
+Your code describes the problem once. XQuad compiles it to XQVM bytecode, and the `xqsa` solver adapters send that bytecode to the backend you pick, from a local CPU to the Quip Network. The [XQuad toolchain](/docs/xquad-toolchain#components) page lists each package.
+
+```mermaid
+flowchart LR
+    M["Your model<br/>constraint language<br/>or Python"]
+    subgraph QVM["Quip Virtual Machine"]
+        X["XQuad<br/>compiles the model"]
+        S["xqsa<br/>solver adapters"]
+    end
+    CPU["CPU<br/>simulated annealing"]
+    GPU["GPU<br/>CUDA or Metal annealer"]
+    DW["D-Wave Advantage<br/>quantum annealer"]
+    QN["Quip Network<br/>network-provided solvers"]
+    M --> X
+    X -->|XQVM bytecode| S
+    S --> CPU
+    S --> GPU
+    S --> DW
+    S --> QN
+    classDef quip fill:#FFEDEE,stroke:#C93A3F,color:#1A1618
+    class QN quip
+```
+
 ## Which problems the Quip Virtual Machine runs
 
 The [XQuad toolchain](/docs/xquad-toolchain) handles combinatorial problems that reduce to quadratic binary models. Route planning, graph coloring, knapsack and portfolio optimization all fall in range. Support for gate-based hardware, starting with IonQ, is [coming](https://quip.network/blog/qvm-launch). Until then, if your work needs a gate-level circuit simulator for research, the Rigetti and Google tools above are built for that job.
