@@ -53,6 +53,8 @@ pip install xquad          # Python toolchain
 cargo install xqcli        # the `xquad` binary
 ```
 
+Prebuilt Python wheels exist for Linux only. On Windows, use WSL2. See [Platform support](../compute/submit-a-job.md#platform-support) for macOS and for the native Windows fallback.
+
 The full documentation covers installation, modeling, the instruction set, worked examples for a dozen classic problems, and the reference for every package.
 
 To run a model on the Quip Network rather than on your own hardware, see [Submit Your First Compute Job](../compute/submit-a-job.md).

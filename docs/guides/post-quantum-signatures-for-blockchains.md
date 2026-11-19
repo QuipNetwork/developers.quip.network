@@ -61,6 +61,32 @@ The Quip clients track slots for account holders. A team writing its own signer 
 
 For a Substrate-based chain, a post on the [Quip research forum](https://research.quip.network/t/post-quantum-signature-libraries-for-a-substrate-based-blockchain/14) compares liboqs, pqcrypto and other libraries for these schemes.
 
+## Hybrid signatures matter less for short-lived authentication
+
+Use a hybrid signature when a key or a signature must stay secure for years. For authentication with short-lived credentials, a hybrid signature adds less. A break there does limited damage, and the operator can repair it.
+
+A hybrid signature protects the period in which you cannot change the algorithm. A key that controls an account can hold assets for years, and a forged signature moves those assets for good. That key needs both halves: the post-quantum half against a future quantum computer, and the classical half against a flaw in a newer post-quantum scheme.
+
+Authentication with short-lived credentials differs in three ways:
+
+* **The verifier checks the signature once.** A login or session signature proves control of a key at one moment. An attacker gains nothing from a recording of it, unlike recorded ciphertext that the attacker can decrypt years later. A forgery works only while the credential is valid and the verifier still accepts the algorithm.
+* **Credentials rotate.** A session key or an access token lives for minutes to months. A key that an attacker recovers after the credential expires opens nothing.
+* **The operator can repair a break.** If an algorithm fails, the operator revokes the affected credentials and issues new ones under a different algorithm. The exposure stops at that point.
+
+So for authentication, the move to post-quantum signatures is a transition problem and not a long-term exposure. No old authentication signature has to stay trustworthy. The operator has to change the algorithm before an attacker can break the current one, and can then use the post-quantum algorithm alone.
+
+This reasoning has limits:
+
+* **A break still gives access until the operator reacts.** If one authenticated action is permanent, such as a transfer of funds, protect that action as a long-lived signature.
+* **Issuer keys are long-lived.** A key that signs credentials, such as a certificate authority root, stays valid for years. Protect it with a hybrid signature.
+* **The credentials must be able to rotate.** A key built into a device or a contract is long-lived, whatever its purpose.
+
+### Identity credentials built on passports
+
+A zero-knowledge identity credential built on a government passport shows the second limit. The chip in the passport carries classical signatures, RSA or ECDSA, that [ICAO Doc 9303](https://www.icao.int/publications/doc-series/doc-9303) specifies. The keys of the issuing state stay valid for as long as the passports that they signed, which is up to 10 years. The standard defines no post-quantum signature, and no credential provider can add one.
+
+Such a credential is only as quantum resistant as the passport behind it. An application controls the remaining part, which is the lifetime of the credential. Set an expiry on each credential and require a new proof after it, so that the authentication step stays short-lived.
+
 ## Next step
 
 Read [Quip Accounts](../interlock/quip-accounts.md) before you add post-quantum signing to a wallet or contract. It covers slot tracking, ERC-1271 signature checks and account upgrades.

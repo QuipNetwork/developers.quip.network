@@ -22,10 +22,24 @@ Install the `xquad` package from the Python Package Index (PyPI). It requires Py
 pip install "xquad[quip]"
 ```
 
-The base install of `xqsa` includes a local simulated annealing solver that runs on your central processing unit (CPU), so you can test a model without touching the network or spending anything. The `[quip]` extra adds the two pieces that the network backend, `SolverQuip`, needs: a chain client and a signing extension that produces the hybrid (classical plus post-quantum) signatures Quip transactions require. Every other solver in `xqsa` installs and runs without the extra. The signing extension, `quip-signer`, ships a prebuilt wheel for Linux; on macOS and Windows, `pip` builds it from source, which needs a local [Rust toolchain](https://rustup.rs).
+The base install of `xqsa` includes a local simulated annealing solver that runs on your central processing unit (CPU), so you can test a model without touching the network or spending anything. The `[quip]` extra adds the two pieces that the network backend, `SolverQuip`, needs: a chain client and a signing extension that produces the hybrid (classical plus post-quantum) signatures Quip transactions require. Every other solver in `xqsa` installs and runs without the extra.
 
 > **Note**
 > The chain interfaces behind the `[quip]` extra are pre-release. The package's own documentation notes that chain metadata and economic parameters can change between releases, so expect to update the packages as the network evolves.
+
+### Platform support
+
+Two of the packages contain compiled Rust code: `xqffi`, which every install needs, and `quip-signer`, which the `[quip]` extra adds. Both publish prebuilt wheels for Linux only. On any other platform, `pip` builds them from the source distribution (sdist), which needs a local [Rust toolchain](https://rustup.rs).
+
+| Platform | How the install works |
+| --- | --- |
+| Linux on x86_64 or aarch64 | `pip` installs the prebuilt wheels. No compiler is necessary. |
+| macOS | `pip` builds `xqffi` and `quip-signer` from the sdist. Install Rust first. |
+| Windows | Use WSL2. Native Windows is not supported. |
+
+On Windows, install the [Windows Subsystem for Linux 2 (WSL2)](https://learn.microsoft.com/windows/wsl/install) and run the tools inside the Linux distribution. WSL2 uses the same prebuilt Linux wheels, so the install needs no compiler. Make sure that the distribution has Python 3.13 or newer.
+
+Native Windows has no wheels, and the XQuad test suite does not run there. If you cannot use WSL2, you can build from the sdist as a fallback. Install Rust and the Microsoft C++ Build Tools, then run the same `pip install` command. Treat the result as untested.
 
 ## Describe your problem as an Ising model
 
