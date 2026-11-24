@@ -16,6 +16,8 @@ coverY: 0
 
 These docs cover building on the Quip Network: submitting optimization jobs to a decentralized quantum and classical compute marketplace, and protecting assets on the chains you already use with quantum-resistant accounts and swaps. New to Quip? Start with the [Quickstart](getting-started/quickstart.md), or read [What is Quip Network?](getting-started/what-is-quip.md) for how the two layers relate. Integrating? Go to the [Quip SDK](getting-started/quip-sdk.md). For the whole system in one diagram, see [How Quip Network Fits Together](interlock/how-quip-fits-together.md). If you are reading alongside an AI assistant, these pages are also [available as markdown and over MCP](getting-started/use-with-ai.md).
 
+Building on QuipSwap? Start with the [QuipSwap overview](quipswap/overview.md), then read [How a Swap Works](quipswap/how-a-swap-works.md) and [The Order Book](quipswap/order-book.md). Package APIs are in the [Reference](https://developers.quip.network/docs/reference), including the [Ethereum SDK](https://developers.quip.network/docs/reference/ethereum-sdk) and the [QuipSwap SDK](https://developers.quip.network/docs/reference/quip-swap-sdk). For what a cross-chain bridge audit should check, see [Blockchain Bridge Audits](guides/blockchain-bridge-audit.md).
+
 The goal of the Quip Network is to make quantum compute usable without owning the hardware, for problems in finance, logistics, manufacturing, and AI.
 
 If you can phrase your question as, "What's the best...?", "What's the fastest...?", or "What's the least costly...?" the odds are good that we can solve your problem faster with a quantum computer.
