@@ -6,5 +6,7 @@
   "xqvm/cli/asm": "cli/vm/asm",
   "xqvm/cli/dis": "cli/vm/dis",
   "xqvm/cli/run": "cli/vm/run",
-  "xqvm/cli/check": "cli/vm/check"
+  "xqvm/cli/check": "cli/vm/check",
+  "xqvm/verifier": "xqvm/checker",
+  "running/verification": "running/checking"
 }
