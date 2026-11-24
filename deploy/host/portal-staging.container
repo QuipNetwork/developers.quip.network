@@ -1,4 +1,4 @@
-# developers-staging.quip.network: follows :fumadocs. Caddy proxies to 127.0.0.1:3001.
+# developers-staging.quip.network: follows :staging. Caddy proxies to 127.0.0.1:3001.
 # podman auto-update moves it to a new image, and puts the old one back if this one never turns healthy.
 
 [Unit]
@@ -6,7 +6,7 @@ Description=developers.quip.network staging
 
 [Container]
 ContainerName=portal-staging
-Image=registry.gitlab.com/quip.network/developers.quip.network:fumadocs
+Image=registry.gitlab.com/quip.network/developers.quip.network:staging
 AutoUpdate=registry
 Label=io.containers.autoupdate.authfile=%h/.config/containers/auth.json
 Environment=ROBOTS_NOINDEX=1

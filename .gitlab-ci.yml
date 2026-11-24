@@ -15,7 +15,7 @@
 #
 # The checks run on a schedule, on a manual "Run pipeline", and on merge requests,
 # deliberately NOT on branch pushes, because a push must not go red because someone
-# else's CDN is having a bad afternoon. Pushes to main and to the fumadocs branch run
+# else's CDN is having a bad afternoon. Pushes to main and to the staging branch run
 # only the image jobs. A "trigger" pipeline (xquad's release hook) rebuilds the image so
 # the book stays current.
 
@@ -33,7 +33,7 @@ workflow:
     - if: $CI_PIPELINE_SOURCE == "web"
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_PIPELINE_SOURCE == "trigger"
-    - if: $CI_PIPELINE_SOURCE == "push" && ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH == "fumadocs")
+    - if: $CI_PIPELINE_SOURCE == "push" && ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH == "staging")
 
 .checks-only:
   rules:
@@ -50,7 +50,7 @@ workflow:
   stage: image
   tags: [linux, amd64, docker]
   rules:
-    - if: ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "trigger") && ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH == "fumadocs")
+    - if: ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "trigger") && ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH == "staging")
   variables:
     # A rebuild of the same commit (an xquad release) must not overwrite the image a
     # rollback would name, so every build gets its own tag.

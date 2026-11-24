@@ -45,7 +45,7 @@ only report from `developers.quip.network`, so staging sends nothing.
 ## Deploy path
 
 CI builds and pushes; it never deploys (see the top of `.gitlab-ci.yml`). Each push to
-`fumadocs` or `main` runs three jobs:
+`staging` or `main` runs three jobs:
 
 1. `build-image` builds with kaniko and pushes `:<short sha>-<pipeline id>`, a tag unique to
    that build, so a rollback target is never overwritten.
@@ -54,8 +54,11 @@ CI builds and pushes; it never deploys (see the top of `.gitlab-ci.yml`). Each p
 
 | Branch | Tag the host follows | Runs on |
 | --- | --- | --- |
-| `fumadocs` | `:fumadocs` | Staging |
+| `staging` | `:staging` | Staging |
 | `main` | `:main` | Production |
+
+Merge requests go to `main`. `staging` is for trying a risky change first: bring it up to
+`main`, merge the change into it, and check it on the staging host before the MR to `main`.
 
 The `:main` tag needs a protection rule in the project's container registry settings, so a
 branch pipeline cannot publish to production. Check it still lets the people who merge to
@@ -90,7 +93,7 @@ user, Caddy in front. The files are in `deploy/host/`.
 | File | What it does |
 | --- | --- |
 | `setup.sh` | One-time setup as root: Podman, Caddy, fail2ban, nightly security updates, the `portal` user |
-| `portal-staging.container` | Quadlet unit following `:fumadocs` on `127.0.0.1:3001`, with `ROBOTS_NOINDEX=1` |
+| `portal-staging.container` | Quadlet unit following `:staging` on `127.0.0.1:3001`, with `ROBOTS_NOINDEX=1` |
 | `portal-production.container` | The same for `:main` on `127.0.0.1:3002`, installed at cutover |
 | `Caddyfile` | TLS, compression, and `noindex` on every staging response |
 | `podman-auto-update.timer.d/` | Checks the registry every 5 minutes instead of daily |
