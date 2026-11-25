@@ -21,8 +21,8 @@ no database or disk, so every replica is identical and a rollback is a tag chang
     are immutable, and everything else revalidates. A CDN in front of the proxy, such as
     Cloudflare, can follow those headers as they are.
 
-- **Two hostnames.** Staging (suggested `developers-staging.quip.network`), and production,
-  `developers.quip.network`, which moves off Netlify at cutover.
+- **Two hostnames.** Staging (`developers-staging.quip.network`), and production,
+  `developers.quip.network`.
 
 ## Runtime settings
 
@@ -71,11 +71,11 @@ sits with the licence rather than the registry.
 The host follows those tags on its own. That must work unattended, because the
 data-refresh bot commits to `main` daily and each commit needs to reach production.
 
-**The XQuad release hook moves at cutover.** xquad's `docs:publish` job posts to a Netlify
-build hook. It needs to start a pipeline on `main` of this project instead, through a
-pipeline trigger token (Settings, CI/CD). The pipeline id it sends today is not needed: with
-none, `scripts/sync-xquad.mjs` publishes the newest release whose book built, which is that
-release. The change is in the xquad repo, so its maintainers review it.
+**XQuad releases rebuild production.** xquad's `docs:publish` job starts a pipeline on
+`main` of this project through a pipeline trigger token (Settings, CI/CD). The xquad CI
+variable that holds the URL is still named `NETLIFY_BUILD_HOOK`. The job sends no pipeline
+id, so `scripts/sync-xquad.mjs` publishes the newest release whose book built, which is that
+release. The trigger token and the host's deploy token both expire on 2027-11-06.
 
 ## Health and monitoring
 
@@ -116,8 +116,7 @@ systemctl --user start portal-staging
 systemctl --user enable --now podman-auto-update.timer portal-prune.timer
 ```
 
-At cutover, install `/usr/local/share/portal/portal-production.container` the same way and uncomment the production
-block in `/etc/caddy/Caddyfile`.
+Production runs `/usr/local/share/portal/portal-production.container`, installed the same way.
 
 Updates need nobody: within 5 minutes of `promote-image`, `podman auto-update` pulls the new
 image and restarts the site, and Caddy holds requests through the restart. If the new
@@ -141,25 +140,14 @@ portal-pin staging --unpin                      # back on the branch tag
 ```
 
 A pinned site stays put until it is unpinned, even when new images arrive. The registry keeps
-the last 10 tags and everything under 14 days old. For two weeks after the cutover, keep the
-Netlify site running, so going back is also a DNS change. The TTL on `developers.quip.network`
-is already 60 seconds.
+the last 10 tags and everything under 14 days old.
 
-## Cutover checklist
+## The move off Netlify
 
-1. Staging runs `:fumadocs`, and `npm run check:staging -- https://<staging host>` passes. That covers
-   pages, URLs, the XQuad book, diagrams, about 5,000 search queries and a full MCP session.
-2. Stop auto publishing on Netlify before the merge. The Next.js build has never passed
-   there, and this keeps the current site live on Netlify as the fallback. That fallback is
-   the old site: it stops getting updates once publishing is stopped.
-3. Merge `fumadocs` to `main`, wait for `:main`, and confirm it on the production container
-   by its IP or a temporary hostname.
-4. Switch DNS. Run `npm run check:staging -- https://developers.quip.network --production
-   --reference <netlify URL>`.
-5. Swap the XQuad release hook.
-6. Submit `/sitemap.xml` in Search Console.
-7. After two quiet weeks, retire the Netlify site, `netlify.toml` and `netlify-cli`, and drop
-   `fumadocs` from the image rules in `.gitlab-ci.yml`.
+Production moved from Netlify to this host on 2026-11-12. `check:staging` passed on staging,
+then on production with `--production --reference <old site>`, which compares the two sites
+page by page. The XQuad release hook moved after that, and the Netlify site was retired after
+two quiet weeks. `--reference` stays for the next move.
 
 ## Optional: Umami
 

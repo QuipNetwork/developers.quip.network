@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /*
  * Offline guard against endpoint drift. Runs as `prebuild`, so it executes
- * inside the Netlify build: a reintroduced dead endpoint fails the deploy
+ * inside the image build: a reintroduced dead endpoint fails the build
  * instead of shipping to a live developer portal.
  *
  * Why this exists. src/sections/BuildWithAi carried a comment claiming

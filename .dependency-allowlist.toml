@@ -14,9 +14,3 @@ version = "1.0.0-beta.2"
 commit = "a182868db47da283a1a044cb15bfd388697a632f"
 reason = "No stable gensync release exists; 1.0.0-beta.2 is the latest tag. Required by @babel/core."
 
-[[allow]]
-ecosystem = "npm"
-name = "pg-gateway"
-version = "0.3.0-beta.4"
-commit = "c7ccafbc0c63d3edf2d04b44066cf448c44db363"
-reason = "No stable pg-gateway release exists; 0.3.0-beta.4 is the latest tag. Pinned exactly by @netlify/db-dev (dev only, via netlify-cli)."

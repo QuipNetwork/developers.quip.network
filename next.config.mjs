@@ -2,8 +2,8 @@ import { createMDX } from "fumadocs-mdx/next";
 
 const withMDX = createMDX();
 
-// Every rule here used to live in netlify.toml. They move into the app so the site
-// behaves the same on any host: the self-hosted container, a laptop, or a preview.
+// Headers and redirects live in the app, so the site behaves the same on any host: the
+// self-hosted container, a laptop, or a preview.
 
 const markdown = [
   { key: "Content-Type", value: "text/markdown; charset=utf-8" },
@@ -17,9 +17,8 @@ const moved = (source, destination) => ({ source, destination, statusCode: 301 }
 
 /** @type {import('next').NextConfig} */
 const config = {
-  // The standalone server is what the Docker image runs. Netlify's runtime packages the app
-  // itself, which matters only while netlify.toml stays as the fallback.
-  output: process.env.NETLIFY ? undefined : "standalone",
+  // The standalone server is what the Docker image runs.
+  output: "standalone",
   // Shown as "Updated" on the home page, as the Astro build did.
   env: { NEXT_PUBLIC_BUILD_DATE: new Date().toISOString().slice(0, 10) },
   reactStrictMode: true,
